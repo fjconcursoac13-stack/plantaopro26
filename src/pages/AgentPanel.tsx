@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAgentProfile } from '@/hooks/useAgentProfile';
+import { useBackNavigation } from '@/hooks/useBackNavigation';
 import { useSessionPersistence } from '@/hooks/useSessionPersistence';
 import { useLicenseCheck } from '@/hooks/useLicenseCheck';
 import { TeamMembersCard } from '@/components/agent-panel/TeamMembersCard';
@@ -35,6 +36,9 @@ export default function AgentPanel() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('equipe');
   const [hasShifts, setHasShifts] = useState(true);
+
+  // ESC key navigation - goes back to previous page or home
+  useBackNavigation({ enabled: true, fallbackPath: '/' });
 
   // Session persistence with retry logic
   const { 

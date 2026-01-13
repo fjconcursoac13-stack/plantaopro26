@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useSessionPersistence } from '@/hooks/useSessionPersistence';
+import { useBackNavigation } from '@/hooks/useBackNavigation';
 import { useLicenseCheck } from '@/hooks/useLicenseCheck';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
@@ -49,6 +50,9 @@ export default function Dashboard() {
   const [showContribution, setShowContribution] = useState(false);
   const [showTeamManagement, setShowTeamManagement] = useState(false);
   const [showTransferRequest, setShowTransferRequest] = useState(false);
+
+  // ESC key navigation - goes back to previous page or home
+  useBackNavigation({ enabled: true, fallbackPath: '/' });
 
   // Session persistence with retry logic
   const { 
