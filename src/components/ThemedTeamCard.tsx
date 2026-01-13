@@ -2,13 +2,14 @@ import { useState, useRef, MouseEvent } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
 import { cn } from '@/lib/utils';
-import { Shield, Sword, Target, Users, Crosshair, Radio, Cpu, Zap, Star, Anchor, Award, Crown, Hexagon } from 'lucide-react';
+import { Shield, Sword, Target, Users, Crosshair, Radio, Cpu, Zap, Star, Anchor, Award, Crown, Hexagon, UserPlus } from 'lucide-react';
 import { LucideIcon } from 'lucide-react';
 
 interface ThemedTeamCardProps {
   team: string;
   selected?: boolean;
   onClick: () => void;
+  onRegisterClick?: () => void;
 }
 
 interface TeamThemeConfig {
@@ -199,9 +200,14 @@ function use3DTilt() {
 }
 
 // TACTICAL THEME - Military Badge Style with Angular Design
-function TacticalCard({ team, config, onClick }: { team: string; config: TeamThemeConfig; onClick: () => void }) {
+function TacticalCard({ team, config, onClick, onRegisterClick }: { team: string; config: TeamThemeConfig; onClick: () => void; onRegisterClick?: () => void }) {
   const Icon = config.icon;
   const { ref, transform, glare, handleMouseMove, handleMouseLeave } = use3DTilt();
+  
+  const handleRegisterClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    onRegisterClick?.();
+  };
   
   return (
     <div 
@@ -265,9 +271,21 @@ function TacticalCard({ team, config, onClick }: { team: string; config: TeamThe
               <p className="text-white/80 font-medium text-xs text-center">{config.description}</p>
               <p className="text-slate-500 text-[10px] italic mt-1">"{config.slogan}"</p>
               
-              <div className="mt-4 flex items-center gap-2 px-3 py-1.5 bg-slate-800/80 border border-slate-600 hover:border-amber-500/50 transition-colors">
-                <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-                <span className="text-[10px] font-bold text-slate-400 tracking-wider">ACESSAR</span>
+              <div className="mt-4 flex flex-col gap-2 w-full">
+                <div className="flex items-center justify-center gap-2 px-3 py-1.5 bg-slate-800/80 border border-slate-600 hover:border-amber-500/50 transition-colors">
+                  <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                  <span className="text-[10px] font-bold text-slate-400 tracking-wider">ACESSAR</span>
+                </div>
+                
+                {onRegisterClick && (
+                  <button
+                    onClick={handleRegisterClick}
+                    className="flex items-center justify-center gap-2 px-3 py-1.5 bg-green-600/20 border border-green-500/50 hover:bg-green-600/40 hover:border-green-400 transition-colors"
+                  >
+                    <UserPlus className="w-3 h-3 text-green-400" />
+                    <span className="text-[10px] font-bold text-green-400 tracking-wider">CADASTRAR</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -278,9 +296,14 @@ function TacticalCard({ team, config, onClick }: { team: string; config: TeamThe
 }
 
 // MILITARY THEME - Dog Tag Style
-function MilitaryCard({ team, config, onClick }: { team: string; config: TeamThemeConfig; onClick: () => void }) {
+function MilitaryCard({ team, config, onClick, onRegisterClick }: { team: string; config: TeamThemeConfig; onClick: () => void; onRegisterClick?: () => void }) {
   const Icon = config.icon;
   const { ref, transform, glare, handleMouseMove, handleMouseLeave } = use3DTilt();
+  
+  const handleRegisterClick = (e: MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    onRegisterClick?.();
+  };
   
   return (
     <div 
@@ -345,8 +368,20 @@ function MilitaryCard({ team, config, onClick }: { team: string; config: TeamThe
               <p className="text-stone-300 font-medium text-xs text-center uppercase tracking-wider">{config.description}</p>
               <p className="text-stone-500 text-[10px] mt-1">"{config.slogan}"</p>
               
-              <div className="mt-4 px-4 py-1.5 bg-stone-700 border border-stone-500 rounded hover:bg-green-900/50 hover:border-green-600 transition-colors">
-                <span className="text-[10px] font-bold text-stone-400 tracking-widest">ENTRAR</span>
+              <div className="mt-4 flex flex-col gap-2 w-full">
+                <div className="px-4 py-1.5 bg-stone-700 border border-stone-500 rounded hover:bg-green-900/50 hover:border-green-600 transition-colors text-center">
+                  <span className="text-[10px] font-bold text-stone-400 tracking-widest">ENTRAR</span>
+                </div>
+                
+                {onRegisterClick && (
+                  <div
+                    onClick={handleRegisterClick}
+                    className="flex items-center justify-center gap-2 px-4 py-1.5 bg-green-600/20 border border-green-500/50 rounded hover:bg-green-600/40 hover:border-green-400 transition-colors cursor-pointer"
+                  >
+                    <UserPlus className="w-3 h-3 text-green-400" />
+                    <span className="text-[10px] font-bold text-green-400 tracking-widest">CADASTRAR</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -357,9 +392,14 @@ function MilitaryCard({ team, config, onClick }: { team: string; config: TeamThe
 }
 
 // CYBER THEME - Hexagonal Circuit Style
-function CyberCard({ team, config, onClick }: { team: string; config: TeamThemeConfig; onClick: () => void }) {
+function CyberCard({ team, config, onClick, onRegisterClick }: { team: string; config: TeamThemeConfig; onClick: () => void; onRegisterClick?: () => void }) {
   const Icon = config.icon;
   const { ref, transform, glare, handleMouseMove, handleMouseLeave } = use3DTilt();
+  
+  const handleRegisterClick = (e: MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    onRegisterClick?.();
+  };
   
   return (
     <div 
@@ -448,11 +488,23 @@ function CyberCard({ team, config, onClick }: { team: string; config: TeamThemeC
             <p className={cn("font-medium text-xs text-center opacity-80", config.textColor)}>{config.description}</p>
             <p className="text-slate-500 text-[10px] mt-1 font-mono">// {config.slogan}</p>
             
-            <div 
-              className="mt-4 px-4 py-1.5 bg-slate-900/80 border hover:bg-cyan-900/30 transition-colors overflow-hidden relative"
-              style={{ borderColor: config.accentColor + '50' }}
-            >
-              <span className={cn("text-[10px] font-bold tracking-widest relative z-10", config.textColor)}>CONECTAR</span>
+            <div className="mt-4 flex flex-col gap-2 w-full">
+              <div 
+                className="px-4 py-1.5 bg-slate-900/80 border hover:bg-cyan-900/30 transition-colors overflow-hidden relative text-center"
+                style={{ borderColor: config.accentColor + '50' }}
+              >
+                <span className={cn("text-[10px] font-bold tracking-widest relative z-10", config.textColor)}>CONECTAR</span>
+              </div>
+              
+              {onRegisterClick && (
+                <div
+                  onClick={handleRegisterClick}
+                  className="flex items-center justify-center gap-2 px-4 py-1.5 bg-green-600/20 border border-green-500/50 hover:bg-green-600/40 hover:border-green-400 transition-colors cursor-pointer"
+                >
+                  <UserPlus className="w-3 h-3 text-green-400" />
+                  <span className="text-[10px] font-bold text-green-400 tracking-widest">CADASTRAR</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -462,9 +514,14 @@ function CyberCard({ team, config, onClick }: { team: string; config: TeamThemeC
 }
 
 // CLASSIC THEME - Elegant Shield Style
-function ClassicCard({ team, config, onClick }: { team: string; config: TeamThemeConfig; onClick: () => void }) {
+function ClassicCard({ team, config, onClick, onRegisterClick }: { team: string; config: TeamThemeConfig; onClick: () => void; onRegisterClick?: () => void }) {
   const Icon = config.icon;
   const { ref, transform, glare, handleMouseMove, handleMouseLeave } = use3DTilt();
+  
+  const handleRegisterClick = (e: MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    onRegisterClick?.();
+  };
   
   return (
     <div 
@@ -492,11 +549,11 @@ function ClassicCard({ team, config, onClick }: { team: string; config: TeamThem
             "shadow-2xl transition-colors duration-300",
             "rounded-t-xl overflow-hidden"
           )}
-          style={{ clipPath: 'polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%)' }}
+          style={{ clipPath: 'polygon(0 0, 100% 0, 100% 80%, 50% 100%, 0 80%)' }}
         >
           <div className="absolute inset-2 border border-amber-500/20 rounded-t-lg" style={{ clipPath: 'polygon(0 0, 100% 0, 100% 75%, 50% 100%, 0 75%)' }} />
           
-          <div className="p-6 pb-10 relative">
+          <div className="p-6 pb-12 relative">
             <div className="flex flex-col items-center" style={{ transform: 'translateZ(25px)' }}>
               <div className="relative mb-4">
                 <div className="absolute -top-2 -left-2 w-4 h-4 border-t-2 border-l-2 border-amber-500/60" />
@@ -526,8 +583,20 @@ function ClassicCard({ team, config, onClick }: { team: string; config: TeamThem
               <p className="text-slate-300 font-medium text-xs text-center">{config.description}</p>
               <p className="text-slate-500 text-[10px] italic mt-1">"{config.slogan}"</p>
               
-              <div className="mt-4 px-5 py-2 bg-gradient-to-r from-amber-600/20 via-amber-500/30 to-amber-600/20 border border-amber-500/40 rounded-full hover:from-amber-600/40 hover:to-amber-600/40 transition-all">
-                <span className="text-[10px] font-semibold text-amber-400 tracking-wider">ACESSAR</span>
+              <div className="mt-4 flex flex-col gap-2 w-full">
+                <div className="px-5 py-2 bg-gradient-to-r from-amber-600/20 via-amber-500/30 to-amber-600/20 border border-amber-500/40 rounded-full hover:from-amber-600/40 hover:to-amber-600/40 transition-all text-center">
+                  <span className="text-[10px] font-semibold text-amber-400 tracking-wider">ACESSAR</span>
+                </div>
+                
+                {onRegisterClick && (
+                  <div
+                    onClick={handleRegisterClick}
+                    className="flex items-center justify-center gap-2 px-5 py-2 bg-green-600/20 border border-green-500/50 rounded-full hover:bg-green-600/40 hover:border-green-400 transition-all cursor-pointer"
+                  >
+                    <UserPlus className="w-3 h-3 text-green-400" />
+                    <span className="text-[10px] font-semibold text-green-400 tracking-wider">CADASTRAR</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -552,7 +621,7 @@ function CardWrapper({ children, theme }: { children: React.ReactNode; theme: st
   );
 }
 
-export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
+export function ThemedTeamCard({ team, onClick, onRegisterClick }: ThemedTeamCardProps) {
   const { theme } = useTheme();
   const { playSound } = useSoundEffects();
   const config = getTeamConfigByTheme(team, theme);
@@ -562,18 +631,23 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
     onClick();
   };
 
+  const handleRegister = () => {
+    playSound('click');
+    onRegisterClick?.();
+  };
+
   const renderCard = () => {
     switch (theme) {
       case 'tactical':
-        return <TacticalCard team={team} config={config} onClick={handleClick} />;
+        return <TacticalCard team={team} config={config} onClick={handleClick} onRegisterClick={onRegisterClick ? handleRegister : undefined} />;
       case 'military':
-        return <MilitaryCard team={team} config={config} onClick={handleClick} />;
+        return <MilitaryCard team={team} config={config} onClick={handleClick} onRegisterClick={onRegisterClick ? handleRegister : undefined} />;
       case 'cyber':
-        return <CyberCard team={team} config={config} onClick={handleClick} />;
+        return <CyberCard team={team} config={config} onClick={handleClick} onRegisterClick={onRegisterClick ? handleRegister : undefined} />;
       case 'classic':
-        return <ClassicCard team={team} config={config} onClick={handleClick} />;
+        return <ClassicCard team={team} config={config} onClick={handleClick} onRegisterClick={onRegisterClick ? handleRegister : undefined} />;
       default:
-        return <TacticalCard team={team} config={config} onClick={handleClick} />;
+        return <TacticalCard team={team} config={config} onClick={handleClick} onRegisterClick={onRegisterClick ? handleRegister : undefined} />;
     }
   };
 
