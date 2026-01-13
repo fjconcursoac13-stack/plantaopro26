@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
+import { useGlobalNavigation } from "@/hooks/useGlobalNavigation";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -23,6 +24,12 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+// Wrapper component to handle global navigation (ESC key and logout redirect)
+function GlobalNavigationHandler({ children }: { children: React.ReactNode }) {
+  useGlobalNavigation({ enabled: true });
+  return <>{children}</>;
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
@@ -31,23 +38,25 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <AuthProvider>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/agent-panel" element={<AgentPanel />} />
-              <Route path="/agent-profile" element={<AgentProfileEdit />} />
-              <Route path="/unit/:unitId" element={<UnitDashboard />} />
-              <Route path="/agents" element={<Agents />} />
-              <Route path="/agents/:id" element={<AgentProfile />} />
-              <Route path="/shifts" element={<Shifts />} />
-              <Route path="/overtime" element={<Overtime />} />
-              <Route path="/units" element={<Units />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/master" element={<Master />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <GlobalNavigationHandler>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/agent-panel" element={<AgentPanel />} />
+                <Route path="/agent-profile" element={<AgentProfileEdit />} />
+                <Route path="/unit/:unitId" element={<UnitDashboard />} />
+                <Route path="/agents" element={<Agents />} />
+                <Route path="/agents/:id" element={<AgentProfile />} />
+                <Route path="/shifts" element={<Shifts />} />
+                <Route path="/overtime" element={<Overtime />} />
+                <Route path="/units" element={<Units />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/master" element={<Master />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </GlobalNavigationHandler>
           </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>
