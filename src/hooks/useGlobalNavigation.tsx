@@ -1,16 +1,60 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 interface UseGlobalNavigationOptions {
   enabled?: boolean;
 }
+
+// Create a visual flash effect on the screen
+const triggerNavigationFlash = () => {
+  const flash = document.createElement('div');
+  flash.className = 'navigation-flash';
+  flash.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 9999;
+    animation: nav-flash 0.3s ease-out forwards;
+  `;
+  
+  // Add keyframes if not exists
+  if (!document.getElementById('nav-flash-style')) {
+    const style = document.createElement('style');
+    style.id = 'nav-flash-style';
+    style.textContent = `
+      @keyframes nav-flash {
+        0% { opacity: 1; transform: scale(1); }
+        100% { opacity: 0; transform: scale(1.5); }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+  
+  document.body.appendChild(flash);
+  setTimeout(() => flash.remove(), 300);
+};
 
 export function useGlobalNavigation(options: UseGlobalNavigationOptions = {}) {
   const { enabled = true } = options;
   const navigate = useNavigate();
   const location = useLocation();
   const { user, masterSession } = useAuth();
+
+  const performNavigation = useCallback(() => {
+    triggerNavigationFlash();
+    
+    if (window.history.length > 2) {
+      navigate(-1);
+    } else {
+      navigate('/');
+    }
+  }, [navigate]);
 
   // Handle ESC key for global navigation
   useEffect(() => {
@@ -43,18 +87,13 @@ export function useGlobalNavigation(options: UseGlobalNavigationOptions = {}) {
           return;
         }
 
-        // Navigate back or to home
-        if (window.history.length > 2) {
-          navigate(-1);
-        } else {
-          navigate('/');
-        }
+        performNavigation();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [enabled, navigate, location.pathname]);
+  }, [enabled, location.pathname, performNavigation]);
 
   // Redirect to home when user logs out
   useEffect(() => {
@@ -71,5 +110,5 @@ export function useGlobalNavigation(options: UseGlobalNavigationOptions = {}) {
     }
   }, [user, masterSession, location.pathname, navigate]);
 
-  return { navigate };
+  return { navigate, performNavigation };
 }
