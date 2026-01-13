@@ -136,7 +136,7 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
           )}
         >
           {/* Top security stripe */}
-          <div className={cn("h-1 w-full bg-gradient-to-r", config.gradient)} />
+          <div className={cn("h-0.5 md:h-1 w-full bg-gradient-to-r", config.gradient)} />
           
           {/* Scan line effect */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -149,47 +149,47 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
             />
           </div>
           
-          {/* Corner brackets */}
-          <div className="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 border-slate-500/50" />
-          <div className="absolute top-2 right-2 w-4 h-4 border-r-2 border-t-2 border-slate-500/50" />
-          <div className="absolute bottom-2 left-2 w-4 h-4 border-l-2 border-b-2 border-slate-500/50" />
-          <div className="absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 border-slate-500/50" />
+          {/* Corner brackets - Smaller on mobile */}
+          <div className="absolute top-1 left-1 md:top-2 md:left-2 w-2 h-2 md:w-3 md:h-3 border-l border-t md:border-l-2 md:border-t-2 border-slate-500/50" />
+          <div className="absolute top-1 right-1 md:top-2 md:right-2 w-2 h-2 md:w-3 md:h-3 border-r border-t md:border-r-2 md:border-t-2 border-slate-500/50" />
+          <div className="absolute bottom-1 left-1 md:bottom-2 md:left-2 w-2 h-2 md:w-3 md:h-3 border-l border-b md:border-l-2 md:border-b-2 border-slate-500/50" />
+          <div className="absolute bottom-1 right-1 md:bottom-2 md:right-2 w-2 h-2 md:w-3 md:h-3 border-r border-b md:border-r-2 md:border-b-2 border-slate-500/50" />
           
-          <div className="p-6 relative">
+          <div className="p-3 md:p-4 relative">
             <div className="flex flex-col items-center" style={{ transform: 'translateZ(20px)' }}>
-              {/* Icon container */}
-              <div className="relative mb-4">
+              {/* Icon container - Smaller on mobile */}
+              <div className="relative mb-2 md:mb-3">
                 <div 
                   className={cn(
-                    "w-16 h-16 rounded-full flex items-center justify-center",
+                    "w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center",
                     "bg-gradient-to-br", config.gradient,
-                    "shadow-lg border-2 border-white/10"
+                    "shadow-lg border border-white/10 md:border-2"
                   )}
                 >
-                  <Icon className="h-8 w-8 text-white drop-shadow-md" />
+                  <Icon className="h-5 w-5 md:h-6 md:w-6 text-white drop-shadow-md" />
                 </div>
                 
                 {/* Status indicator */}
-                <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-green-500 border-2 border-slate-800 animate-pulse" />
+                <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-green-500 border border-slate-800 md:border-2 animate-pulse" />
               </div>
               
               {/* Team name */}
               <h3 className={cn(
-                "text-xl font-black tracking-[0.2em] mb-1",
+                "text-sm md:text-base font-black tracking-[0.15em] mb-0.5",
                 config.textColor
               )}>
                 {team}
               </h3>
               
-              {/* Description */}
-              <p className="text-slate-400 text-[11px] text-center font-medium tracking-wide">
+              {/* Description - Hidden on very small screens */}
+              <p className="text-slate-400 text-[8px] md:text-[10px] text-center font-medium tracking-wide hidden xs:block">
                 {config.description}
               </p>
               
-              {/* Action indicator */}
-              <div className="mt-4 flex items-center gap-2 px-4 py-2 bg-slate-700/50 rounded border border-slate-600/50 group-hover:border-slate-500 group-hover:bg-slate-700/70 transition-all">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-[10px] font-semibold text-slate-300 tracking-widest uppercase">
+              {/* Action indicator - Compact */}
+              <div className="mt-2 md:mt-3 flex items-center gap-1.5 px-2 py-1 md:px-3 md:py-1.5 bg-slate-700/50 rounded border border-slate-600/50 group-hover:border-slate-500 group-hover:bg-slate-700/70 transition-all">
+                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                <span className="text-[8px] md:text-[9px] font-semibold text-slate-300 tracking-widest uppercase">
                   Entrar
                 </span>
               </div>

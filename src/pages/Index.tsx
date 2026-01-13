@@ -673,68 +673,68 @@ export default function Index() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background relative overflow-hidden">
+    <div className="h-screen flex flex-col bg-background relative overflow-hidden">
       {/* Themed Animated Background */}
       <ThemedBackground />
 
-      {/* Top Security Bar */}
-      <div className="bg-slate-900/90 border-b border-slate-700/50 py-2 px-4 relative z-20">
+      {/* Top Security Bar - Compact */}
+      <div className="bg-slate-900/90 border-b border-slate-700/50 py-1.5 px-3 relative z-20">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-[10px] font-mono text-slate-400 tracking-wider">
-              SISTEMA ATIVO
+          <div className="flex items-center gap-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+            <span className="text-[9px] font-mono text-slate-400 tracking-wider">
+              ATIVO
             </span>
           </div>
-          <div className="text-[10px] font-mono text-slate-500">
-            {new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+          <div className="text-[9px] font-mono text-slate-500 hidden sm:block">
+            {new Date().toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric', month: 'short' })}
           </div>
         </div>
       </div>
 
-      {/* Hero Section - Professional Security Style */}
-      <header className="py-10 px-4 relative z-10">
+      {/* Hero Section - Compact */}
+      <header className="py-4 md:py-6 px-3 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
-          {/* Security Badge */}
-          <div className="mb-6 flex flex-col items-center">
+          {/* Security Badge - Smaller on mobile */}
+          <div className="mb-3 flex flex-col items-center">
             <div className="relative">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 border-4 border-amber-500/30 flex items-center justify-center shadow-2xl">
-                <Shield className="h-12 w-12 text-amber-500" />
+              <div className="w-14 h-14 md:w-18 md:h-18 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 border-2 border-amber-500/30 flex items-center justify-center shadow-xl">
+                <Shield className="h-7 w-7 md:h-9 md:w-9 text-amber-500" />
               </div>
-              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-4 py-1 bg-amber-500 rounded text-[8px] font-black text-slate-900 tracking-widest">
+              <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-amber-500 rounded text-[6px] md:text-[7px] font-black text-slate-900 tracking-widest">
                 SEGURANÇA
               </div>
             </div>
           </div>
           
-          {/* Title */}
-          <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight mb-2">
+          {/* Title - Responsive */}
+          <h1 className="text-xl md:text-3xl font-black text-white tracking-tight mb-1">
             PLANTÃO <span className="text-amber-500">PRO</span>
           </h1>
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-12 h-[2px] bg-gradient-to-r from-transparent to-amber-500/50" />
-            <span className="text-[10px] font-bold text-slate-400 tracking-[0.3em]">
-              SISTEMA DE GESTÃO DE ESCALAS
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <div className="w-8 h-[1px] bg-gradient-to-r from-transparent to-amber-500/50" />
+            <span className="text-[8px] md:text-[9px] font-bold text-slate-400 tracking-[0.2em]">
+              GESTÃO DE ESCALAS
             </span>
-            <div className="w-12 h-[2px] bg-gradient-to-l from-transparent to-amber-500/50" />
+            <div className="w-8 h-[1px] bg-gradient-to-l from-transparent to-amber-500/50" />
           </div>
           
-          <p className="text-slate-400 text-sm max-w-md mx-auto">
-            Identifique-se selecionando sua equipe de operação
+          <p className="text-slate-400 text-[10px] md:text-xs">
+            Selecione sua equipe
           </p>
         </div>
       </header>
 
-      {/* Teams Grid Section with Themed Cards */}
-      <section className="flex-1 py-6 px-4 relative z-10">
-        <div className="max-w-5xl mx-auto">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+      {/* Teams Grid Section - Compact */}
+      <section className="flex-1 py-2 px-3 relative z-10 flex items-center">
+        <div className="w-full max-w-lg md:max-w-4xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
             {teams.map((team, index) => (
               <div
                 key={team}
                 className="animate-fade-in"
                 style={{
-                  animationDelay: `${index * 150}ms`,
+                  animationDelay: `${index * 100}ms`,
                   animationFillMode: 'backwards'
                 }}
               >
@@ -748,33 +748,28 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Footer - Professional Security Style */}
-      <footer className="py-3 px-4 bg-slate-900/80 border-t border-slate-700/50 relative z-10">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Shield className="h-4 w-4 text-amber-500/70" />
-              <span className="text-xs font-semibold text-slate-400">
-                PLANTÃO PRO
-              </span>
-            </div>
-            <div className="hidden md:block w-px h-4 bg-slate-700" />
-            <p className="text-[10px] text-slate-500">
-              © {new Date().getFullYear()} • Desenvolvido por <span className="text-amber-500/70">Franc Denis</span>
-            </p>
+      {/* Footer - Compact */}
+      <footer className="py-2 px-3 bg-slate-900/80 border-t border-slate-700/50 relative z-10">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Shield className="h-3 w-3 text-amber-500/70" />
+            <span className="text-[9px] font-semibold text-slate-400 hidden sm:inline">
+              PLANTÃO PRO
+            </span>
+            <span className="text-[8px] text-slate-500 hidden md:inline">
+              © {new Date().getFullYear()} • Franc Denis
+            </span>
           </div>
           
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowMasterLogin(true)}
-              className="text-slate-500 hover:text-amber-500 hover:bg-amber-500/10 transition-colors gap-2 h-8"
-            >
-              <Lock className="h-3 w-3" />
-              <span className="text-[10px] font-semibold tracking-wider">ADMINISTRAÇÃO</span>
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowMasterLogin(true)}
+            className="text-slate-500 hover:text-amber-500 hover:bg-amber-500/10 transition-colors gap-1 h-6 px-2"
+          >
+            <Lock className="h-2.5 w-2.5" />
+            <span className="text-[8px] font-semibold tracking-wider">ADMIN</span>
+          </Button>
         </div>
       </footer>
 
