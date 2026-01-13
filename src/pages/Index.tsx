@@ -206,6 +206,13 @@ export default function Index() {
     setFoundAgent(null);
   };
 
+  // Direct registration from team card
+  const handleDirectRegister = (team: string) => {
+    setSelectedTeam(team);
+    setFormData(prev => ({ ...prev, cpf: '' }));
+    setShowRegistration(true);
+  };
+
   // Real-time CPF search
   const handleCpfInputChange = async (value: string) => {
     const formatted = formatCPF(value);
@@ -686,6 +693,7 @@ export default function Index() {
                 <ThemedTeamCard
                   team={team}
                   onClick={() => handleTeamClick(team)}
+                  onRegisterClick={() => handleDirectRegister(team)}
                 />
               </div>
             ))}
