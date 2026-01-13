@@ -20,7 +20,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Shield, Clock, Users, Loader2, AlertTriangle, Star, Radio, Siren, Eye, EyeOff, Sword, Target, UserCheck, Lock, Palette, Sparkles, Volume2 } from 'lucide-react';
+import { Shield, Loader2, AlertTriangle, Eye, EyeOff, UserCheck, Lock, Sword, Target, Users } from 'lucide-react';
 import { 
   validateCPF, 
   formatCPF, 
@@ -31,12 +31,9 @@ import {
   calculateAge,
   formatPhone 
 } from '@/lib/validators';
-import { UnsavedChangesDialog, useUnsavedChanges } from '@/components/UnsavedChangesDialog';
-import { Card, CardContent } from '@/components/ui/card';
+import { UnsavedChangesDialog } from '@/components/UnsavedChangesDialog';
 import { ForgotPasswordDialog } from '@/components/ForgotPasswordDialog';
-import { SavedCredentials, saveCredential, getSavedCredentials } from '@/components/auth/SavedCredentials';
-import { AnimatedLogo } from '@/components/AnimatedLogo';
-import { ThemeSelector } from '@/components/ThemeSelector';
+import { SavedCredentials, saveCredential } from '@/components/auth/SavedCredentials';
 import { useTheme } from '@/contexts/ThemeContext';
 import { ThemedBackground } from '@/components/ThemedBackground';
 import { ThemedTeamCard } from '@/components/ThemedTeamCard';
@@ -103,9 +100,7 @@ export default function Index() {
   const { user, isLoading, signIn, signUp, setMasterSession } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { theme, themeConfig } = useTheme();
   const { playSound } = useSoundEffects();
-  const [showThemeSelector, setShowThemeSelector] = useState(false);
 
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
   const [showCpfCheck, setShowCpfCheck] = useState(false);
@@ -255,13 +250,6 @@ export default function Index() {
     setShowCpfCheck(true);
     setCheckCpf('');
     setFoundAgent(null);
-  };
-
-  // Direct registration from team card
-  const handleDirectRegister = (team: string) => {
-    setSelectedTeam(team);
-    setFormData(prev => ({ ...prev, cpf: '' }));
-    setShowRegistration(true);
   };
 
   // Real-time CPF search
@@ -689,41 +677,50 @@ export default function Index() {
       {/* Themed Animated Background */}
       <ThemedBackground />
 
-      {/* Theme Selector Button */}
-      <button
-        onClick={() => {
-          playSound('click');
-          setShowThemeSelector(!showThemeSelector);
-        }}
-        className="absolute top-4 right-4 z-20 p-3 rounded-xl bg-card/80 backdrop-blur-sm border border-border hover:border-primary/50 transition-all group"
-      >
-        <Palette className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
-      </button>
-
-      {/* Theme Selector Dropdown */}
-      {showThemeSelector && (
-        <div className="absolute top-16 right-4 z-30 p-4 rounded-xl bg-card/95 backdrop-blur-lg border border-border shadow-xl animate-scale-in max-w-sm w-full">
-          <div className="flex items-center gap-2 mb-3">
-            <Sparkles className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium text-foreground">Escolha o Tema</span>
+      {/* Top Security Bar */}
+      <div className="bg-slate-900/90 border-b border-slate-700/50 py-2 px-4 relative z-20">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <span className="text-[10px] font-mono text-slate-400 tracking-wider">
+              SISTEMA ATIVO
+            </span>
           </div>
-          <ThemeSelector onSelect={() => setShowThemeSelector(false)} />
+          <div className="text-[10px] font-mono text-slate-500">
+            {new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+          </div>
         </div>
-      )}
+      </div>
 
-      {/* Hero Section */}
-      <header className="py-8 px-4 relative z-10">
+      {/* Hero Section - Professional Security Style */}
+      <header className="py-10 px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
-          {/* Animated Logo */}
-          <div className="mb-6">
-            <AnimatedLogo size="lg" animate={true} />
+          {/* Security Badge */}
+          <div className="mb-6 flex flex-col items-center">
+            <div className="relative">
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 border-4 border-amber-500/30 flex items-center justify-center shadow-2xl">
+                <Shield className="h-12 w-12 text-amber-500" />
+              </div>
+              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-4 py-1 bg-amber-500 rounded text-[8px] font-black text-slate-900 tracking-widest">
+                SEGURANÇA
+              </div>
+            </div>
           </div>
           
-          <p 
-            className="text-muted-foreground max-w-xl mx-auto animate-fade-in"
-            style={{ animationDelay: '600ms', animationFillMode: 'backwards' }}
-          >
-            Selecione sua equipe para acessar o sistema
+          {/* Title */}
+          <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight mb-2">
+            PLANTÃO <span className="text-amber-500">PRO</span>
+          </h1>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="w-12 h-[2px] bg-gradient-to-r from-transparent to-amber-500/50" />
+            <span className="text-[10px] font-bold text-slate-400 tracking-[0.3em]">
+              SISTEMA DE GESTÃO DE ESCALAS
+            </span>
+            <div className="w-12 h-[2px] bg-gradient-to-l from-transparent to-amber-500/50" />
+          </div>
+          
+          <p className="text-slate-400 text-sm max-w-md mx-auto">
+            Identifique-se selecionando sua equipe de operação
           </p>
         </div>
       </header>
@@ -744,7 +741,6 @@ export default function Index() {
                 <ThemedTeamCard
                   team={team}
                   onClick={() => handleTeamClick(team)}
-                  onRegisterClick={() => handleDirectRegister(team)}
                 />
               </div>
             ))}
@@ -752,37 +748,31 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Footer with Master Access */}
-      <footer className="py-4 px-4 border-t border-border relative z-10">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="text-center md:text-left">
-            <p className="text-sm text-muted-foreground">
-              Plantão Pro App © {new Date().getFullYear()}
-            </p>
-            <p className="text-xs text-muted-foreground/60">
-              Desenvolvido por <span className="text-primary font-medium">Franc Denis</span>
+      {/* Footer - Professional Security Style */}
+      <footer className="py-3 px-4 bg-slate-900/80 border-t border-slate-700/50 relative z-10">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Shield className="h-4 w-4 text-amber-500/70" />
+              <span className="text-xs font-semibold text-slate-400">
+                PLANTÃO PRO
+              </span>
+            </div>
+            <div className="hidden md:block w-px h-4 bg-slate-700" />
+            <p className="text-[10px] text-slate-500">
+              © {new Date().getFullYear()} • Desenvolvido por <span className="text-amber-500/70">Franc Denis</span>
             </p>
           </div>
           
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowThemeSelector(!showThemeSelector)}
-              className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors gap-2"
-            >
-              <Palette className="h-4 w-4" />
-              <span className="text-xs">Tema: {themeConfig.name}</span>
-            </Button>
-            
+          <div className="flex items-center gap-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setShowMasterLogin(true)}
-              className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors gap-2"
+              className="text-slate-500 hover:text-amber-500 hover:bg-amber-500/10 transition-colors gap-2 h-8"
             >
-              <Lock className="h-4 w-4" />
-              <span className="text-xs">Acesso Admin</span>
+              <Lock className="h-3 w-3" />
+              <span className="text-[10px] font-semibold tracking-wider">ADMINISTRAÇÃO</span>
             </Button>
           </div>
         </div>
