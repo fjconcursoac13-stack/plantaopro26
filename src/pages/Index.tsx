@@ -1083,17 +1083,26 @@ export default function Index() {
                 onValueChange={(value) => setFormData({ ...formData, unit_id: value })}
               >
                 <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white">
-                  <SelectValue placeholder="Selecione sua unidade" />
+                  <SelectValue placeholder={units.length === 0 ? "Carregando unidades..." : "Selecione sua unidade"} />
                 </SelectTrigger>
-                <SelectContent className="bg-slate-800 border-slate-700 z-50">
-                  {units.map((unit) => (
-                    <SelectItem key={unit.id} value={unit.id} className="text-white focus:bg-slate-700">
-                      <div className="flex flex-col">
-                        <span className="font-medium">{unit.name}</span>
-                        <span className="text-xs text-slate-400">{unit.municipality}</span>
-                      </div>
-                    </SelectItem>
-                  ))}
+                <SelectContent 
+                  className="bg-slate-800 border-slate-700 max-h-60"
+                  position="popper"
+                  sideOffset={4}
+                  style={{ zIndex: 9999 }}
+                >
+                  {units.length === 0 ? (
+                    <div className="px-3 py-2 text-slate-400 text-sm">Carregando unidades...</div>
+                  ) : (
+                    units.map((unit) => (
+                      <SelectItem key={unit.id} value={unit.id} className="text-white hover:bg-slate-700 focus:bg-slate-700 cursor-pointer">
+                        <div className="flex flex-col">
+                          <span className="font-medium">{unit.name}</span>
+                          <span className="text-xs text-slate-400">{unit.municipality}</span>
+                        </div>
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
               {regErrors.unit_id && <p className="text-xs text-red-400">{regErrors.unit_id}</p>}
