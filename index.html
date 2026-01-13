@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PlantaoPro - Gestão de Escalas</title>
+    <meta name="description" content="Sistema completo para gestão de escalas e plantões. Simplifique o controle da sua equipe com o PlantaoPro." />
+    <meta name="theme-color" content="#0a0f1a" />
+
+    <meta property="og:title" content="PlantaoPro - Gestão de Escalas" />
+    <meta property="og:description" content="Sistema completo para gestão de escalas e plantões." />
+    <meta property="og:type" content="website" />
+
+    <style>
+      html, body, #root {
+        background-color: #0a0f1a;
+        min-height: 100vh;
+      }
+    </style>
+
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for (let registration of registrations) { registration.unregister(); }
+        });
+      }
+      if ('caches' in window) {
+        caches.keys().then(function(names) {
+          for (let name of names) { caches.delete(name); }
+        });
+      }
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
