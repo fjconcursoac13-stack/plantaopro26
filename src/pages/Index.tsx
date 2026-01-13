@@ -149,6 +149,14 @@ export default function Index() {
   const [calculatedAge, setCalculatedAge] = useState<number | null>(null);
   const [showUnsavedDialog, setShowUnsavedDialog] = useState(false);
   const [pendingCloseAction, setPendingCloseAction] = useState<(() => void) | null>(null);
+  
+  // Real-time CPF validation state
+  const [cpfValidation, setCpfValidation] = useState<{
+    isValid: boolean;
+    isChecking: boolean;
+    exists: boolean;
+    existingAgent: { name: string; team: string | null } | null;
+  }>({ isValid: false, isChecking: false, exists: false, existingAgent: null });
 
   // Check if registration form has data
   const hasRegistrationData = Boolean(
@@ -184,6 +192,49 @@ export default function Index() {
       setCalculatedAge(null);
     }
   }, [formData.birth_date]);
+
+  // Real-time CPF validation for registration form
+  useEffect(() => {
+    const cleanCpf = formData.cpf.replace(/\D/g, '');
+    
+    if (cleanCpf.length === 11) {
+      const isValidFormat = validateCPF(formData.cpf);
+      
+      if (isValidFormat) {
+        setCpfValidation(prev => ({ ...prev, isChecking: true }));
+        
+        const checkCpfExists = async () => {
+          try {
+            const { data } = await supabase
+              .from('agents')
+              .select('name, team')
+              .eq('cpf', cleanCpf)
+              .maybeSingle();
+            
+            setCpfValidation({
+              isValid: true,
+              isChecking: false,
+              exists: !!data,
+              existingAgent: data
+            });
+          } catch (error) {
+            setCpfValidation({
+              isValid: true,
+              isChecking: false,
+              exists: false,
+              existingAgent: null
+            });
+          }
+        };
+        
+        checkCpfExists();
+      } else {
+        setCpfValidation({ isValid: false, isChecking: false, exists: false, existingAgent: null });
+      }
+    } else {
+      setCpfValidation({ isValid: false, isChecking: false, exists: false, existingAgent: null });
+    }
+  }, [formData.cpf]);
 
   const fetchUnits = async () => {
     try {
@@ -967,15 +1018,58 @@ export default function Index() {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
                 <Label className="text-slate-300 text-sm">CPF *</Label>
-                <Input
-                  value={formData.cpf}
-                  onChange={(e) => setFormData({ ...formData, cpf: formatCPF(e.target.value) })}
-                  placeholder="000.000.000-00"
-                  className="bg-slate-700/50 border-slate-600 text-white"
-                  maxLength={14}
-                  required
-                />
+                <div className="relative">
+                  <Input
+                    value={formData.cpf}
+                    onChange={(e) => setFormData({ ...formData, cpf: formatCPF(e.target.value) })}
+                    placeholder="000.000.000-00"
+                    className={`bg-slate-700/50 border-slate-600 text-white pr-10 ${
+                      formData.cpf.replace(/\D/g, '').length === 11
+                        ? cpfValidation.isValid && !cpfValidation.exists
+                          ? 'border-green-500 focus:border-green-500'
+                          : cpfValidation.exists
+                          ? 'border-amber-500 focus:border-amber-500'
+                          : 'border-red-500 focus:border-red-500'
+                        : ''
+                    }`}
+                    maxLength={14}
+                    required
+                  />
+                  {formData.cpf.replace(/\D/g, '').length === 11 && (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      {cpfValidation.isChecking ? (
+                        <Loader2 className="h-4 w-4 animate-spin text-slate-400" />
+                      ) : cpfValidation.isValid && !cpfValidation.exists ? (
+                        <UserCheck className="h-4 w-4 text-green-400" />
+                      ) : cpfValidation.exists ? (
+                        <AlertTriangle className="h-4 w-4 text-amber-400" />
+                      ) : (
+                        <AlertTriangle className="h-4 w-4 text-red-400" />
+                      )}
+                    </div>
+                  )}
+                </div>
                 {regErrors.cpf && <p className="text-xs text-red-400">{regErrors.cpf}</p>}
+                
+                {/* Real-time CPF validation feedback */}
+                {formData.cpf.replace(/\D/g, '').length === 11 && !cpfValidation.isChecking && (
+                  <div className={`text-xs mt-1 ${
+                    cpfValidation.isValid && !cpfValidation.exists
+                      ? 'text-green-400'
+                      : cpfValidation.exists
+                      ? 'text-amber-400'
+                      : 'text-red-400'
+                  }`}>
+                    {!cpfValidation.isValid && 'CPF inválido'}
+                    {cpfValidation.isValid && !cpfValidation.exists && '✓ CPF válido e disponível'}
+                    {cpfValidation.exists && cpfValidation.existingAgent && (
+                      <span>
+                        CPF já cadastrado: {cpfValidation.existingAgent.name}
+                        {cpfValidation.existingAgent.team && ` (Equipe ${cpfValidation.existingAgent.team})`}
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
               <div className="space-y-1">
                 <Label className="text-slate-300 text-sm">Matrícula *</Label>
