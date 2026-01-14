@@ -100,6 +100,24 @@ export default {
           "0%": { opacity: "0", transform: "scale(0.95) translateY(10px)" },
           "100%": { opacity: "1", transform: "scale(1) translateY(0)" },
         },
+        "tactical-slide": {
+          "0%": { opacity: "0", transform: "translateX(-20px) skewX(-2deg)" },
+          "100%": { opacity: "1", transform: "translateX(0) skewX(0)" },
+        },
+        "tactical-reveal": {
+          "0%": { opacity: "0", clipPath: "inset(0 100% 0 0)" },
+          "100%": { opacity: "1", clipPath: "inset(0 0 0 0)" },
+        },
+        "tactical-pulse": {
+          "0%": { boxShadow: "0 0 0 0 hsl(var(--primary) / 0.4)" },
+          "70%": { boxShadow: "0 0 0 8px hsl(var(--primary) / 0)" },
+          "100%": { boxShadow: "0 0 0 0 hsl(var(--primary) / 0)" },
+        },
+        "scan-line": {
+          "0%": { transform: "translateY(-100%)", opacity: "0.5" },
+          "50%": { opacity: "1" },
+          "100%": { transform: "translateY(100%)", opacity: "0.5" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -108,6 +126,10 @@ export default {
         shimmer: "shimmer 2s infinite",
         "fade-in": "fade-in 0.5s ease-out forwards",
         "fade-in-scale": "fade-in-scale 0.5s ease-out forwards",
+        "tactical-slide": "tactical-slide 0.4s ease-out forwards",
+        "tactical-reveal": "tactical-reveal 0.6s ease-out forwards",
+        "tactical-pulse": "tactical-pulse 1.5s ease-out",
+        "scan-line": "scan-line 2s ease-in-out infinite",
       },
       boxShadow: {
         glow: "0 0 40px hsl(187 85% 53% / 0.15)",

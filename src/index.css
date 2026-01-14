@@ -457,6 +457,62 @@
   }
 }
 
+@keyframes tacticalEntry {
+  0% {
+    opacity: 0;
+    transform: translateX(-15px) skewX(-1deg);
+    filter: blur(2px);
+  }
+  60% {
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) skewX(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes scanEffect {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 0% 100%;
+  }
+}
+
+/* Tactical animation utilities */
+.tactical-card {
+  animation: tacticalEntry 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+.tactical-card:nth-child(1) { animation-delay: 0.05s; }
+.tactical-card:nth-child(2) { animation-delay: 0.1s; }
+.tactical-card:nth-child(3) { animation-delay: 0.15s; }
+.tactical-card:nth-child(4) { animation-delay: 0.2s; }
+.tactical-card:nth-child(5) { animation-delay: 0.25s; }
+.tactical-card:nth-child(6) { animation-delay: 0.3s; }
+.tactical-card:nth-child(7) { animation-delay: 0.35s; }
+.tactical-card:nth-child(8) { animation-delay: 0.4s; }
+
+.tactical-scan::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, hsl(var(--primary)), transparent);
+  animation: scan 1.5s ease-out;
+}
+
+@keyframes scan {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;
