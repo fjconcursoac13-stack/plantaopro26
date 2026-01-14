@@ -87,8 +87,33 @@
   /* Prevent flash of unstyled content */
   #root {
     min-height: 100vh;
-    background: hsl(222 47% 6%);
+    background: hsl(var(--background));
   }
+}
+
+/* Light theme overrides */
+.light-theme {
+  --shadow-glow: 0 0 40px hsl(217 91% 50% / 0.15);
+  --shadow-card: 0 8px 32px hsl(0 0% 0% / 0.08);
+  --shadow-soft: 0 4px 16px hsl(0 0% 0% / 0.06);
+  --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(210 40% 98%) 100%);
+}
+
+.light-theme body,
+.light-theme #root {
+  background: hsl(var(--background));
+}
+
+.light-theme ::-webkit-scrollbar-track {
+  background: hsl(210 40% 96%);
+}
+
+.light-theme ::-webkit-scrollbar-thumb {
+  background: hsl(214 32% 85%);
+}
+
+.light-theme ::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--primary) / 0.5);
 }
 
 @layer utilities {
