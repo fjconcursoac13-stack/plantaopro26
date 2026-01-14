@@ -217,6 +217,8 @@ export function EditAgentDialog({ agent, open, onOpenChange, onSuccess }: EditAg
               <Input
                 value={formData.matricula}
                 onChange={(e) => setFormData({ ...formData, matricula: formatMatricula(e.target.value) })}
+                placeholder="000.000.000"
+                maxLength={11}
                 className="bg-input"
               />
             </div>
