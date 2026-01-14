@@ -142,18 +142,11 @@ export function useSessionPersistence(config: SessionPersistenceConfig = {}) {
         return false;
       }
 
-      // Check if session is about to expire (within 5 minutes)
-      const expiresAt = session.expires_at;
-      if (expiresAt) {
-        const expirationTime = expiresAt * 1000;
-        const now = Date.now();
-        const fiveMinutes = 5 * 60 * 1000;
-
-        if (expirationTime - now < fiveMinutes) {
-          console.log('[SessionPersistence] Session expiring soon, refreshing...');
-          return refreshSession();
-        }
-      }
+      // NOTE:
+      // Do NOT force refreshSession here.
+      // The Supabase client already auto-refreshes tokens; forcing refresh can cause
+      // refresh storms (429) which revoke tokens and log the user out.
+      // We keep this hook as an online/offline indicator + manual retry only.
 
       return true;
     } catch (error: any) {
@@ -171,9 +164,11 @@ export function useSessionPersistence(config: SessionPersistenceConfig = {}) {
       setRetryCount(0);
       setLastError(null);
       onConnectionRestored?.();
-      
-      // Attempt to refresh session when coming back online
-      refreshSession();
+
+      // IMPORTANT:
+      // Do NOT auto-call refreshSession here.
+      // Supabase client already does autoRefreshToken, and extra refresh calls can
+      // trigger refresh_token rate limiting (429) and token revocation.
     };
 
     const handleOffline = () => {
@@ -189,19 +184,16 @@ export function useSessionPersistence(config: SessionPersistenceConfig = {}) {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, [onConnectionLost, onConnectionRestored, refreshSession]);
+  }, [onConnectionLost, onConnectionRestored]);
 
   // Periodic session check
+  // IMPORTANT: disabled.
+  // The Supabase client already refreshes tokens automatically.
+  // Our previous periodic refresh/validate loop was causing token refresh storms (429 /token)
+  // which revoke tokens and log the user out.
   useEffect(() => {
-    // Check session every 2 minutes
-    const interval = setInterval(() => {
-      if (navigator.onLine) {
-        validateSession();
-      }
-    }, 2 * 60 * 1000);
-
-    return () => clearInterval(interval);
-  }, [validateSession]);
+    return;
+  }, []);
 
   // Manual retry function
   const manualRetry = useCallback(() => {
