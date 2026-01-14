@@ -8,8 +8,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { toast } from 'sonner';
-import { Calendar as CalendarIcon, Plus, Loader2, RefreshCw, Check, X, AlertTriangle, Palmtree } from 'lucide-react';
+import { Calendar as CalendarIcon, Plus, Loader2, RefreshCw, Check, X, AlertTriangle, Palmtree, ChevronDown, ChevronUp } from 'lucide-react';
 import { format, parseISO, isToday, isBefore, startOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -43,6 +44,7 @@ export function ShiftScheduleCard({ agentId }: ShiftScheduleCardProps) {
   const [editNotes, setEditNotes] = useState<string>('');
   const [compensationDate, setCompensationDate] = useState<Date | undefined>();
   const [isSaving, setIsSaving] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
 
   useEffect(() => {
     fetchShifts();
@@ -167,81 +169,90 @@ export function ShiftScheduleCard({ agentId }: ShiftScheduleCardProps) {
     .reverse();
 
   return (
-    <Card className="bg-slate-800/50 border-slate-700">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <CalendarIcon className="h-5 w-5 text-amber-500" />
-            <span>Escala de Plantões</span>
-          </CardTitle>
-          <Dialog open={showConfig} onOpenChange={setShowConfig}>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="sm" className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10">
-                {shifts.length === 0 ? (
-                  <>
-                    <Plus className="h-4 w-4 mr-1" />
-                    Configurar
-                  </>
+    <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
+      <Card className="bg-slate-800/50 border-slate-700">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CollapsibleTrigger className="flex-1">
+              <CardTitle className="flex items-center gap-2 text-lg cursor-pointer hover:opacity-80 transition-opacity">
+                <CalendarIcon className="h-5 w-5 text-amber-500" />
+                <span>Escala de Plantões</span>
+                {isExpanded ? (
+                  <ChevronUp className="h-4 w-4 text-muted-foreground ml-auto" />
                 ) : (
-                  <>
-                    <RefreshCw className="h-4 w-4 mr-1" />
-                    Reconfigurar
-                  </>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground ml-auto" />
                 )}
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-slate-800 border-slate-700">
-              <DialogHeader>
-                <DialogTitle>Configurar Escala de Plantões</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4 pt-4">
-                <p className="text-sm text-slate-400">
-                  Selecione a data do seu primeiro plantão. O sistema irá gerar automaticamente 
-                  os próximos plantões seguindo o padrão <strong className="text-amber-400">24h de serviço + 72h de descanso</strong>.
-                </p>
-                
-                <div className="space-y-2">
-                  <Label>Data do Primeiro Plantão</Label>
-                  <Calendar
-                    mode="single"
-                    selected={firstShiftDate}
-                    onSelect={setFirstShiftDate}
-                    locale={ptBR}
-                    className="rounded-md border border-slate-600 bg-slate-700/50"
-                  />
-                </div>
-
-                {firstShiftDate && (
-                  <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
-                    <p className="text-sm text-amber-400">
-                      <strong>Primeiro plantão:</strong> {format(firstShiftDate, "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
-                    </p>
-                    <p className="text-xs text-slate-400 mt-1">
-                      Serão gerados plantões para os próximos 6 meses
-                    </p>
-                  </div>
-                )}
-                
-                <Button 
-                  onClick={generateShifts} 
-                  disabled={!firstShiftDate || isGenerating}
-                  className="w-full bg-amber-500 hover:bg-amber-600 text-black"
-                >
-                  {isGenerating ? (
+              </CardTitle>
+            </CollapsibleTrigger>
+            <Dialog open={showConfig} onOpenChange={setShowConfig}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10 ml-2">
+                  {shifts.length === 0 ? (
                     <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Gerando...
+                      <Plus className="h-4 w-4 mr-1" />
+                      Configurar
                     </>
                   ) : (
-                    'Gerar Escala'
+                    <>
+                      <RefreshCw className="h-4 w-4 mr-1" />
+                      Reconfigurar
+                    </>
                   )}
                 </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
+              </DialogTrigger>
+              <DialogContent className="bg-slate-800 border-slate-700">
+                <DialogHeader>
+                  <DialogTitle>Configurar Escala de Plantões</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 pt-4">
+                  <p className="text-sm text-slate-400">
+                    Selecione a data do seu primeiro plantão. O sistema irá gerar automaticamente 
+                    os próximos plantões seguindo o padrão <strong className="text-amber-400">24h de serviço + 72h de descanso</strong>.
+                  </p>
+                  
+                  <div className="space-y-2">
+                    <Label>Data do Primeiro Plantão</Label>
+                    <Calendar
+                      mode="single"
+                      selected={firstShiftDate}
+                      onSelect={setFirstShiftDate}
+                      locale={ptBR}
+                      className="rounded-md border border-slate-600 bg-slate-700/50"
+                    />
+                  </div>
+
+                  {firstShiftDate && (
+                    <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                      <p className="text-sm text-amber-400">
+                        <strong>Primeiro plantão:</strong> {format(firstShiftDate, "EEEE, dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                      </p>
+                      <p className="text-xs text-slate-400 mt-1">
+                        Serão gerados plantões para os próximos 6 meses
+                      </p>
+                    </div>
+                  )}
+                  
+                  <Button 
+                    onClick={generateShifts} 
+                    disabled={!firstShiftDate || isGenerating}
+                    className="w-full bg-amber-500 hover:bg-amber-600 text-black"
+                  >
+                    {isGenerating ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Gerando...
+                      </>
+                    ) : (
+                      'Gerar Escala'
+                    )}
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </CardHeader>
+        <CollapsibleContent>
+          <CardContent className="space-y-4 pt-0">
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
             <Loader2 className="h-6 w-6 animate-spin text-amber-500" />
@@ -398,82 +409,84 @@ export function ShiftScheduleCard({ agentId }: ShiftScheduleCardProps) {
             </div>
           </>
         )}
-      </CardContent>
+          </CardContent>
+        </CollapsibleContent>
 
-      {/* Shift Edit Dialog */}
-      <Dialog open={showShiftDialog} onOpenChange={setShowShiftDialog}>
-        <DialogContent className="bg-slate-800 border-slate-700">
-          <DialogHeader>
-            <DialogTitle>
-              Plantão - {selectedShift && format(parseISO(selectedShift.shift_date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 pt-4">
-            <div className="space-y-2">
-              <Label>Status do Plantão</Label>
-              <Select value={editStatus} onValueChange={setEditStatus}>
-                <SelectTrigger className="bg-slate-700 border-slate-600">
-                  <SelectValue placeholder="Selecione o status" />
-                </SelectTrigger>
-                <SelectContent className="bg-slate-800 border-slate-700">
-                  <SelectItem value="scheduled">Agendado</SelectItem>
-                  <SelectItem value="completed">Cumprido</SelectItem>
-                  <SelectItem value="missed">Faltou</SelectItem>
-                  <SelectItem value="compensated">Compensado</SelectItem>
-                  <SelectItem value="vacation">Férias</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {editStatus === 'missed' && (
+        {/* Shift Edit Dialog */}
+        <Dialog open={showShiftDialog} onOpenChange={setShowShiftDialog}>
+          <DialogContent className="bg-slate-800 border-slate-700">
+            <DialogHeader>
+              <DialogTitle>
+                Plantão - {selectedShift && format(parseISO(selectedShift.shift_date), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 pt-4">
               <div className="space-y-2">
-                <Label>Data de Compensação (opcional)</Label>
-                <Calendar
-                  mode="single"
-                  selected={compensationDate}
-                  onSelect={setCompensationDate}
-                  locale={ptBR}
-                  disabled={(date) => isBefore(date, new Date())}
-                  className="rounded-md border border-slate-600 bg-slate-700/50"
+                <Label>Status do Plantão</Label>
+                <Select value={editStatus} onValueChange={setEditStatus}>
+                  <SelectTrigger className="bg-slate-700 border-slate-600">
+                    <SelectValue placeholder="Selecione o status" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-800 border-slate-700">
+                    <SelectItem value="scheduled">Agendado</SelectItem>
+                    <SelectItem value="completed">Cumprido</SelectItem>
+                    <SelectItem value="missed">Faltou</SelectItem>
+                    <SelectItem value="compensated">Compensado</SelectItem>
+                    <SelectItem value="vacation">Férias</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {editStatus === 'missed' && (
+                <div className="space-y-2">
+                  <Label>Data de Compensação (opcional)</Label>
+                  <Calendar
+                    mode="single"
+                    selected={compensationDate}
+                    onSelect={setCompensationDate}
+                    locale={ptBR}
+                    disabled={(date) => isBefore(date, new Date())}
+                    className="rounded-md border border-slate-600 bg-slate-700/50"
+                  />
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <Label>Observações</Label>
+                <Textarea
+                  value={editNotes}
+                  onChange={(e) => setEditNotes(e.target.value)}
+                  placeholder="Descreva o que aconteceu, motivo da falta, etc."
+                  className="bg-slate-700 border-slate-600 min-h-[100px]"
                 />
               </div>
-            )}
-
-            <div className="space-y-2">
-              <Label>Observações</Label>
-              <Textarea
-                value={editNotes}
-                onChange={(e) => setEditNotes(e.target.value)}
-                placeholder="Descreva o que aconteceu, motivo da falta, etc."
-                className="bg-slate-700 border-slate-600 min-h-[100px]"
-              />
             </div>
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setShowShiftDialog(false)}
-              className="border-slate-600"
-            >
-              Cancelar
-            </Button>
-            <Button
-              onClick={handleSaveShift}
-              disabled={isSaving}
-              className="bg-amber-500 hover:bg-amber-600 text-black"
-            >
-              {isSaving ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Salvando...
-                </>
-              ) : (
-                'Salvar'
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </Card>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setShowShiftDialog(false)}
+                className="border-slate-600"
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleSaveShift}
+                disabled={isSaving}
+                className="bg-amber-500 hover:bg-amber-600 text-black"
+              >
+                {isSaving ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Salvando...
+                  </>
+                ) : (
+                  'Salvar'
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </Card>
+    </Collapsible>
   );
 }

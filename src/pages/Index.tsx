@@ -656,6 +656,54 @@ export default function Index() {
     setIsSubmitting(false);
   };
 
+  const handleBiometricLogin = async () => {
+    setIsBiometricLoading(true);
+    try {
+      const cpf = await authenticateBiometric();
+      if (cpf) {
+        // Get agent info
+        const { data: agentData, error: agentError } = await supabase
+          .from('agents')
+          .select('email')
+          .eq('cpf', cpf)
+          .maybeSingle();
+        
+        if (agentError || !agentData) {
+          toast({
+            title: 'Erro',
+            description: 'CPF não encontrado no sistema.',
+            variant: 'destructive',
+          });
+          setIsBiometricLoading(false);
+          return;
+        }
+        
+        // We need the password for login - prompt user
+        const authEmail = agentData.email || `${cpf}@agent.plantaopro.com`;
+        setLoginCpf(formatCPF(cpf));
+        setShowLogin(true);
+        toast({
+          title: 'Biometria Confirmada',
+          description: 'Digite sua senha para continuar.',
+        });
+      } else {
+        toast({
+          title: 'Biometria Cancelada',
+          description: 'Autenticação biométrica foi cancelada.',
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      console.error('Biometric login error:', error);
+      toast({
+        title: 'Erro na Biometria',
+        description: 'Não foi possível autenticar com biometria.',
+        variant: 'destructive',
+      });
+    }
+    setIsBiometricLoading(false);
+  };
+
   const closeAllDialogs = () => {
     setShowCpfCheck(false);
     setShowLogin(false);
@@ -820,6 +868,27 @@ export default function Index() {
               <span className="text-sm font-medium text-foreground">Selecione sua equipe</span>
             </div>
           </div>
+          
+          {/* Quick Biometric Login Button */}
+          {isBiometricAvailable && isBiometricEnrolled && enrolledCpf && (
+            <div className="mt-4 animate-fade-in" style={{ animationDelay: '0.9s' }}>
+              <Button
+                onClick={handleBiometricLogin}
+                disabled={isBiometricLoading}
+                className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold px-6 py-3 h-auto shadow-lg shadow-emerald-500/20"
+              >
+                {isBiometricLoading ? (
+                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                ) : (
+                  <Fingerprint className="h-5 w-5 mr-2" />
+                )}
+                Login Rápido com Biometria
+              </Button>
+              <p className="text-xs text-muted-foreground mt-2">
+                CPF cadastrado: {enrolledCpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')}
+              </p>
+            </div>
+          )}
         </div>
       </header>
 
