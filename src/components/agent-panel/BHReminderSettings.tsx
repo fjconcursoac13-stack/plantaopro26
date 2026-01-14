@@ -2,7 +2,10 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Bell, Sun, Sunset, Moon, Check, Calendar, TrendingUp, Clock } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Bell, Sun, Sunset, Moon, Check, Calendar, TrendingUp, Clock, Target, Edit2, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
@@ -56,6 +59,7 @@ const PERIOD_OPTIONS: PeriodOption[] = [
 ];
 
 const STORAGE_KEY = 'bh_reminder_period';
+const GOAL_STORAGE_KEY = 'bh_monthly_goal';
 
 interface FortnightStats {
   first: { entries: number; totalHours: number };
@@ -69,18 +73,35 @@ export function BHReminderSettings({ agentId, onReminderHourChange }: BHReminder
     second: { entries: 0, totalHours: 0 } 
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [monthlyGoal, setMonthlyGoal] = useState<number>(20);
+  const [isEditingGoal, setIsEditingGoal] = useState(false);
+  const [goalInput, setGoalInput] = useState('20');
 
-  // Load saved preference and fetch stats
+  // Calculate total monthly hours and progress
+  const totalMonthlyHours = stats.first.totalHours + stats.second.totalHours;
+  const progressPercentage = monthlyGoal > 0 ? Math.min((totalMonthlyHours / monthlyGoal) * 100, 100) : 0;
+  const isGoalReached = totalMonthlyHours >= monthlyGoal;
+
+  // Load saved preference, goal and fetch stats
   useEffect(() => {
-    const stored = localStorage.getItem(`${STORAGE_KEY}_${agentId}`);
-    if (stored) {
-      const period = stored as ReminderPeriod;
+    const storedPeriod = localStorage.getItem(`${STORAGE_KEY}_${agentId}`);
+    if (storedPeriod) {
+      const period = storedPeriod as ReminderPeriod;
       if (PERIOD_OPTIONS.some(p => p.value === period)) {
         setSelectedPeriod(period);
         const option = PERIOD_OPTIONS.find(p => p.value === period);
         if (option && onReminderHourChange) {
           onReminderHourChange(option.hour);
         }
+      }
+    }
+
+    const storedGoal = localStorage.getItem(`${GOAL_STORAGE_KEY}_${agentId}`);
+    if (storedGoal) {
+      const goal = parseFloat(storedGoal);
+      if (!isNaN(goal) && goal > 0) {
+        setMonthlyGoal(goal);
+        setGoalInput(goal.toString());
       }
     }
 
@@ -94,8 +115,6 @@ export function BHReminderSettings({ agentId, onReminderHourChange }: BHReminder
     setIsLoading(true);
     try {
       const now = new Date();
-      const year = now.getFullYear();
-      const month = now.getMonth();
       
       const { data: entries, error } = await supabase
         .from('overtime_bank')
@@ -157,6 +176,26 @@ export function BHReminderSettings({ agentId, onReminderHourChange }: BHReminder
     }
   };
 
+  const handleSaveGoal = () => {
+    const newGoal = parseFloat(goalInput);
+    if (isNaN(newGoal) || newGoal <= 0) {
+      toast.error('Meta deve ser maior que zero');
+      return;
+    }
+    
+    setMonthlyGoal(newGoal);
+    localStorage.setItem(`${GOAL_STORAGE_KEY}_${agentId}`, newGoal.toString());
+    setIsEditingGoal(false);
+    toast.success(`Meta mensal definida: ${newGoal}h`);
+  };
+
+  const getProgressColor = () => {
+    if (isGoalReached) return 'bg-emerald-500';
+    if (progressPercentage >= 75) return 'bg-amber-500';
+    if (progressPercentage >= 50) return 'bg-blue-500';
+    return 'bg-slate-500';
+  };
+
   return (
     <Card className="bg-slate-800/50 border-slate-700">
       <CardHeader className="pb-2">
@@ -212,6 +251,79 @@ export function BHReminderSettings({ agentId, onReminderHourChange }: BHReminder
             );
           })}
         </RadioGroup>
+
+        {/* Monthly Goal Section */}
+        <div className="mt-4 pt-3 border-t border-slate-600/30">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <Target className={`h-3.5 w-3.5 ${isGoalReached ? 'text-emerald-500' : 'text-violet-500'}`} />
+              <span className="text-xs font-medium text-slate-300">
+                Meta Mensal de BH
+              </span>
+            </div>
+            {!isEditingGoal ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsEditingGoal(true)}
+                className="h-6 px-2 text-[10px] text-slate-400 hover:text-white"
+              >
+                <Edit2 className="h-3 w-3 mr-1" />
+                Editar
+              </Button>
+            ) : (
+              <div className="flex items-center gap-1">
+                <Input
+                  type="number"
+                  value={goalInput}
+                  onChange={(e) => setGoalInput(e.target.value)}
+                  className="h-6 w-16 text-xs bg-slate-700 border-slate-600 text-white"
+                  min="1"
+                  step="0.5"
+                />
+                <span className="text-[10px] text-slate-500">h</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleSaveGoal}
+                  className="h-6 px-2 text-emerald-400 hover:text-emerald-300"
+                >
+                  <Save className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Progress Bar */}
+          <div className="space-y-2">
+            <div className="relative">
+              <Progress 
+                value={progressPercentage} 
+                className="h-3 bg-slate-700/50"
+              />
+              <div 
+                className={`absolute inset-0 h-3 rounded-full transition-all ${getProgressColor()}`}
+                style={{ width: `${progressPercentage}%` }}
+              />
+            </div>
+            <div className="flex items-center justify-between text-[10px]">
+              <span className={`font-medium ${isGoalReached ? 'text-emerald-400' : 'text-slate-300'}`}>
+                {totalMonthlyHours.toFixed(1)}h de {monthlyGoal}h
+              </span>
+              <span className={`font-bold ${isGoalReached ? 'text-emerald-400' : 'text-slate-400'}`}>
+                {progressPercentage.toFixed(0)}%
+              </span>
+            </div>
+            {isGoalReached && (
+              <div className="flex items-center justify-center gap-1 p-1.5 bg-emerald-500/10 rounded-lg border border-emerald-500/30">
+                <Check className="h-3 w-3 text-emerald-400" />
+                <span className="text-[10px] font-medium text-emerald-400">
+                  Meta atingida! 🎉
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
 
         {/* Fortnight Stats */}
         <div className="mt-4 pt-3 border-t border-slate-600/30">
