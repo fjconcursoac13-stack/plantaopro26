@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { toast } from 'sonner';
 
+type SoundType = 'notification' | 'alert' | 'shift' | 'urgent' | 'success';
+
 interface NotificationPayload {
   title: string;
   body: string;
@@ -8,35 +10,79 @@ interface NotificationPayload {
   tag?: string;
   requireInteraction?: boolean;
   playSound?: boolean;
+  soundType?: SoundType;
 }
 
-// Play notification sound using Web Audio API
-const playNotificationSound = () => {
+// Enhanced notification sounds using Web Audio API
+const playTacticalSound = (type: SoundType = 'notification') => {
   try {
     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
     const now = audioContext.currentTime;
-    
-    // Alert chime - 3 ascending notes
-    const playNote = (frequency: number, startTime: number, duration: number) => {
+
+    const playNote = (frequency: number, startTime: number, duration: number, oscType: OscillatorType = 'sine', volume: number = 0.15) => {
       const osc = audioContext.createOscillator();
       const gain = audioContext.createGain();
       osc.connect(gain);
       gain.connect(audioContext.destination);
-      osc.type = 'sine';
+      osc.type = oscType;
       osc.frequency.setValueAtTime(frequency, startTime);
-      gain.gain.setValueAtTime(0.2, startTime);
+      gain.gain.setValueAtTime(volume, startTime);
       gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
       osc.start(startTime);
       osc.stop(startTime + duration + 0.05);
     };
-    
-    playNote(523, now, 0.15);        // C5
-    playNote(659, now + 0.12, 0.15); // E5
-    playNote(784, now + 0.24, 0.25); // G5
+
+    switch (type) {
+      case 'notification':
+        // Standard notification - 3 ascending tones
+        playNote(523, now, 0.12);        // C5
+        playNote(659, now + 0.1, 0.12);  // E5
+        playNote(784, now + 0.2, 0.2);   // G5
+        break;
+
+      case 'alert':
+        // Alert - two-tone attention grabber
+        playNote(880, now, 0.1, 'triangle', 0.2);
+        playNote(660, now + 0.12, 0.1, 'triangle', 0.2);
+        playNote(880, now + 0.24, 0.15, 'triangle', 0.2);
+        break;
+
+      case 'shift':
+        // Shift reminder - tactical radio chirp
+        playNote(1200, now, 0.05, 'square', 0.08);
+        playNote(800, now + 0.06, 0.05, 'square', 0.08);
+        playNote(1000, now + 0.15, 0.1, 'sine', 0.12);
+        playNote(1200, now + 0.27, 0.15, 'sine', 0.15);
+        break;
+
+      case 'urgent':
+        // Urgent - rapid pulsing alert
+        for (let i = 0; i < 4; i++) {
+          playNote(1000, now + i * 0.15, 0.08, 'sawtooth', 0.1);
+          playNote(800, now + i * 0.15 + 0.08, 0.05, 'sawtooth', 0.08);
+        }
+        break;
+
+      case 'success':
+        // Success - pleasant confirmation
+        playNote(392, now, 0.1);        // G4
+        playNote(523, now + 0.12, 0.1); // C5
+        playNote(659, now + 0.24, 0.1); // E5
+        playNote(784, now + 0.36, 0.2); // G5
+        break;
+
+      default:
+        playNote(523, now, 0.12);
+        playNote(659, now + 0.1, 0.12);
+        playNote(784, now + 0.2, 0.2);
+    }
   } catch (error) {
     console.error('Error playing notification sound:', error);
   }
 };
+
+// Legacy function for backward compatibility
+const playNotificationSound = () => playTacticalSound('notification');
 
 export function usePushNotifications() {
   const [permission, setPermission] = useState<NotificationPermission>('default');
@@ -105,9 +151,9 @@ export function usePushNotifications() {
     }
 
     try {
-      // Play sound if enabled (default: true)
+      // Play tactical sound based on type
       if (payload.playSound !== false) {
-        playNotificationSound();
+        playTacticalSound(payload.soundType || 'notification');
       }
 
       // Use service worker notification if available (works even when tab is closed)
@@ -156,5 +202,6 @@ export function usePushNotifications() {
     showNotification,
     scheduleNotification,
     playNotificationSound,
+    playTacticalSound,
   };
 }

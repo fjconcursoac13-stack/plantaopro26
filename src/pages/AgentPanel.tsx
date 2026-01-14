@@ -28,8 +28,9 @@ import { BHReminderSettings } from '@/components/agent-panel/BHReminderSettings'
 import { BHEvolutionChart } from '@/components/agent-panel/BHEvolutionChart';
 import { BirthdayCard } from '@/components/agent-panel/BirthdayCard';
 import { LicenseWarningBanner } from '@/components/LicenseWarningBanner';
+import { TacticalRadar } from '@/components/dashboard/TacticalRadar';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, Users, MessageCircle, Calendar, Clock, ArrowRightLeft, CalendarOff, Settings, User, CalendarDays, Calculator, LogOut, Home, WifiOff, RefreshCw, Droplet } from 'lucide-react';
+import { Loader2, Users, MessageCircle, Calendar, Clock, ArrowRightLeft, CalendarOff, Settings, User, CalendarDays, Calculator, LogOut, Home, WifiOff, RefreshCw, Droplet, Radar } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -381,17 +382,25 @@ export default function AgentPanel() {
               </TabsList>
 
               <TabsContent value="equipe" className="space-y-3">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                  <TeamMembersCard 
-                    unitId={agent.unit_id} 
-                    team={agent.team} 
-                    currentAgentId={agent.id}
-                  />
-                  <BirthdayCard 
-                    agentId={agent.id}
-                    team={agent.team}
-                    unitId={agent.unit_id}
-                  />
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                  <div className="lg:col-span-2 space-y-3">
+                    <TeamMembersCard 
+                      unitId={agent.unit_id} 
+                      team={agent.team} 
+                      currentAgentId={agent.id}
+                    />
+                    <BirthdayCard 
+                      agentId={agent.id}
+                      team={agent.team}
+                      unitId={agent.unit_id}
+                    />
+                  </div>
+                  <div className="lg:col-span-1">
+                    <TacticalRadar 
+                      unitId={agent.unit_id || undefined}
+                      compact={false}
+                    />
+                  </div>
                 </div>
               </TabsContent>
 
