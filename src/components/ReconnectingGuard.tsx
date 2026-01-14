@@ -15,10 +15,10 @@ interface ReconnectingGuardProps {
 
 export function ReconnectingGuard({
   children,
-  publicRoutes = ['/', '/auth', '/install', '/debug/auth'],
+  publicRoutes = ['/', '/auth', '/install', '/debug/auth', '/master'],
   maxWaitTime = 10000,
 }: ReconnectingGuardProps) {
-  const { user, session, isLoading } = useAuth();
+  const { user, session, isLoading, masterSession } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -29,13 +29,16 @@ export function ReconnectingGuard({
   const previousAuthState = useRef<{ hadUser: boolean; hadSession: boolean } | null>(null);
   const waitStartTime = useRef<number | null>(null);
 
+  // Master session bypasses auth requirements
+  const hasMasterAccess = !!masterSession;
+
   const isPublicRoute = publicRoutes.some(route => 
     location.pathname === route || location.pathname.startsWith(route + '/')
   );
 
   useEffect(() => {
-    // Skip for public routes
-    if (isPublicRoute) {
+    // Skip for public routes or if master session is active
+    if (isPublicRoute || hasMasterAccess) {
       setShowReconnecting(false);
       return;
     }
@@ -52,8 +55,8 @@ export function ReconnectingGuard({
       // First render after loading
       previousAuthState.current = currentState;
       
-      // If no session on first render of protected route, redirect
-      if (!user && !session) {
+      // If no session on first render of protected route and no master session, redirect
+      if (!user && !session && !hasMasterAccess) {
         navigate('/', { replace: true });
       }
       return;

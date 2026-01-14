@@ -6,14 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Shield, Loader2, BadgeCheck, AlertTriangle, Lock, Eye, EyeOff, UserCheck, ArrowLeft, Home } from 'lucide-react';
 import { 
@@ -620,289 +612,115 @@ export default function Auth() {
                 </Button>
               </form>
             ) : (
-              <Tabs defaultValue="login" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-6 bg-slate-700/50">
-                  <TabsTrigger value="login" className="data-[state=active]:bg-amber-500 data-[state=active]:text-slate-900">Entrar</TabsTrigger>
-                  <TabsTrigger value="register" className="data-[state=active]:bg-amber-500 data-[state=active]:text-slate-900">Cadastrar</TabsTrigger>
-                </TabsList>
-                
-                <TabsContent value="login">
-                  {/* Info Box for Login */}
-                  <div className="p-3 bg-slate-700/30 rounded-lg border border-slate-600 mb-4">
-                    <div className="flex items-start gap-2 text-sm">
-                      <AlertTriangle className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
-                      <p className="text-slate-400">
-                        Use seu <strong className="text-amber-400">CPF</strong> como usuário e a <strong className="text-amber-400">senha que você criou</strong> no cadastro.
-                      </p>
-                    </div>
+              <div className="space-y-4">
+                {/* Info Box for Login */}
+                <div className="p-3 bg-slate-700/30 rounded-lg border border-slate-600 mb-4">
+                  <div className="flex items-start gap-2 text-sm">
+                    <AlertTriangle className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                    <p className="text-slate-400">
+                      Use seu <strong className="text-amber-400">CPF</strong> como usuário e a <strong className="text-amber-400">senha que você criou</strong> no cadastro.
+                    </p>
                   </div>
+                </div>
 
-                  <form onSubmit={handleSignIn} className="space-y-4" data-login-form="true">
-                    <div className="space-y-2">
-                      <Label htmlFor="login-cpf" className="text-slate-300">CPF</Label>
-                      <Input
-                        id="login-cpf"
-                        type="text"
-                        placeholder="000.000.000-00"
-                        value={cpf}
-                        onChange={(e) => handleLoginCPFChange(e.target.value)}
-                        required
-                        maxLength={14}
-                        className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500"
-                      />
-                      {errors.cpf && (
-                        <p className="text-sm text-red-400">{errors.cpf}</p>
-                      )}
-                      
-                      {/* Show found agent info */}
-                      {foundAgent && (
-                        <div className="p-2 bg-green-500/20 rounded-lg border border-green-500/40 animate-fade-in">
-                          <div className="flex items-center gap-2">
-                            <UserCheck className="h-3 w-3 text-green-400" />
-                            <span className="text-green-400 font-medium text-xs">Agente: {foundAgent.name}</span>
-                          </div>
-                        </div>
-                      )}
-                      
-                      {cpf.replace(/\D/g, '').length === 11 && !foundAgent && !isSearchingAgent && (
-                        <div className="p-2 bg-amber-500/20 rounded-lg border border-amber-500/40 animate-fade-in">
-                          <div className="flex items-center gap-2">
-                            <AlertTriangle className="h-3 w-3 text-amber-400" />
-                            <span className="text-amber-400 font-medium text-xs">CPF não cadastrado</span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="login-password" className="text-slate-300">Senha</Label>
-                      <div className="relative">
-                        <Input
-                          id="login-password"
-                          type={showPassword ? "text" : "password"}
-                          placeholder="Sua senha"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          required
-                          className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500 pr-10"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
-                        >
-                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        </button>
-                      </div>
-                      {errors.password && (
-                        <p className="text-sm text-red-400">{errors.password}</p>
-                      )}
-                    </div>
-                    
-                    <SavedCredentials
-                      onSelectCredential={(selectedCpf, savedPassword) => {
-                        handleLoginCPFChange(selectedCpf);
-                        if (savedPassword) {
-                          setPassword(savedPassword);
-                        }
-                      }}
-                      onSaveChange={(cpf, pwd) => {
-                        setSaveCpfEnabled(cpf);
-                        setSavePasswordEnabled(pwd);
-                      }}
-                      saveCpf={saveCpfEnabled}
-                      savePassword={savePasswordEnabled}
+                <form onSubmit={handleSignIn} className="space-y-4" data-login-form="true">
+                  <div className="space-y-2">
+                    <Label htmlFor="login-cpf" className="text-slate-300">CPF</Label>
+                    <Input
+                      id="login-cpf"
+                      type="text"
+                      placeholder="000.000.000-00"
+                      value={cpf}
+                      onChange={(e) => handleLoginCPFChange(e.target.value)}
+                      required
+                      maxLength={14}
+                      className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500"
                     />
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-900 font-semibold"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Entrando...
-                        </>
-                      ) : (
-                        'Entrar'
-                      )}
-                    </Button>
-                  </form>
-                </TabsContent>
-                
-                <TabsContent value="register">
-                  {/* Info Box */}
-                  <div className="p-3 bg-amber-500/10 rounded-lg border border-amber-500/30 mb-4">
-                    <div className="flex items-start gap-2 text-sm">
-                      <AlertTriangle className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
-                      <div className="text-slate-300">
-                        <p className="font-medium text-amber-400 mb-1">Informação Importante</p>
-                        <p>
-                          Seu <strong>CPF</strong> será seu usuário. Crie uma <strong>senha segura</strong> que você irá lembrar. 
-                          Você pode alterá-la no seu painel.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <form onSubmit={handleSignUp} className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
-                    {/* Name */}
-                    <div className="space-y-2">
-                      <Label htmlFor="register-name" className="text-slate-300">Nome Completo *</Label>
-                      <Input
-                        id="register-name"
-                        type="text"
-                        placeholder="NOME COMPLETO"
-                        value={formData.name}
-                        onChange={handleNameChange}
-                        className="bg-slate-700/50 border-slate-600 text-white uppercase placeholder:text-slate-500"
-                        required
-                      />
-                      {regErrors.name && (
-                        <p className="text-sm text-red-400">{regErrors.name}</p>
-                      )}
-                    </div>
-
-                    {/* CPF */}
-                    <div className="space-y-2">
-                      <Label htmlFor="register-cpf" className="text-slate-300">CPF *</Label>
-                      <Input
-                        id="register-cpf"
-                        type="text"
-                        placeholder="000.000.000-00"
-                        value={formData.cpf}
-                        onChange={handleCPFChange}
-                        className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500"
-                        maxLength={14}
-                        required
-                      />
-                      {regErrors.cpf && (
-                        <p className="text-sm text-red-400">{regErrors.cpf}</p>
-                      )}
-                    </div>
-
-                    {/* Unit and Team */}
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label className="text-slate-300">Unidade *</Label>
-                        <Select
-                          value={formData.unit_id}
-                          onValueChange={(value) => setFormData({ ...formData, unit_id: value })}
-                        >
-                          <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white">
-                            <SelectValue placeholder="Selecione" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-slate-800 border-slate-700">
-                            {units.map((unit) => (
-                              <SelectItem key={unit.id} value={unit.id} className="text-white hover:bg-slate-700">
-                                {unit.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        {regErrors.unit_id && (
-                          <p className="text-sm text-red-400">{regErrors.unit_id}</p>
-                        )}
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-slate-300">Equipe *</Label>
-                        <Select
-                          value={formData.team}
-                          onValueChange={(value) => setFormData({ ...formData, team: value })}
-                        >
-                          <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white">
-                            <SelectValue placeholder="Selecione" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-slate-800 border-slate-700">
-                            {teams.map((team) => (
-                              <SelectItem key={team} value={team} className="text-white hover:bg-slate-700">
-                                {team}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        {regErrors.team && (
-                          <p className="text-sm text-red-400">{regErrors.team}</p>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Municipality Display */}
-                    {selectedUnit && (
-                      <div className="p-3 bg-slate-700/30 rounded-lg text-sm">
-                        <span className="text-slate-400">Município: </span>
-                        <span className="font-medium text-white">{selectedUnit.municipality}</span>
+                    {errors.cpf && (
+                      <p className="text-sm text-red-400">{errors.cpf}</p>
+                    )}
+                    
+                    {/* Show found agent info */}
+                    {foundAgent && (
+                      <div className="p-2 bg-green-500/20 rounded-lg border border-green-500/40 animate-fade-in">
+                        <div className="flex items-center gap-2">
+                          <UserCheck className="h-3 w-3 text-green-400" />
+                          <span className="text-green-400 font-medium text-xs">Agente: {foundAgent.name}</span>
+                        </div>
                       </div>
                     )}
-
-                    {/* Info about profile completion */}
-                    <div className="p-3 bg-amber-500/10 rounded-lg border border-amber-500/30 text-sm">
-                      <p className="text-amber-400 font-medium mb-1">⚡ Cadastro Rápido</p>
-                      <p className="text-slate-400 text-xs">
-                        Após o cadastro, você poderá completar seu perfil com matrícula, 
-                        tipo sanguíneo, telefone e outras informações importantes.
-                      </p>
-                    </div>
-
-                    {/* Password */}
-                    <div className="space-y-2">
-                      <Label htmlFor="register-password" className="text-slate-300">Criar Senha *</Label>
-                      <div className="relative">
-                        <Input
-                          id="register-password"
-                          type={showRegPassword ? "text" : "password"}
-                          placeholder="Mínimo 6 caracteres"
-                          value={formData.registerPassword}
-                          onChange={(e) => setFormData({ ...formData, registerPassword: e.target.value })}
-                          className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500 pr-10"
-                          required
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowRegPassword(!showRegPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
-                        >
-                          {showRegPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        </button>
+                    
+                    {cpf.replace(/\D/g, '').length === 11 && !foundAgent && !isSearchingAgent && (
+                      <div className="p-2 bg-amber-500/20 rounded-lg border border-amber-500/40 animate-fade-in">
+                        <div className="flex items-center gap-2">
+                          <AlertTriangle className="h-3 w-3 text-amber-400" />
+                          <span className="text-amber-400 font-medium text-xs">CPF não cadastrado</span>
+                        </div>
                       </div>
-                      {regErrors.registerPassword && (
-                        <p className="text-sm text-red-400">{regErrors.registerPassword}</p>
-                      )}
-                    </div>
-
-                    {/* Confirm Password */}
-                    <div className="space-y-2">
-                      <Label htmlFor="confirm-password" className="text-slate-300">Confirmar Senha *</Label>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="login-password" className="text-slate-300">Senha</Label>
+                    <div className="relative">
                       <Input
-                        id="confirm-password"
-                        type={showRegPassword ? "text" : "password"}
-                        placeholder="Repita a senha"
-                        value={formData.confirmPassword}
-                        onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                        className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500"
+                        id="login-password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Sua senha"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         required
+                        className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500 pr-10"
                       />
-                      {regErrors.confirmPassword && (
-                        <p className="text-sm text-red-400">{regErrors.confirmPassword}</p>
-                      )}
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
                     </div>
+                    {errors.password && (
+                      <p className="text-sm text-red-400">{errors.password}</p>
+                    )}
+                  </div>
+                  
+                  <SavedCredentials
+                    onSelectCredential={(selectedCpf, savedPassword) => {
+                      handleLoginCPFChange(selectedCpf);
+                      if (savedPassword) {
+                        setPassword(savedPassword);
+                      }
+                    }}
+                    onSaveChange={(cpf, pwd) => {
+                      setSaveCpfEnabled(cpf);
+                      setSavePasswordEnabled(pwd);
+                    }}
+                    saveCpf={saveCpfEnabled}
+                    savePassword={savePasswordEnabled}
+                  />
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-900 font-semibold"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Entrando...
+                      </>
+                    ) : (
+                      'Entrar'
+                    )}
+                  </Button>
+                </form>
 
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-900 font-semibold"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Cadastrando...
-                        </>
-                      ) : (
-                        'Criar Conta'
-                      )}
-                    </Button>
-                  </form>
-                </TabsContent>
-              </Tabs>
+                {/* Notice about disabled registration */}
+                <div className="p-3 bg-slate-800/50 rounded-lg border border-slate-600 mt-4">
+                  <p className="text-xs text-slate-400 text-center">
+                    O cadastro está temporariamente desabilitado. Entre em contato com o administrador.
+                  </p>
+                </div>
+              </div>
             )}
             
             {!isMasterLogin && (

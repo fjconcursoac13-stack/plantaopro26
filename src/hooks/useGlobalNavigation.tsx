@@ -100,16 +100,23 @@ export function useGlobalNavigation(options: UseGlobalNavigationOptions = {}) {
     // During initial auth hydration the user can be null briefly.
     // Redirecting here causes an unwanted bounce back to '/'.
     const isAuthPage = location.pathname === '/auth' || location.pathname === '/';
+    const isMasterPage = location.pathname === '/master';
     if (isAuthPage) return;
 
     // IMPORTANT: only redirect after auth finished loading
     if (isLoading) return;
 
+    // Never redirect if master session is active
+    if (masterSession) return;
+
+    // Never redirect from master page (handled by Master component itself)
+    if (isMasterPage) return;
+
     if (!user && !masterSession) {
-      // Small delay to ensure the logout is complete
+      // Longer delay to ensure the session state is settled
       const timer = setTimeout(() => {
         navigate('/', { replace: true });
-      }, 100);
+      }, 300);
 
       return () => clearTimeout(timer);
     }
