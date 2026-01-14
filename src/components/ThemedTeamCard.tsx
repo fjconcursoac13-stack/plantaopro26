@@ -1,4 +1,4 @@
-import { useState, useRef, MouseEvent } from 'react';
+import { useState, useRef, MouseEvent, useCallback } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
 import { cn } from '@/lib/utils';
@@ -105,18 +105,32 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
   const { ref, transform, glare, handleMouseMove, handleMouseLeave } = use3DTilt();
   const config = teamConfigs[team] || teamConfigs.ALFA;
   const Icon = config.icon;
+  const hasPlayedHover = useRef(false);
 
   const handleClick = () => {
-    playSound('click');
+    playSound('card-select');
     onClick();
   };
+
+  const handleMouseEnterCard = useCallback(() => {
+    if (!hasPlayedHover.current) {
+      playSound('hover');
+      hasPlayedHover.current = true;
+    }
+  }, [playSound]);
+
+  const handleMouseLeaveCard = useCallback(() => {
+    hasPlayedHover.current = false;
+    handleMouseLeave();
+  }, [handleMouseLeave]);
 
   return (
     <div 
       ref={ref}
       onClick={handleClick}
+      onMouseEnter={handleMouseEnterCard}
       onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
+      onMouseLeave={handleMouseLeaveCard}
       className="w-full cursor-pointer transition-all duration-300 ease-out group"
       style={{ transform, transformStyle: 'preserve-3d' }}
     >
