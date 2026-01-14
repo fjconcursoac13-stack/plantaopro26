@@ -437,6 +437,23 @@ export default function Index() {
       
       if (signUpError) throw signUpError;
 
+      // Wait for session to be established after signup (auto-confirm enabled)
+      let retries = 0;
+      let sessionReady = false;
+      while (retries < 10 && !sessionReady) {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          sessionReady = true;
+        } else {
+          await new Promise(resolve => setTimeout(resolve, 300));
+          retries++;
+        }
+      }
+
+      if (!sessionReady) {
+        throw new Error('Não foi possível estabelecer a sessão. Tente novamente.');
+      }
+
       const { error: agentError } = await supabase.from('agents').insert({
         name: formData.name.toUpperCase().trim(),
         cpf: formData.cpf.replace(/\D/g, ''),
