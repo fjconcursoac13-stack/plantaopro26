@@ -110,17 +110,17 @@ export const themes: Record<ThemeType, ThemeConfig> = {
     description: 'Tema claro e profissional',
     icon: '☀️',
     colors: {
-      primary: '217 91% 45%', // deeper blue for better contrast
+      primary: '217 91% 40%', // deep blue for excellent contrast
       primaryForeground: '0 0% 100%',
-      accent: '217 91% 50%',
-      background: '210 40% 98%', // slightly warm white
+      accent: '217 91% 45%',
+      background: '210 40% 98%', // clean off-white
       card: '0 0% 100%', // pure white cards
-      border: '214 32% 85%', // more visible borders
-      gradientFrom: '217 91% 45%',
-      gradientTo: '200 85% 50%',
-      foreground: '222 47% 11%', // dark text
+      border: '214 32% 80%', // clearly visible borders
+      gradientFrom: '217 91% 40%',
+      gradientTo: '200 85% 45%',
+      foreground: '222 47% 11%', // near-black text
       muted: '210 40% 94%', // subtle background
-      mutedForeground: '215 20% 40%', // darker muted text for readability
+      mutedForeground: '215 25% 35%', // high contrast muted text
       isLight: true,
     },
   },
