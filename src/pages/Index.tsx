@@ -940,67 +940,66 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Footer - Fixed at bottom */}
-      <footer className="py-2 px-2 sm:px-4 bg-slate-900/95 backdrop-blur-sm border-t border-primary/20 relative z-20 shrink-0">
+      {/* Footer - Clean & Professional */}
+      <footer className="py-2.5 px-3 sm:px-4 bg-background/80 backdrop-blur-md border-t border-border/30 relative z-20 shrink-0">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="flex items-center gap-1.5 sm:gap-2">
+          {/* Left: Branding */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               {(() => {
                 const FooterIcon = themeAssets.mainIcon;
-                return <FooterIcon className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />;
+                return <FooterIcon className="h-4 w-4 text-primary/80" />;
               })()}
-              <span className="text-[10px] sm:text-xs font-bold text-foreground">
-                PLANTÃO PRO
+              <span className="text-xs font-semibold text-foreground/80">
+                PlantãoPro
               </span>
             </div>
-            <div className="hidden md:flex items-center gap-2">
-              <span className="text-[10px] text-muted-foreground">|</span>
-              <span className="text-[10px] text-muted-foreground">
-                © {new Date().getFullYear()} Franc Denis
-              </span>
-            </div>
+            <span className="hidden sm:inline text-xs text-muted-foreground/60">
+              © {new Date().getFullYear()}
+            </span>
           </div>
           
-          <div className="flex items-center gap-1 sm:gap-2">
-            <div className="hidden sm:flex items-center gap-1.5 sm:gap-2 mr-1 sm:mr-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-[9px] sm:text-[10px] font-mono text-green-400">ONLINE</span>
+          {/* Right: Actions */}
+          <div className="flex items-center gap-1">
+            {/* Status indicator - subtle */}
+            <div className="hidden sm:flex items-center gap-1.5 mr-2 px-2 py-1 rounded-full bg-green-500/10">
+              <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+              <span className="text-[10px] font-medium text-green-500/80">Online</span>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
+            
+            {/* About link - text style */}
+            <button
               onClick={() => {
                 playSound('click');
                 navigate('/about');
               }}
-              className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors gap-1 sm:gap-1.5 h-7 sm:h-8 px-2 sm:px-3"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1.5 rounded hover:bg-muted/50"
             >
-              <Info className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-              <span className="text-[9px] sm:text-[10px] font-bold tracking-wider">SOBRE</span>
-            </Button>
+              Sobre
+            </button>
+            
+            {/* Saved credentials - only icon on mobile */}
             {getSavedCredentials().length > 0 && (
-              <Button
-                variant="ghost"
-                size="sm"
+              <button
                 onClick={() => {
                   playSound('click');
                   setShowCredentialsManager(true);
                 }}
-                className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors gap-1 sm:gap-1.5 h-7 sm:h-8 px-2 sm:px-3"
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1.5 rounded hover:bg-muted/50 flex items-center gap-1"
               >
-                <KeyRound className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-                <span className="text-[9px] sm:text-[10px] font-bold tracking-wider hidden sm:inline">CPFs</span>
-              </Button>
+                <KeyRound className="h-3 w-3" />
+                <span className="hidden sm:inline">CPFs</span>
+              </button>
             )}
-            <Button
-              variant="ghost"
-              size="sm"
+            
+            {/* Admin - subtle button */}
+            <button
               onClick={() => setShowMasterLogin(true)}
-              className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors gap-1 sm:gap-1.5 h-7 sm:h-8 px-2 sm:px-3"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1.5 rounded hover:bg-muted/50 flex items-center gap-1"
             >
-              <Lock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-              <span className="text-[9px] sm:text-[10px] font-bold tracking-wider">ADMIN</span>
-            </Button>
+              <Lock className="h-3 w-3" />
+              <span className="hidden sm:inline">Admin</span>
+            </button>
           </div>
         </div>
       </footer>
