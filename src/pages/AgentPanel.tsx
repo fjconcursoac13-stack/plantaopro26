@@ -269,93 +269,93 @@ export default function AgentPanel() {
               onComplete={checkAgentShifts}
             />
 
-            {/* Agent Header - Compacto para mobile */}
-            <div className="bg-gradient-to-r from-slate-800 via-slate-800/95 to-amber-900/20 rounded-xl md:rounded-2xl p-3 md:p-5 border border-amber-500/30 shadow-lg shadow-amber-500/10">
-              <div className="flex items-center justify-between gap-3">
+            {/* Agent Header - LARGER e mais proporcional */}
+            <div className="bg-gradient-to-r from-slate-800 via-slate-800/95 to-amber-900/20 rounded-xl md:rounded-2xl p-4 md:p-6 lg:p-8 border border-amber-500/30 shadow-lg shadow-amber-500/10">
+              <div className="flex items-center justify-between gap-4">
                 <div 
-                  className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity flex-1 min-w-0"
+                  className="flex items-center gap-4 md:gap-5 cursor-pointer hover:opacity-80 transition-opacity flex-1 min-w-0"
                   onClick={() => navigate('/agent-profile')}
                   title="Editar meu perfil"
                 >
-                  <Avatar className="w-12 h-12 md:w-16 md:h-16 border-2 md:border-4 border-amber-500/50 shadow-lg shadow-amber-500/20 flex-shrink-0">
+                  <Avatar className="w-14 h-14 md:w-20 md:h-20 lg:w-24 lg:h-24 border-3 md:border-4 border-amber-500/50 shadow-lg shadow-amber-500/20 flex-shrink-0">
                     {(agent as any).avatar_url && <AvatarImage src={(agent as any).avatar_url} alt={agent.name} />}
-                    <AvatarFallback className="bg-gradient-to-br from-amber-500 to-amber-600 text-lg md:text-2xl font-bold text-black">
+                    <AvatarFallback className="bg-gradient-to-br from-amber-500 to-amber-600 text-xl md:text-3xl lg:text-4xl font-bold text-black">
                       {agent.name.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div className="min-w-0 flex-1">
-                    {/* Nome destacado */}
-                    <h1 className="text-lg md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 tracking-wide truncate">
+                    {/* Nome destacado - MAIOR */}
+                    <h1 className="text-xl md:text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 tracking-wide truncate">
                       {agent.name}
                     </h1>
                     
-                    {/* Badges em linha compacta */}
-                    <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                    {/* Badges em linha - MAIORES */}
+                    <div className="flex items-center gap-2 mt-2 flex-wrap">
                       {getRoleBadge((agent as any).role)}
                       {(agent as any).blood_type && (
-                        <Badge className="bg-red-500/20 text-red-400 border-red-500/40 flex items-center gap-0.5 text-[10px] px-1.5 py-0">
-                          <Droplet className="h-2.5 w-2.5" />
+                        <Badge className="bg-red-500/20 text-red-400 border-red-500/40 flex items-center gap-1 text-xs md:text-sm px-2 py-0.5">
+                          <Droplet className="h-3 w-3 md:h-4 md:w-4" />
                           {(agent as any).blood_type}
                         </Badge>
                       )}
                       {agent.team && (
-                        <Badge className="bg-slate-700/80 text-amber-400 border-amber-500/30 text-[10px] px-1.5 py-0 hidden sm:flex">
+                        <Badge className="bg-slate-700/80 text-amber-400 border-amber-500/30 text-xs md:text-sm px-2 py-0.5 hidden sm:flex">
                           {agent.team}
                         </Badge>
                       )}
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-1.5 flex-shrink-0">
+                <div className="flex items-center gap-2 flex-shrink-0">
                   <AgentRoleSelector agentId={agent.id} currentRole={(agent as any).role || 'agent'} />
                   <NotificationsPanel agentId={agent.id} />
                 </div>
               </div>
             </div>
 
-            {/* Quick Stats Row - Melhor proporção */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+            {/* Quick Stats Row - MAIOR proporção */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
               <ProfessionalShiftTimer agentId={agent.id} compact />
               <BHTracker agentId={agent.id} compact />
             </div>
 
-            {/* Main Tabs - Compacto para mobile */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-3">
-              <TabsList className="bg-slate-800/60 border border-slate-700/50 p-0.5 h-auto flex flex-wrap gap-0.5 rounded-lg">
-                <TabsTrigger value="equipe" className="flex items-center gap-1 text-xs px-2 py-1.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-md">
-                  <Users className="h-3.5 w-3.5" />
+            {/* Main Tabs - Maior e mais visível */}
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 md:space-y-6">
+              <TabsList className="bg-slate-800/60 border border-slate-700/50 p-1 h-auto flex flex-wrap gap-1 rounded-xl">
+                <TabsTrigger value="equipe" className="flex items-center gap-1.5 text-xs md:text-sm px-3 py-2 md:px-4 md:py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg">
+                  <Users className="h-4 w-4 md:h-5 md:w-5" />
                   <span className="hidden sm:inline">Equipe</span>
                 </TabsTrigger>
-                <TabsTrigger value="plantoes" className="flex items-center gap-1 text-xs px-2 py-1.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-md">
-                  <Calendar className="h-3.5 w-3.5" />
+                <TabsTrigger value="plantoes" className="flex items-center gap-1.5 text-xs md:text-sm px-3 py-2 md:px-4 md:py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg">
+                  <Calendar className="h-4 w-4 md:h-5 md:w-5" />
                   <span className="hidden sm:inline">Plantões</span>
                 </TabsTrigger>
-                <TabsTrigger value="bh" className="flex items-center gap-1 text-xs px-2 py-1.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-md">
-                  <Clock className="h-3.5 w-3.5" />
+                <TabsTrigger value="bh" className="flex items-center gap-1.5 text-xs md:text-sm px-3 py-2 md:px-4 md:py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg">
+                  <Clock className="h-4 w-4 md:h-5 md:w-5" />
                   <span>BH</span>
                 </TabsTrigger>
-                <TabsTrigger value="folgas" className="flex items-center gap-1 text-xs px-2 py-1.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-md">
-                  <CalendarOff className="h-3.5 w-3.5" />
+                <TabsTrigger value="folgas" className="flex items-center gap-1.5 text-xs md:text-sm px-3 py-2 md:px-4 md:py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg">
+                  <CalendarOff className="h-4 w-4 md:h-5 md:w-5" />
                   <span className="hidden sm:inline">Folgas</span>
                 </TabsTrigger>
-                <TabsTrigger value="agenda" className="flex items-center gap-1 text-xs px-2 py-1.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-md">
-                  <CalendarDays className="h-3.5 w-3.5" />
+                <TabsTrigger value="agenda" className="flex items-center gap-1.5 text-xs md:text-sm px-3 py-2 md:px-4 md:py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg">
+                  <CalendarDays className="h-4 w-4 md:h-5 md:w-5" />
                   <span className="hidden sm:inline">Agenda</span>
                 </TabsTrigger>
-                <TabsTrigger value="planejador" className="flex items-center gap-1 text-xs px-2 py-1.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-md">
-                  <Calculator className="h-3.5 w-3.5" />
+                <TabsTrigger value="planejador" className="flex items-center gap-1.5 text-xs md:text-sm px-3 py-2 md:px-4 md:py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg">
+                  <Calculator className="h-4 w-4 md:h-5 md:w-5" />
                   <span className="hidden sm:inline">Plan</span>
                 </TabsTrigger>
-                <TabsTrigger value="permutas" className="flex items-center gap-1 text-xs px-2 py-1.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-md">
-                  <ArrowRightLeft className="h-3.5 w-3.5" />
+                <TabsTrigger value="permutas" className="flex items-center gap-1.5 text-xs md:text-sm px-3 py-2 md:px-4 md:py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg">
+                  <ArrowRightLeft className="h-4 w-4 md:h-5 md:w-5" />
                   <span className="hidden sm:inline">Troca</span>
                 </TabsTrigger>
-                <TabsTrigger value="chat" className="flex items-center gap-1 text-xs px-2 py-1.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-md">
-                  <MessageCircle className="h-3.5 w-3.5" />
+                <TabsTrigger value="chat" className="flex items-center gap-1.5 text-xs md:text-sm px-3 py-2 md:px-4 md:py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg">
+                  <MessageCircle className="h-4 w-4 md:h-5 md:w-5" />
                   <span className="hidden sm:inline">Chat</span>
                 </TabsTrigger>
-                <TabsTrigger value="config" className="flex items-center gap-1 text-xs px-2 py-1.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-md">
-                  <Settings className="h-3.5 w-3.5" />
+                <TabsTrigger value="config" className="flex items-center gap-1.5 text-xs md:text-sm px-3 py-2 md:px-4 md:py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg">
+                  <Settings className="h-4 w-4 md:h-5 md:w-5" />
                 </TabsTrigger>
               </TabsList>
 

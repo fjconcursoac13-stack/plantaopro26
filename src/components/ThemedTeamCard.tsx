@@ -127,12 +127,12 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
           }}
         />
         
-        {/* Main Card - Better aspect ratio for visibility */}
+        {/* Main Card - LARGER aspect ratio for better visibility */}
         <div 
           className={cn(
-            "relative overflow-hidden rounded-lg md:rounded-xl",
-            "border-2 transition-all duration-300 group-hover:shadow-2xl",
-            "min-h-[140px] landscape:min-h-[100px] sm:min-h-[180px] md:min-h-[220px]",
+            "relative overflow-hidden rounded-xl md:rounded-2xl",
+            "border-2 md:border-3 transition-all duration-300 group-hover:shadow-2xl",
+            "min-h-[180px] landscape:min-h-[120px] sm:min-h-[240px] md:min-h-[300px] lg:min-h-[340px]",
           )}
           style={{ 
             borderColor: teamColors[team as keyof typeof teamColors]?.primary || '#fff',
@@ -168,47 +168,47 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
           </div>
           
           {/* Content - Bottom aligned */}
-          <div className="absolute inset-x-0 bottom-0 p-2 sm:p-3 md:p-4 z-10">
+          <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4 md:p-6 z-10">
             <div className="flex flex-col items-center">
-              {/* Icon with team color */}
+              {/* Icon with team color - LARGER */}
               <div 
-                className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center mb-2 shadow-xl group-hover:scale-110 transition-transform duration-300 border-2 border-white/30"
+                className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-full flex items-center justify-center mb-2 md:mb-3 shadow-xl group-hover:scale-110 transition-transform duration-300 border-2 md:border-3 border-white/30"
                 style={{ 
                   backgroundColor: teamColors[team as keyof typeof teamColors]?.primary,
-                  boxShadow: `0 0 25px ${teamColors[team as keyof typeof teamColors]?.glow}`,
+                  boxShadow: `0 0 35px ${teamColors[team as keyof typeof teamColors]?.glow}`,
                 }}
               >
-                <Icon className="h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 text-white drop-shadow-lg" />
+                <Icon className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 lg:h-12 lg:w-12 text-white drop-shadow-lg" />
               </div>
               
-              {/* Team name - Always visible */}
-              <div className="flex items-center gap-1.5 mb-1">
-                <Star className="h-2.5 w-2.5 md:h-3 md:w-3 text-white/80 group-hover:animate-pulse shrink-0" />
+              {/* Team name - Always visible - LARGER */}
+              <div className="flex items-center gap-2 mb-1 md:mb-2">
+                <Star className="h-3 w-3 md:h-4 md:w-4 text-white/80 group-hover:animate-pulse shrink-0" />
                 <h3 
-                  className="text-base sm:text-lg md:text-xl font-black tracking-[0.15em] text-white drop-shadow-lg"
+                  className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-black tracking-[0.15em] text-white drop-shadow-lg"
                   style={{ 
                     textShadow: `0 2px 10px ${teamColors[team as keyof typeof teamColors]?.glow}, 0 0 30px ${teamColors[team as keyof typeof teamColors]?.glow}`,
                   }}
                 >
                   {team}
                 </h3>
-                <Star className="h-2.5 w-2.5 md:h-3 md:w-3 text-white/80 group-hover:animate-pulse shrink-0" />
+                <Star className="h-3 w-3 md:h-4 md:w-4 text-white/80 group-hover:animate-pulse shrink-0" />
               </div>
               
-              {/* Description - Visible on larger screens */}
-              <p className="hidden sm:block text-white/80 text-[10px] md:text-xs text-center font-medium mb-2 max-w-full truncate">
+              {/* Description - Visible on larger screens - LARGER */}
+              <p className="hidden sm:block text-white/80 text-xs md:text-sm text-center font-medium mb-2 md:mb-3 max-w-full truncate">
                 {descriptions.description}
               </p>
               
-              {/* Access button */}
+              {/* Access button - LARGER */}
               <div 
-                className="flex items-center justify-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg bg-black/70 backdrop-blur-sm border transition-all duration-300 group-hover:bg-black/90 group-hover:scale-105"
+                className="flex items-center justify-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 md:px-6 md:py-3 rounded-lg md:rounded-xl bg-black/70 backdrop-blur-sm border-2 transition-all duration-300 group-hover:bg-black/90 group-hover:scale-105"
                 style={{ 
                   borderColor: teamColors[team as keyof typeof teamColors]?.primary,
                 }}
               >
-                <Radio className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-green-400 animate-pulse shrink-0" />
-                <span className="text-[9px] sm:text-[10px] md:text-xs font-bold text-white tracking-widest uppercase">
+                <Radio className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-green-400 animate-pulse shrink-0" />
+                <span className="text-[10px] sm:text-xs md:text-sm font-bold text-white tracking-widest uppercase">
                   ACESSAR
                 </span>
               </div>
