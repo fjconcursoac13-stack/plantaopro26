@@ -2,8 +2,11 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Bell, Sun, Sunset, Moon, Check } from 'lucide-react';
+import { Bell, Sun, Sunset, Moon, Check, Calendar, TrendingUp, Clock } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 interface BHReminderSettingsProps {
   agentId: string;
@@ -54,10 +57,20 @@ const PERIOD_OPTIONS: PeriodOption[] = [
 
 const STORAGE_KEY = 'bh_reminder_period';
 
+interface FortnightStats {
+  first: { entries: number; totalHours: number };
+  second: { entries: number; totalHours: number };
+}
+
 export function BHReminderSettings({ agentId, onReminderHourChange }: BHReminderSettingsProps) {
   const [selectedPeriod, setSelectedPeriod] = useState<ReminderPeriod>('night');
+  const [stats, setStats] = useState<FortnightStats>({ 
+    first: { entries: 0, totalHours: 0 }, 
+    second: { entries: 0, totalHours: 0 } 
+  });
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load saved preference
+  // Load saved preference and fetch stats
   useEffect(() => {
     const stored = localStorage.getItem(`${STORAGE_KEY}_${agentId}`);
     if (stored) {
@@ -70,7 +83,59 @@ export function BHReminderSettings({ agentId, onReminderHourChange }: BHReminder
         }
       }
     }
+
+    // Fetch BH stats for current month
+    fetchFortnightStats();
   }, [agentId, onReminderHourChange]);
+
+  const fetchFortnightStats = async () => {
+    if (!agentId) return;
+    
+    setIsLoading(true);
+    try {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth();
+      
+      const { data: entries, error } = await supabase
+        .from('overtime_bank')
+        .select('hours, description, created_at')
+        .eq('agent_id', agentId);
+
+      if (error) throw error;
+
+      const currentMonthStr = format(now, 'MM/yyyy');
+      const firstFortnight = { entries: 0, totalHours: 0 };
+      const secondFortnight = { entries: 0, totalHours: 0 };
+
+      (entries || []).forEach((entry) => {
+        if (entry.description) {
+          // Match pattern "BH - DD/MM/YYYY"
+          const match = entry.description.match(/BH - (\d{2})\/(\d{2}\/\d{4})/);
+          if (match) {
+            const day = parseInt(match[1], 10);
+            const monthYear = match[2];
+            
+            if (monthYear === currentMonthStr) {
+              if (day <= 15) {
+                firstFortnight.entries++;
+                firstFortnight.totalHours += entry.hours || 0;
+              } else {
+                secondFortnight.entries++;
+                secondFortnight.totalHours += entry.hours || 0;
+              }
+            }
+          }
+        }
+      });
+
+      setStats({ first: firstFortnight, second: secondFortnight });
+    } catch (error) {
+      console.error('Error fetching BH stats:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handlePeriodChange = (value: ReminderPeriod) => {
     setSelectedPeriod(value);
@@ -147,6 +212,61 @@ export function BHReminderSettings({ agentId, onReminderHourChange }: BHReminder
             );
           })}
         </RadioGroup>
+
+        {/* Fortnight Stats */}
+        <div className="mt-4 pt-3 border-t border-slate-600/30">
+          <div className="flex items-center gap-2 mb-2">
+            <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
+            <span className="text-xs font-medium text-slate-300">
+              Estatísticas do Mês ({format(new Date(), 'MMMM', { locale: ptBR })})
+            </span>
+          </div>
+          
+          {isLoading ? (
+            <div className="grid grid-cols-2 gap-2">
+              <div className="h-14 bg-slate-700/30 rounded-lg animate-pulse" />
+              <div className="h-14 bg-slate-700/30 rounded-lg animate-pulse" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-2">
+              {/* First Fortnight */}
+              <div className="p-2 bg-slate-700/30 rounded-lg border border-slate-600/30">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Calendar className="h-3 w-3 text-blue-400" />
+                  <span className="text-[10px] font-medium text-slate-400">1ª Quinzena</span>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-lg font-bold text-white">{stats.first.entries}</span>
+                  <span className="text-[10px] text-slate-500">registros</span>
+                </div>
+                <div className="flex items-center gap-1 mt-0.5">
+                  <Clock className="h-2.5 w-2.5 text-slate-500" />
+                  <span className="text-[10px] text-slate-400">
+                    {stats.first.totalHours > 0 ? '+' : ''}{stats.first.totalHours.toFixed(1)}h
+                  </span>
+                </div>
+              </div>
+              
+              {/* Second Fortnight */}
+              <div className="p-2 bg-slate-700/30 rounded-lg border border-slate-600/30">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Calendar className="h-3 w-3 text-purple-400" />
+                  <span className="text-[10px] font-medium text-slate-400">2ª Quinzena</span>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-lg font-bold text-white">{stats.second.entries}</span>
+                  <span className="text-[10px] text-slate-500">registros</span>
+                </div>
+                <div className="flex items-center gap-1 mt-0.5">
+                  <Clock className="h-2.5 w-2.5 text-slate-500" />
+                  <span className="text-[10px] text-slate-400">
+                    {stats.second.totalHours > 0 ? '+' : ''}{stats.second.totalHours.toFixed(1)}h
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
 
         <div className="mt-3 p-2 bg-slate-700/20 rounded-lg border border-slate-600/30">
           <p className="text-[10px] text-slate-400 text-center">
