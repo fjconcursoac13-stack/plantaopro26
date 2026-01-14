@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer } from '@/components/ui/chart';
-import { BarChart, Bar, XAxis, YAxis, Cell, ReferenceLine, Tooltip } from 'recharts';
-import { BarChart3, Loader2 } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, Cell, ReferenceLine, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart3, Loader2, TrendingUp, TrendingDown } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { format, subMonths } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -115,87 +115,153 @@ export function BHEvolutionChart({ agentId }: BHEvolutionChartProps) {
   };
 
   const getBarColor = (value: number) => {
-    if (value > 0) return '#22c55e'; // green
-    if (value < 0) return '#ef4444'; // red
-    return '#64748b'; // slate
+    if (value > 0) return '#10b981'; // emerald-500
+    if (value < 0) return '#f43f5e'; // rose-500
+    return '#475569'; // slate-600
+  };
+
+  const totalHours = chartData.reduce((acc, d) => acc + d.hours, 0);
+  const isPositive = totalHours >= 0;
+
+  // Custom tooltip without white flash
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (!active || !payload || !payload.length) return null;
+    const data = payload[0].payload as ChartDataPoint;
+    return (
+      <div className="bg-slate-900/95 backdrop-blur-sm border border-slate-700/50 rounded-lg p-3 shadow-2xl">
+        <div className="flex flex-col gap-1.5">
+          <span className="font-semibold text-slate-200 text-xs">{data.label}</span>
+          <div className="flex items-center gap-2">
+            {data.hours >= 0 ? (
+              <TrendingUp className="h-3.5 w-3.5 text-emerald-400" />
+            ) : (
+              <TrendingDown className="h-3.5 w-3.5 text-rose-400" />
+            )}
+            <span className={`text-base font-bold ${data.hours >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+              {data.hours >= 0 ? '+' : ''}{data.hours.toFixed(1)}h
+            </span>
+          </div>
+          <span className="text-slate-500 text-[10px]">{data.entries} {data.entries === 1 ? 'registro' : 'registros'}</span>
+        </div>
+      </div>
+    );
   };
 
   return (
-    <Card className="bg-slate-800/50 border-slate-700">
+    <Card className="bg-gradient-to-br from-slate-800/60 to-slate-900/60 border-slate-700/50 shadow-xl">
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-medium text-slate-300 flex items-center gap-2">
-          <BarChart3 className="h-4 w-4 text-emerald-500" />
-          Evolução de BH (6 meses)
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm font-medium text-slate-300 flex items-center gap-2">
+            <div className="p-1.5 rounded-lg bg-emerald-500/10">
+              <BarChart3 className="h-4 w-4 text-emerald-400" />
+            </div>
+            Evolução de BH
+          </CardTitle>
+          {!isLoading && chartData.length > 0 && (
+            <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+              isPositive 
+                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
+                : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+            }`}>
+              {isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+              {isPositive ? '+' : ''}{totalHours.toFixed(1)}h
+            </div>
+          )}
+        </div>
+        <p className="text-[10px] text-slate-500 mt-1">Últimos 6 meses por quinzena</p>
       </CardHeader>
       <CardContent className="pt-0">
         {isLoading ? (
-          <div className="h-[140px] flex items-center justify-center">
-            <Loader2 className="h-6 w-6 animate-spin text-slate-500" />
+          <div className="h-[160px] flex items-center justify-center">
+            <div className="flex flex-col items-center gap-2">
+              <Loader2 className="h-6 w-6 animate-spin text-emerald-500" />
+              <span className="text-xs text-slate-500">Carregando dados...</span>
+            </div>
           </div>
         ) : chartData.length === 0 ? (
-          <div className="h-[140px] flex items-center justify-center">
-            <p className="text-xs text-slate-500">Nenhum dado disponível</p>
+          <div className="h-[160px] flex items-center justify-center">
+            <div className="text-center">
+              <BarChart3 className="h-8 w-8 text-slate-600 mx-auto mb-2" />
+              <p className="text-xs text-slate-500">Nenhum dado disponível</p>
+            </div>
           </div>
         ) : (
-          <ChartContainer config={chartConfig} className="h-[140px] w-full">
-            <BarChart data={chartData} margin={{ top: 10, right: 5, left: -20, bottom: 0 }}>
-              <XAxis 
-                dataKey="label" 
-                tick={{ fontSize: 8, fill: '#94a3b8' }}
-                tickLine={false}
-                axisLine={false}
-                interval={1}
-              />
-              <YAxis 
-                tick={{ fontSize: 9, fill: '#94a3b8' }}
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(value) => `${value}h`}
-              />
-              <ReferenceLine y={0} stroke="#475569" strokeDasharray="3 3" />
-              <Tooltip
-                content={({ active, payload }) => {
-                  if (!active || !payload || !payload.length) return null;
-                  const data = payload[0].payload as ChartDataPoint;
-                  return (
-                    <div className="bg-slate-800 border border-slate-600 rounded-lg p-2 shadow-lg">
-                      <div className="flex flex-col gap-1">
-                        <span className="font-medium text-white text-xs">{data.label}</span>
-                        <span className={`text-sm font-bold ${data.hours >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                          {data.hours >= 0 ? '+' : ''}{data.hours.toFixed(1)}h
-                        </span>
-                        <span className="text-slate-400 text-[10px]">{data.entries} registros</span>
-                      </div>
-                    </div>
-                  );
-                }}
-              />
-              <Bar 
-                dataKey="hours" 
-                radius={[3, 3, 0, 0]}
-                maxBarSize={16}
+          <ChartContainer config={chartConfig} className="h-[160px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart 
+                data={chartData} 
+                margin={{ top: 15, right: 5, left: -15, bottom: 0 }}
               >
-                {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={getBarColor(entry.hours)} />
-                ))}
-              </Bar>
-            </BarChart>
+                <defs>
+                  <linearGradient id="positiveGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#10b981" stopOpacity={0.9}/>
+                    <stop offset="100%" stopColor="#059669" stopOpacity={0.7}/>
+                  </linearGradient>
+                  <linearGradient id="negativeGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#f43f5e" stopOpacity={0.9}/>
+                    <stop offset="100%" stopColor="#e11d48" stopOpacity={0.7}/>
+                  </linearGradient>
+                  <linearGradient id="zeroGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#64748b" stopOpacity={0.6}/>
+                    <stop offset="100%" stopColor="#475569" stopOpacity={0.4}/>
+                  </linearGradient>
+                </defs>
+                <XAxis 
+                  dataKey="label" 
+                  tick={{ fontSize: 8, fill: '#64748b' }}
+                  tickLine={false}
+                  axisLine={false}
+                  interval={1}
+                />
+                <YAxis 
+                  tick={{ fontSize: 9, fill: '#64748b' }}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(value) => `${value}h`}
+                />
+                <ReferenceLine y={0} stroke="#334155" strokeWidth={1} />
+                <Tooltip 
+                  content={<CustomTooltip />}
+                  cursor={{ fill: 'transparent' }}
+                  wrapperStyle={{ outline: 'none' }}
+                />
+                <Bar 
+                  dataKey="hours" 
+                  radius={[4, 4, 0, 0]}
+                  maxBarSize={18}
+                >
+                  {chartData.map((entry, index) => (
+                    <Cell 
+                      key={`cell-${index}`} 
+                      fill={
+                        entry.hours > 0 
+                          ? 'url(#positiveGradient)' 
+                          : entry.hours < 0 
+                            ? 'url(#negativeGradient)' 
+                            : 'url(#zeroGradient)'
+                      }
+                      style={{ outline: 'none', cursor: 'default' }}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
           </ChartContainer>
         )}
         
-        <div className="mt-2 flex items-center justify-center gap-4 text-[10px] text-slate-500">
-          <div className="flex items-center gap-1">
-            <div className="w-2 h-2 rounded-sm bg-green-500" />
-            <span>Positivo</span>
+        {/* Legend */}
+        <div className="mt-3 pt-3 border-t border-slate-700/30 flex items-center justify-center gap-6 text-[10px]">
+          <div className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-sm bg-gradient-to-b from-emerald-500 to-emerald-600" />
+            <span className="text-slate-400">Positivo</span>
           </div>
-          <div className="flex items-center gap-1">
-            <div className="w-2 h-2 rounded-sm bg-red-500" />
-            <span>Negativo</span>
+          <div className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-sm bg-gradient-to-b from-rose-500 to-rose-600" />
+            <span className="text-slate-400">Negativo</span>
           </div>
-          <div className="flex items-center gap-1">
-            <div className="w-2 h-2 rounded-sm bg-slate-500" />
-            <span>Zero</span>
+          <div className="flex items-center gap-1.5">
+            <div className="w-2.5 h-2.5 rounded-sm bg-gradient-to-b from-slate-500 to-slate-600" />
+            <span className="text-slate-400">Zero</span>
           </div>
         </div>
       </CardContent>
