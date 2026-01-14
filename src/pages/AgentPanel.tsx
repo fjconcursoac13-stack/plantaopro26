@@ -27,6 +27,7 @@ import { ShiftCalendarOverview } from '@/components/agent-panel/ShiftCalendarOve
 import { BHReminderSettings } from '@/components/agent-panel/BHReminderSettings';
 import { BHEvolutionChart } from '@/components/agent-panel/BHEvolutionChart';
 import { BirthdayCard } from '@/components/agent-panel/BirthdayCard';
+import { ProfileCompletionAlert } from '@/components/agent-panel/ProfileCompletionAlert';
 import { LicenseWarningBanner } from '@/components/LicenseWarningBanner';
 import { TacticalRadar } from '@/components/dashboard/TacticalRadar';
 import { supabase } from '@/integrations/supabase/client';
@@ -279,6 +280,9 @@ export default function AgentPanel() {
                 </Button>
               </div>
             </div>
+
+            {/* Profile Completion Alert */}
+            <ProfileCompletionAlert agentId={agent.id} agentName={agent.name} />
 
             {/* Shift Alert Banner */}
             <ShiftAlertsBanner agentId={agent.id} />

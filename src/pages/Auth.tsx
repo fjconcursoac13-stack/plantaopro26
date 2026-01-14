@@ -16,20 +16,11 @@ import {
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Shield, Loader2, BadgeCheck, AlertTriangle, Lock, Eye, EyeOff, UserCheck, ArrowLeft, Home } from 'lucide-react';
-import { z } from 'zod';
 import { 
   validateCPF, 
-  formatCPF, 
-  formatMatricula, 
-  formatBirthDate, 
-  parseBirthDate, 
-  calculateAge,
-  formatPhone,
-  validatePhone
+  formatCPF
 } from '@/lib/validators';
 import { SavedCredentials, saveCredential, getAutoLoginCredential } from '@/components/auth/SavedCredentials';
-
-const passwordSchema = z.string().min(6, 'Senha deve ter pelo menos 6 caracteres');
 
 interface Unit {
   id: string;
@@ -50,24 +41,17 @@ export default function Auth() {
   const [foundAgent, setFoundAgent] = useState<{ name: string } | null>(null);
   const [isSearchingAgent, setIsSearchingAgent] = useState(false);
   
-  // Registration form state
+  // Registration form state - SIMPLIFIED (only essential fields)
   const [units, setUnits] = useState<Unit[]>([]);
   const [formData, setFormData] = useState({
     name: '',
     cpf: '',
-    matricula: '',
     unit_id: '',
     team: '',
-    birth_date: '',
-    blood_type: '',
-    phone: '',
-    address: '',
-    registerEmail: '',
     registerPassword: '',
     confirmPassword: '',
   });
   const [regErrors, setRegErrors] = useState<Record<string, string>>({});
-  const [calculatedAge, setCalculatedAge] = useState<number | null>(null);
   const [showRegPassword, setShowRegPassword] = useState(false);
   
   // Master admin state
@@ -89,19 +73,7 @@ export default function Auth() {
     fetchUnits();
   }, []);
 
-  // Calculate age when birth_date changes
-  useEffect(() => {
-    if (formData.birth_date.length === 10) {
-      const date = parseBirthDate(formData.birth_date);
-      if (date) {
-        setCalculatedAge(calculateAge(date));
-      } else {
-        setCalculatedAge(null);
-      }
-    } else {
-      setCalculatedAge(null);
-    }
-  }, [formData.birth_date]);
+  // No longer needed - birth_date moved to profile completion
 
   // Auto-login effect on page load
   const [autoLoginAttempted, setAutoLoginAttempted] = useState(false);
@@ -174,14 +146,6 @@ export default function Auth() {
       errors.cpf = 'CPF inválido';
     }
     
-    // Matricula validation (9 digits)
-    const matriculaNumbers = formData.matricula.replace(/\D/g, '');
-    if (!matriculaNumbers) {
-      errors.matricula = 'Matrícula é obrigatória';
-    } else if (matriculaNumbers.length !== 9) {
-      errors.matricula = 'Matrícula deve ter 9 dígitos';
-    }
-    
     // Unit validation
     if (!formData.unit_id) {
       errors.unit_id = 'Selecione uma unidade';
@@ -190,28 +154,6 @@ export default function Auth() {
     // Team validation
     if (!formData.team) {
       errors.team = 'Selecione uma equipe';
-    }
-    
-    // Blood type validation (REQUIRED)
-    if (!formData.blood_type) {
-      errors.blood_type = 'Tipo sanguíneo é obrigatório';
-    }
-    
-    // Birth date validation (optional but if provided must be valid)
-    if (formData.birth_date && formData.birth_date.length > 0) {
-      if (formData.birth_date.length !== 10) {
-        errors.birth_date = 'Data incompleta (DD-MM-AAAA)';
-      } else if (!parseBirthDate(formData.birth_date)) {
-        errors.birth_date = 'Data de nascimento inválida';
-      }
-    }
-    
-    // Phone validation (optional but if provided must be valid)
-    if (formData.phone) {
-      const phoneValidation = validatePhone(formData.phone);
-      if (!phoneValidation.valid) {
-        errors.phone = phoneValidation.message || 'Telefone inválido';
-      }
     }
     
     // Password validation
@@ -349,50 +291,32 @@ export default function Auth() {
     
     try {
       const cleanCpf = formData.cpf.replace(/\D/g, '');
-      const cleanMatricula = formData.matricula.replace(/\D/g, '');
 
-      // First, check if CPF or matricula already exists
+      // First, check if CPF already exists
       const { data: existingAgent, error: checkError } = await supabase
         .from('agents')
-        .select('id, cpf, matricula')
-        .or(`cpf.eq.${cleanCpf},matricula.eq.${cleanMatricula}`)
+        .select('id, cpf')
+        .eq('cpf', cleanCpf)
         .maybeSingle();
 
       if (checkError) throw checkError;
 
       if (existingAgent) {
-        if (existingAgent.cpf === cleanCpf) {
-          toast({
-            title: 'CPF já cadastrado!',
-            description: 'Redirecionando para a tela de login...',
-            variant: 'default',
-          });
+        toast({
+          title: 'CPF já cadastrado!',
+          description: 'Redirecionando para a tela de login...',
+          variant: 'default',
+        });
 
-          setTimeout(() => {
-            setCpf(formData.cpf);
-            setFormData(prev => ({ ...prev, cpf: '' }));
-            const loginTab = document.querySelector('[value="login"]') as HTMLButtonElement;
-            if (loginTab) loginTab.click();
-          }, 1500);
+        setTimeout(() => {
+          setCpf(formData.cpf);
+          setFormData(prev => ({ ...prev, cpf: '' }));
+          const loginTab = document.querySelector('[value="login"]') as HTMLButtonElement;
+          if (loginTab) loginTab.click();
+        }, 1500);
 
-          setIsSubmitting(false);
-          return;
-        } else {
-          setRegErrors({ matricula: 'Matrícula já cadastrada' });
-          setIsSubmitting(false);
-          return;
-        }
-      }
-
-      // Parse birth date if provided
-      let birthDate: string | null = null;
-      let age: number | null = null;
-      if (formData.birth_date.length === 10) {
-        const date = parseBirthDate(formData.birth_date);
-        if (date) {
-          birthDate = date.toISOString().split('T')[0];
-          age = calculateAge(date);
-        }
+        setIsSubmitting(false);
+        return;
       }
 
       // Generate email using CPF
@@ -422,20 +346,13 @@ export default function Auth() {
         throw new Error('Não foi possível estabelecer a sessão. Tente novamente.');
       }
 
-      // Create agent record (IMPORTANT: id must match auth user id)
+      // Create agent record with ONLY essential fields (IMPORTANT: id must match auth user id)
       const { error: agentError } = await supabase.from('agents').insert({
         id: sessionUserId,
         name: formData.name.toUpperCase().trim(),
         cpf: cleanCpf,
-        matricula: cleanMatricula,
         unit_id: formData.unit_id,
         team: formData.team,
-        birth_date: birthDate,
-        age: age,
-        blood_type: formData.blood_type,
-        email: formData.registerEmail || null,
-        phone: formData.phone || null,
-        address: formData.address || null,
       });
 
       if (agentError) {
@@ -460,18 +377,11 @@ export default function Auth() {
       setFormData({
         name: '',
         cpf: '',
-        matricula: '',
         unit_id: '',
         team: '',
-        birth_date: '',
-        blood_type: '',
-        phone: '',
-        address: '',
-        registerEmail: '',
         registerPassword: '',
         confirmPassword: '',
       });
-      setCalculatedAge(null);
       
       // Switch to login tab with CPF pre-filled
       setTimeout(() => {
@@ -562,18 +472,6 @@ export default function Auth() {
 
   const handleCPFChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, cpf: formatCPF(e.target.value) });
-  };
-
-  const handleMatriculaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, matricula: formatMatricula(e.target.value) });
-  };
-
-  const handleBirthDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, birth_date: formatBirthDate(e.target.value) });
-  };
-
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, phone: formatPhone(e.target.value) });
   };
 
   const handleLoginCPFChange = async (value: string) => {
@@ -864,40 +762,22 @@ export default function Auth() {
                       )}
                     </div>
 
-                    {/* CPF and Matricula */}
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="register-cpf" className="text-slate-300">CPF *</Label>
-                        <Input
-                          id="register-cpf"
-                          type="text"
-                          placeholder="000.000.000-00"
-                          value={formData.cpf}
-                          onChange={handleCPFChange}
-                          className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500"
-                          maxLength={14}
-                          required
-                        />
-                        {regErrors.cpf && (
-                          <p className="text-sm text-red-400">{regErrors.cpf}</p>
-                        )}
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="register-matricula" className="text-slate-300">Matrícula *</Label>
-                        <Input
-                          id="register-matricula"
-                          type="text"
-                          placeholder="000000000"
-                          value={formData.matricula}
-                          onChange={handleMatriculaChange}
-                          className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500"
-                          maxLength={9}
-                          required
-                        />
-                        {regErrors.matricula && (
-                          <p className="text-sm text-red-400">{regErrors.matricula}</p>
-                        )}
-                      </div>
+                    {/* CPF */}
+                    <div className="space-y-2">
+                      <Label htmlFor="register-cpf" className="text-slate-300">CPF *</Label>
+                      <Input
+                        id="register-cpf"
+                        type="text"
+                        placeholder="000.000.000-00"
+                        value={formData.cpf}
+                        onChange={handleCPFChange}
+                        className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500"
+                        maxLength={14}
+                        required
+                      />
+                      {regErrors.cpf && (
+                        <p className="text-sm text-red-400">{regErrors.cpf}</p>
+                      )}
                     </div>
 
                     {/* Unit and Team */}
@@ -954,57 +834,13 @@ export default function Auth() {
                       </div>
                     )}
 
-                    {/* Blood Type - REQUIRED */}
-                    <div className="space-y-2">
-                      <Label className="text-slate-300 flex items-center gap-1">
-                        Tipo Sanguíneo *
-                        <span className="text-red-400 text-xs">(obrigatório)</span>
-                      </Label>
-                      <Select
-                        value={formData.blood_type}
-                        onValueChange={(value) => setFormData({ ...formData, blood_type: value })}
-                      >
-                        <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white">
-                          <SelectValue placeholder="Selecione seu tipo sanguíneo" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-slate-800 border-slate-700">
-                          {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((type) => (
-                            <SelectItem key={type} value={type} className="text-white hover:bg-slate-700">
-                              {type}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {regErrors.blood_type && (
-                        <p className="text-sm text-red-400">{regErrors.blood_type}</p>
-                      )}
-                      <p className="text-xs text-amber-400">
-                        ⚠️ Informação essencial para emergências médicas durante o serviço.
+                    {/* Info about profile completion */}
+                    <div className="p-3 bg-amber-500/10 rounded-lg border border-amber-500/30 text-sm">
+                      <p className="text-amber-400 font-medium mb-1">⚡ Cadastro Rápido</p>
+                      <p className="text-slate-400 text-xs">
+                        Após o cadastro, você poderá completar seu perfil com matrícula, 
+                        tipo sanguíneo, telefone e outras informações importantes.
                       </p>
-                    </div>
-
-                    {/* Birth Date */}
-                    <div className="space-y-2">
-                      <Label htmlFor="register-birth" className="text-slate-300">Data de Nascimento</Label>
-                      <div className="flex gap-2 items-center">
-                        <Input
-                          id="register-birth"
-                          type="text"
-                          placeholder="DD-MM-AAAA"
-                          value={formData.birth_date}
-                          onChange={handleBirthDateChange}
-                          className="bg-slate-700/50 border-slate-600 text-white flex-1 placeholder:text-slate-500"
-                          maxLength={10}
-                        />
-                        {calculatedAge !== null && (
-                          <div className="px-3 py-2 bg-amber-500/20 rounded-lg text-sm font-medium text-amber-400 whitespace-nowrap">
-                            {calculatedAge} anos
-                          </div>
-                        )}
-                      </div>
-                      {regErrors.birth_date && (
-                        <p className="text-sm text-red-400">{regErrors.birth_date}</p>
-                      )}
                     </div>
 
                     {/* Password */}
@@ -1048,65 +884,6 @@ export default function Auth() {
                       {regErrors.confirmPassword && (
                         <p className="text-sm text-red-400">{regErrors.confirmPassword}</p>
                       )}
-                    </div>
-
-                    {/* Optional fields notice */}
-                    <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/30 text-sm">
-                      <p className="text-blue-400 font-medium mb-1">📋 Informações Opcionais (mas importantes)</p>
-                      <p className="text-slate-400 text-xs">
-                        Telefone, endereço e email são opcionais, mas recomendamos preencher. 
-                        Sua equipe poderá contatar você em emergências e você receberá notificações importantes.
-                      </p>
-                    </div>
-
-                    {/* Phone */}
-                    <div className="space-y-2">
-                      <Label htmlFor="register-phone" className="text-slate-300">Telefone / WhatsApp</Label>
-                      <Input
-                        id="register-phone"
-                        type="text"
-                        placeholder="(68) 99999-9999"
-                        value={formData.phone}
-                        onChange={handlePhoneChange}
-                        className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500"
-                        maxLength={15}
-                      />
-                      {regErrors.phone && (
-                        <p className="text-sm text-red-400">{regErrors.phone}</p>
-                      )}
-                      <p className="text-xs text-slate-500">
-                        DDD + número com 9 dígitos. Ex: (68) 99999-9999
-                      </p>
-                    </div>
-
-                    {/* Address */}
-                    <div className="space-y-2">
-                      <Label htmlFor="register-address" className="text-slate-300">Endereço</Label>
-                      <Input
-                        id="register-address"
-                        type="text"
-                        placeholder="Rua, número, bairro, cidade"
-                        value={formData.address}
-                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                        className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500"
-                        maxLength={255}
-                      />
-                      <p className="text-xs text-slate-500">
-                        Útil para colegas em caso de emergência.
-                      </p>
-                    </div>
-
-                    {/* Email (optional) */}
-                    <div className="space-y-2">
-                      <Label htmlFor="register-email" className="text-slate-300">Email (opcional)</Label>
-                      <Input
-                        id="register-email"
-                        type="email"
-                        placeholder="seu@email.com"
-                        value={formData.registerEmail}
-                        onChange={(e) => setFormData({ ...formData, registerEmail: e.target.value })}
-                        className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500"
-                      />
                     </div>
 
                     <Button 
