@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-export type ThemeType = 'tactical' | 'military' | 'cyber' | 'classic';
+export type ThemeType = 'tactical' | 'military' | 'cyber' | 'classic' | 'light';
 
 interface ThemeConfig {
   id: ThemeType;
@@ -16,6 +16,10 @@ interface ThemeConfig {
     border: string;
     gradientFrom: string;
     gradientTo: string;
+    foreground: string;
+    muted: string;
+    mutedForeground: string;
+    isLight: boolean;
   };
 }
 
@@ -34,6 +38,10 @@ export const themes: Record<ThemeType, ThemeConfig> = {
       border: '222 30% 18%',
       gradientFrom: '38 92% 50%',
       gradientTo: '25 95% 53%',
+      foreground: '210 40% 98%',
+      muted: '222 30% 12%',
+      mutedForeground: '215 20% 55%',
+      isLight: false,
     },
   },
   military: {
@@ -50,6 +58,10 @@ export const themes: Record<ThemeType, ThemeConfig> = {
       border: '160 20% 18%',
       gradientFrom: '142 76% 36%',
       gradientTo: '120 60% 30%',
+      foreground: '210 40% 98%',
+      muted: '160 20% 12%',
+      mutedForeground: '160 15% 55%',
+      isLight: false,
     },
   },
   cyber: {
@@ -66,6 +78,10 @@ export const themes: Record<ThemeType, ThemeConfig> = {
       border: '240 15% 18%',
       gradientFrom: '187 85% 53%',
       gradientTo: '280 85% 60%',
+      foreground: '210 40% 98%',
+      muted: '240 15% 12%',
+      mutedForeground: '240 10% 55%',
+      isLight: false,
     },
   },
   classic: {
@@ -82,6 +98,30 @@ export const themes: Record<ThemeType, ThemeConfig> = {
       border: '217 30% 18%',
       gradientFrom: '217 91% 50%',
       gradientTo: '200 85% 45%',
+      foreground: '210 40% 98%',
+      muted: '222 30% 12%',
+      mutedForeground: '217 20% 55%',
+      isLight: false,
+    },
+  },
+  light: {
+    id: 'light',
+    name: 'Claro',
+    description: 'Tema claro e profissional',
+    icon: '☀️',
+    colors: {
+      primary: '217 91% 50%', // blue
+      primaryForeground: '0 0% 100%',
+      accent: '217 91% 55%',
+      background: '0 0% 100%',
+      card: '210 20% 98%',
+      border: '214 32% 91%',
+      gradientFrom: '217 91% 50%',
+      gradientTo: '200 85% 55%',
+      foreground: '222 47% 11%',
+      muted: '210 40% 96%',
+      mutedForeground: '215 16% 47%',
+      isLight: true,
     },
   },
 };
@@ -110,19 +150,61 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const config = themes[theme];
     const root = document.documentElement;
     
+    // Core colors
     root.style.setProperty('--primary', config.colors.primary);
     root.style.setProperty('--primary-foreground', config.colors.primaryForeground);
     root.style.setProperty('--accent', config.colors.accent);
+    root.style.setProperty('--accent-foreground', config.colors.primaryForeground);
     root.style.setProperty('--background', config.colors.background);
+    root.style.setProperty('--foreground', config.colors.foreground);
     root.style.setProperty('--card', config.colors.card);
+    root.style.setProperty('--card-foreground', config.colors.foreground);
+    root.style.setProperty('--popover', config.colors.card);
+    root.style.setProperty('--popover-foreground', config.colors.foreground);
+    root.style.setProperty('--muted', config.colors.muted);
+    root.style.setProperty('--muted-foreground', config.colors.mutedForeground);
     root.style.setProperty('--border', config.colors.border);
+    root.style.setProperty('--input', config.colors.isLight ? config.colors.muted : config.colors.muted);
     root.style.setProperty('--ring', config.colors.primary);
+    
+    // Secondary colors
+    root.style.setProperty('--secondary', config.colors.muted);
+    root.style.setProperty('--secondary-foreground', config.colors.foreground);
+    
+    // Sidebar colors
+    root.style.setProperty('--sidebar-background', config.colors.isLight ? config.colors.card : config.colors.background);
+    root.style.setProperty('--sidebar-foreground', config.colors.isLight ? config.colors.mutedForeground : config.colors.foreground);
     root.style.setProperty('--sidebar-primary', config.colors.primary);
+    root.style.setProperty('--sidebar-primary-foreground', config.colors.primaryForeground);
+    root.style.setProperty('--sidebar-accent', config.colors.muted);
+    root.style.setProperty('--sidebar-accent-foreground', config.colors.foreground);
+    root.style.setProperty('--sidebar-border', config.colors.border);
+    root.style.setProperty('--sidebar-ring', config.colors.primary);
     
     // Update gradient
     root.style.setProperty('--gradient-primary', 
       `linear-gradient(135deg, hsl(${config.colors.gradientFrom}) 0%, hsl(${config.colors.gradientTo}) 100%)`
     );
+    
+    // Update gradient dark for light theme
+    if (config.colors.isLight) {
+      root.style.setProperty('--gradient-dark', 
+        `linear-gradient(180deg, hsl(${config.colors.background}) 0%, hsl(210 40% 96%) 100%)`
+      );
+    } else {
+      root.style.setProperty('--gradient-dark', 
+        `linear-gradient(180deg, hsl(${config.colors.card}) 0%, hsl(${config.colors.background}) 100%)`
+      );
+    }
+    
+    // Add/remove light theme class
+    if (config.colors.isLight) {
+      root.classList.add('light-theme');
+      root.classList.remove('dark');
+    } else {
+      root.classList.remove('light-theme');
+      root.classList.add('dark');
+    }
   }, [theme]);
 
   return (

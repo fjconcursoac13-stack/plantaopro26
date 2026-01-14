@@ -16,7 +16,6 @@ import {
 const navItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
   { icon: UserCircle, label: 'Meu Painel', href: '/agent-panel' },
-  { icon: Calendar, label: 'Escalas', href: '/shifts' },
   { icon: Users, label: 'Agentes', href: '/agents' },
   { icon: Clock, label: 'Banco de Horas', href: '/overtime' },
   { icon: MapPin, label: 'Unidades', href: '/units' },

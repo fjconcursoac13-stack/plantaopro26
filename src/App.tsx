@@ -15,7 +15,7 @@ import Agents from "./pages/Agents";
 import AgentProfile from "./pages/AgentProfile";
 import AgentPanel from "./pages/AgentPanel";
 import AgentProfileEdit from "./pages/AgentProfileEdit";
-import Shifts from "./pages/Shifts";
+
 import Overtime from "./pages/Overtime";
 import Units from "./pages/Units";
 import Settings from "./pages/Settings";
@@ -50,7 +50,7 @@ const App = () => (
                 <Route path="/unit/:unitId" element={<UnitDashboard />} />
                 <Route path="/agents" element={<Agents />} />
                 <Route path="/agents/:id" element={<AgentProfile />} />
-                <Route path="/shifts" element={<Shifts />} />
+                
                 <Route path="/overtime" element={<Overtime />} />
                 <Route path="/units" element={<Units />} />
                 <Route path="/settings" element={<Settings />} />
