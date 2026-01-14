@@ -25,6 +25,7 @@ import { AgentEventsCard } from '@/components/agent-panel/AgentEventsCard';
 import ShiftPlannerCard from '@/components/agent-panel/ShiftPlannerCard';
 import { ShiftCalendarOverview } from '@/components/agent-panel/ShiftCalendarOverview';
 import { BHReminderSettings } from '@/components/agent-panel/BHReminderSettings';
+import { BHEvolutionChart } from '@/components/agent-panel/BHEvolutionChart';
 import { BirthdayCard } from '@/components/agent-panel/BirthdayCard';
 import { LicenseWarningBanner } from '@/components/LicenseWarningBanner';
 import { supabase } from '@/integrations/supabase/client';
@@ -471,6 +472,7 @@ export default function AgentPanel() {
                   <div className="space-y-4">
                     <NotificationSettings />
                     <BHReminderSettings agentId={agent.id} />
+                    <BHEvolutionChart agentId={agent.id} />
                   </div>
                 </div>
               </TabsContent>
