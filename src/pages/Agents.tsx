@@ -456,9 +456,9 @@ export default function Agents() {
                             id="matricula"
                             value={formData.matricula}
                             onChange={(e) => setFormData({ ...formData, matricula: formatMatricula(e.target.value) })}
-                            placeholder="000000000"
+                            placeholder="000.000.000"
                             className="bg-input"
-                            maxLength={9}
+                            maxLength={11}
                             required
                           />
                           {formErrors.matricula && <p className="text-sm text-destructive">{formErrors.matricula}</p>}
