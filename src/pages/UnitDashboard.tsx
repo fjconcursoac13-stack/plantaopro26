@@ -18,7 +18,8 @@ import {
   Target, 
   Calendar,
   Building2,
-  User
+  User,
+  Clock
 } from 'lucide-react';
 
 interface Unit {
@@ -296,15 +297,15 @@ export default function UnitDashboard() {
             <div className="grid grid-cols-2 gap-2">
               <Card 
                 className="bg-slate-800/40 border-slate-700/50 hover:border-amber-500/40 cursor-pointer transition-colors group"
-                onClick={() => navigate('/shifts')}
+                onClick={() => navigate('/overtime')}
               >
                 <CardContent className="p-3 flex items-center gap-2.5">
-                  <div className="p-1.5 rounded bg-blue-500/20 text-blue-400 group-hover:scale-110 transition-transform">
-                    <Calendar className="h-4 w-4" />
+                  <div className="p-1.5 rounded bg-amber-500/20 text-amber-400 group-hover:scale-110 transition-transform">
+                    <Clock className="h-4 w-4" />
                   </div>
                   <div>
-                    <p className="text-xs font-medium text-white">Escalas</p>
-                    <p className="text-[10px] text-slate-400">Ver plantões</p>
+                    <p className="text-xs font-medium text-white">Banco de Horas</p>
+                    <p className="text-[10px] text-slate-400">Ver saldo BH</p>
                   </div>
                 </CardContent>
               </Card>
