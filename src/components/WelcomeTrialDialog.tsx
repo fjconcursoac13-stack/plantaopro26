@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Shield, Gift, Clock, CheckCircle, Sparkles } from 'lucide-react';
+import { Shield, Gift, Clock, CheckCircle, Sparkles, Users, Calendar, MessageCircle, Bell, Smartphone, ArrowRightLeft, CalendarDays, Droplet } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface WelcomeTrialDialogProps {
@@ -10,8 +10,20 @@ interface WelcomeTrialDialogProps {
 export function WelcomeTrialDialog({ agentName, onClose }: WelcomeTrialDialogProps) {
   const [progress, setProgress] = useState(100);
   const [isVisible, setIsVisible] = useState(false);
+  const [currentFeature, setCurrentFeature] = useState(0);
   
-  const AUTO_CLOSE_SECONDS = 15;
+  const AUTO_CLOSE_SECONDS = 20;
+
+  const features = [
+    { icon: Calendar, label: 'Escala Automática', desc: 'Geração e gestão de plantões 24x72' },
+    { icon: Clock, label: 'Banco de Horas', desc: 'Controle preciso de horas extras' },
+    { icon: Users, label: 'Equipe', desc: 'Visualize sua equipe e colegas' },
+    { icon: MessageCircle, label: 'Chat Integrado', desc: 'Comunicação em tempo real' },
+    { icon: ArrowRightLeft, label: 'Permutas', desc: 'Solicite trocas de plantão' },
+    { icon: CalendarDays, label: 'Agenda', desc: 'Organize compromissos pessoais' },
+    { icon: Bell, label: 'Notificações', desc: 'Alertas de plantões e eventos' },
+    { icon: Smartphone, label: 'PWA', desc: 'Instale como app no celular' },
+  ];
 
   useEffect(() => {
     // Fade in animation
@@ -25,6 +37,11 @@ export function WelcomeTrialDialog({ agentName, onClose }: WelcomeTrialDialogPro
       });
     }, 100);
 
+    // Feature rotation
+    const featureInterval = setInterval(() => {
+      setCurrentFeature((prev) => (prev + 1) % features.length);
+    }, 2500);
+
     // Auto close
     const closeTimer = setTimeout(() => {
       setIsVisible(false);
@@ -34,14 +51,17 @@ export function WelcomeTrialDialog({ agentName, onClose }: WelcomeTrialDialogPro
     return () => {
       clearTimeout(fadeInTimer);
       clearInterval(interval);
+      clearInterval(featureInterval);
       clearTimeout(closeTimer);
     };
-  }, [onClose]);
+  }, [onClose, features.length]);
 
   const handleClose = () => {
     setIsVisible(false);
     setTimeout(onClose, 300);
   };
+
+  const CurrentFeatureIcon = features[currentFeature].icon;
 
   return (
     <div 
@@ -52,118 +72,149 @@ export function WelcomeTrialDialog({ agentName, onClose }: WelcomeTrialDialogPro
     >
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/85 backdrop-blur-md"
         onClick={handleClose}
       />
 
       {/* Modal */}
       <div 
         className={cn(
-          "relative w-full max-w-md transform transition-all duration-500",
+          "relative w-full max-w-lg transform transition-all duration-500",
           isVisible ? "scale-100 translate-y-0" : "scale-95 translate-y-4"
         )}
       >
         {/* Glow effect */}
-        <div className="absolute -inset-1 bg-gradient-to-r from-amber-500/30 via-amber-600/20 to-amber-500/30 rounded-2xl blur-xl opacity-60" />
+        <div className="absolute -inset-2 bg-gradient-to-r from-amber-500/40 via-amber-600/30 to-amber-500/40 rounded-3xl blur-2xl opacity-60 animate-pulse" />
         
-        <div className="relative bg-gradient-to-b from-slate-800 via-slate-850 to-slate-900 rounded-2xl border border-amber-500/40 overflow-hidden shadow-2xl">
+        <div className="relative bg-gradient-to-b from-slate-800 via-slate-850 to-slate-900 rounded-2xl border border-amber-500/50 overflow-hidden shadow-2xl">
           {/* Top accent stripe */}
-          <div className="h-1 w-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600" />
+          <div className="h-1.5 w-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600" />
           
-          {/* Progress bar */}
-          <div className="h-0.5 bg-slate-700">
+          {/* Progress bar with timer */}
+          <div className="relative h-1 bg-slate-700">
             <div 
-              className="h-full bg-gradient-to-r from-amber-400 to-amber-600 transition-all duration-100"
+              className="h-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 transition-all duration-100"
               style={{ width: `${progress}%` }}
             />
+            <span className="absolute right-2 -top-0.5 text-[9px] text-slate-400 font-mono">
+              {Math.ceil(progress / 100 * AUTO_CLOSE_SECONDS)}s
+            </span>
           </div>
 
-          <div className="p-6 space-y-5">
+          <div className="p-6 space-y-4">
             {/* Icon Header */}
             <div className="flex justify-center">
               <div className="relative">
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/30">
-                  <Gift className="h-8 w-8 text-slate-900" />
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 flex items-center justify-center shadow-xl shadow-amber-500/40 animate-pulse">
+                  <Gift className="h-10 w-10 text-slate-900" />
                 </div>
-                <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-green-500 flex items-center justify-center border-2 border-slate-800">
-                  <Sparkles className="h-3 w-3 text-white" />
+                <div className="absolute -top-1 -right-1 w-7 h-7 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center border-2 border-slate-800 shadow-lg">
+                  <Sparkles className="h-4 w-4 text-white" />
                 </div>
               </div>
             </div>
 
             {/* Welcome Text */}
-            <div className="text-center space-y-2">
-              <h2 className="text-xl font-bold text-white">
+            <div className="text-center space-y-1">
+              <h2 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500">
                 Bem-vindo(a), {agentName.split(' ')[0]}! 🎉
               </h2>
               <p className="text-sm text-slate-300">
-                Seu cadastro foi realizado com sucesso!
+                Seu cadastro no <span className="font-bold text-amber-400">Plantão Pro</span> foi realizado com sucesso!
+              </p>
+            </div>
+
+            {/* App Description */}
+            <div className="bg-gradient-to-r from-slate-800/80 to-slate-700/40 rounded-xl p-4 border border-slate-600/50">
+              <p className="text-center text-sm text-slate-200 leading-relaxed">
+                <span className="font-bold text-amber-400">Plantão Pro</span> é um sistema completo de gestão de escalas 
+                desenvolvido especialmente para <span className="font-semibold text-amber-300">agentes de segurança pública</span> do 
+                <span className="font-semibold text-green-400"> ISE/ACRE</span>.
               </p>
             </div>
 
             {/* Trial Info Card */}
-            <div className="bg-gradient-to-r from-green-500/10 via-green-500/5 to-transparent rounded-xl p-4 border border-green-500/30">
+            <div className="bg-gradient-to-r from-green-500/15 via-green-500/10 to-emerald-500/5 rounded-xl p-4 border border-green-500/40 shadow-inner">
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center shrink-0">
-                  <CheckCircle className="h-5 w-5 text-green-400" />
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shrink-0 shadow-lg shadow-green-500/30">
+                  <CheckCircle className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-green-400 text-sm">
+                  <h3 className="font-bold text-green-400 text-base flex items-center gap-2">
                     🎁 Primeiro Mês GRÁTIS!
                   </h3>
-                  <p className="text-slate-300 text-xs mt-1 leading-relaxed">
-                    Aproveite todos os recursos do sistema sem custo durante o primeiro mês.
+                  <p className="text-slate-300 text-sm mt-1 leading-relaxed">
+                    Aproveite <span className="font-semibold text-white">todos os recursos</span> sem custo durante 30 dias.
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Pricing Info */}
-            <div className="bg-slate-800/60 rounded-xl p-4 border border-slate-700">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center">
-                    <Shield className="h-5 w-5 text-amber-400" />
+            {/* Animated Feature Showcase */}
+            <div className="bg-slate-800/60 rounded-xl p-4 border border-slate-700 overflow-hidden">
+              <p className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold mb-3 text-center">
+                Recursos Disponíveis
+              </p>
+              <div className="flex items-center justify-center gap-4 min-h-[60px]">
+                <div 
+                  key={currentFeature}
+                  className="flex flex-col items-center gap-2 animate-fade-in"
+                >
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500/20 to-amber-600/10 flex items-center justify-center border border-amber-500/30">
+                    <CurrentFeatureIcon className="h-7 w-7 text-amber-400" />
                   </div>
-                  <div>
-                    <p className="text-xs text-slate-400">Após o período gratuito</p>
-                    <p className="text-lg font-bold text-white">R$ 20,00<span className="text-sm text-slate-400 font-normal">/mês</span></p>
+                  <div className="text-center">
+                    <p className="font-bold text-white text-sm">{features[currentFeature].label}</p>
+                    <p className="text-slate-400 text-xs">{features[currentFeature].desc}</p>
                   </div>
                 </div>
               </div>
-              <p className="text-[11px] text-slate-500 mt-3 leading-relaxed">
-                Este valor ajuda a cobrir os custos de desenvolvimento e hospedagem, 
-                mantendo o aplicativo funcionando e sempre atualizado para você.
-              </p>
+              {/* Feature dots indicator */}
+              <div className="flex justify-center gap-1.5 mt-3">
+                {features.map((_, idx) => (
+                  <div 
+                    key={idx}
+                    className={cn(
+                      "w-1.5 h-1.5 rounded-full transition-all duration-300",
+                      idx === currentFeature 
+                        ? "w-4 bg-amber-500" 
+                        : "bg-slate-600"
+                    )}
+                  />
+                ))}
+              </div>
             </div>
 
-            {/* Features */}
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                { icon: Clock, label: 'Gestão de Escalas' },
-                { icon: Shield, label: 'Banco de Horas' },
-              ].map(({ icon: Icon, label }) => (
-                <div 
-                  key={label}
-                  className="flex items-center gap-2 px-3 py-2 bg-slate-800/40 rounded-lg border border-slate-700/50"
-                >
-                  <Icon className="h-3.5 w-3.5 text-amber-400" />
-                  <span className="text-[11px] text-slate-300 font-medium">{label}</span>
+            {/* Pricing Info */}
+            <div className="bg-gradient-to-r from-slate-800/80 to-slate-700/40 rounded-xl p-4 border border-slate-600">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-500/20">
+                    <Shield className="h-6 w-6 text-slate-900" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-400">Após o período gratuito</p>
+                    <p className="text-2xl font-black text-white">R$ 20<span className="text-base text-slate-400 font-normal">,00/mês</span></p>
+                  </div>
                 </div>
-              ))}
+              </div>
+              <p className="text-xs text-slate-400 mt-3 leading-relaxed">
+                Valor simbólico para cobrir custos de <span className="text-slate-300">desenvolvimento</span> e 
+                <span className="text-slate-300"> hospedagem</span>, mantendo o app sempre atualizado.
+              </p>
             </div>
 
             {/* CTA Button */}
             <button
               onClick={handleClose}
-              className="w-full py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-900 font-bold rounded-xl transition-all duration-200 shadow-lg shadow-amber-500/30 hover:shadow-amber-500/40 text-sm"
+              className="w-full py-4 bg-gradient-to-r from-amber-500 via-amber-500 to-amber-600 hover:from-amber-400 hover:via-amber-500 hover:to-amber-600 text-slate-900 font-black rounded-xl transition-all duration-200 shadow-xl shadow-amber-500/30 hover:shadow-amber-500/50 text-base tracking-wide hover:scale-[1.02] active:scale-[0.98]"
             >
-              Começar a Usar
+              🚀 Começar a Usar
             </button>
 
             {/* Auto close note */}
             <p className="text-center text-[10px] text-slate-500">
-              Esta tela fechará automaticamente
+              Toque em qualquer lugar ou aguarde para fechar automaticamente
             </p>
           </div>
         </div>
