@@ -3,10 +3,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { MessageCircle, Send, Users, Building2, Globe, Loader2, Trash2, MoreVertical, Circle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { MessageCircle, Send, Users, Building2, Globe, Loader2, Trash2, MoreVertical, Circle, Crown, Shield } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
@@ -36,6 +36,7 @@ interface ChatPanelProps {
   unitId: string | null;
   team: string | null;
   agentName: string;
+  agentRole?: string | null;
 }
 
 interface ChatRoom {
@@ -59,6 +60,8 @@ interface ChatMessage {
   };
 }
 
+type ChatType = 'team' | 'unit' | 'leaders' | 'all';
+
 const getRoleLabel = (role: string | null | undefined) => {
   switch (role) {
     case 'team_leader':
@@ -70,7 +73,39 @@ const getRoleLabel = (role: string | null | undefined) => {
   }
 };
 
-export function ChatPanel({ agentId, unitId, team, agentName }: ChatPanelProps) {
+const chatRoomConfig: Record<ChatType, { 
+  icon: React.ReactNode; 
+  label: string; 
+  description: string;
+  color: string;
+}> = {
+  team: {
+    icon: <Users className="h-4 w-4" />,
+    label: 'Minha Equipe',
+    description: 'Apenas membros da sua equipe',
+    color: 'text-amber-500',
+  },
+  unit: {
+    icon: <Building2 className="h-4 w-4" />,
+    label: 'Unidade',
+    description: 'Todas as equipes da unidade',
+    color: 'text-blue-500',
+  },
+  leaders: {
+    icon: <Crown className="h-4 w-4" />,
+    label: 'Liderança',
+    description: 'Chefes de equipe e apoios',
+    color: 'text-purple-500',
+  },
+  all: {
+    icon: <Globe className="h-4 w-4" />,
+    label: 'Sistema FASE',
+    description: 'Todas as unidades socioeducativas',
+    color: 'text-green-500',
+  },
+};
+
+export function ChatPanel({ agentId, unitId, team, agentName, agentRole }: ChatPanelProps) {
   const [activeRoom, setActiveRoom] = useState<ChatRoom | null>(null);
   const [rooms, setRooms] = useState<ChatRoom[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -78,17 +113,18 @@ export function ChatPanel({ agentId, unitId, team, agentName }: ChatPanelProps) 
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [chatType, setChatType] = useState<'team' | 'unit' | 'all'>('team');
+  const [chatType, setChatType] = useState<ChatType>('team');
   const [deletedMessageIds, setDeletedMessageIds] = useState<Set<string>>(new Set());
   const [onlineUsers, setOnlineUsers] = useState<OnlineUser[]>([]);
   const presenceChannelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
+
+  const isLeader = agentRole === 'team_leader' || agentRole === 'support';
 
   useEffect(() => {
     initializeChatRooms();
     fetchDeletedMessages();
   }, [agentId, unitId, team]);
 
-  // Subscribe to presence when activeRoom changes
   useEffect(() => {
     if (activeRoom) {
       fetchMessages();
@@ -115,7 +151,6 @@ export function ChatPanel({ agentId, unitId, team, agentName }: ChatPanelProps) 
   const subscribeToPresence = () => {
     if (!activeRoom) return;
 
-    // Remove existing presence channel if any
     if (presenceChannelRef.current) {
       supabase.removeChannel(presenceChannelRef.current);
     }
@@ -227,11 +262,26 @@ export function ChatPanel({ agentId, unitId, team, agentName }: ChatPanelProps) 
     try {
       setIsLoading(true);
       
-      // Fetch existing rooms or create them - using any to bypass type issues with new tables
+      // Build query for rooms this agent can access
+      let roomQuery = `type.eq.all`;
+      
+      if (unitId) {
+        roomQuery += `,and(type.eq.unit,unit_id.eq.${unitId})`;
+        
+        if (team) {
+          roomQuery += `,and(type.eq.team,unit_id.eq.${unitId},team.eq.${team})`;
+        }
+        
+        // Leaders room - only if agent is leader/support
+        if (isLeader) {
+          roomQuery += `,and(type.eq.leaders,unit_id.eq.${unitId})`;
+        }
+      }
+      
       const { data: existingRooms, error } = await (supabase as any)
         .from('chat_rooms')
         .select('*')
-        .or(`type.eq.all,and(type.eq.unit,unit_id.eq.${unitId}),and(type.eq.team,unit_id.eq.${unitId},team.eq.${team})`);
+        .or(roomQuery);
 
       if (error) throw error;
 
@@ -262,7 +312,6 @@ export function ChatPanel({ agentId, unitId, team, agentName }: ChatPanelProps) 
       if (unitId) {
         const unitRoom = allRooms.find(r => r.type === 'unit' && r.unit_id === unitId);
         if (!unitRoom) {
-          // Fetch unit name
           const { data: unitData } = await supabase
             .from('units')
             .select('name')
@@ -284,6 +333,33 @@ export function ChatPanel({ agentId, unitId, team, agentName }: ChatPanelProps) 
             allRooms = [...allRooms, newUnitRoom];
           }
         }
+
+        // Create leaders room if doesn't exist (only for leaders)
+        if (isLeader) {
+          const leadersRoom = allRooms.find(r => r.type === 'leaders' && r.unit_id === unitId);
+          if (!leadersRoom) {
+            const { data: unitData } = await supabase
+              .from('units')
+              .select('name')
+              .eq('id', unitId)
+              .single();
+
+            const { data: newLeadersRoom, error: createError } = await (supabase as any)
+              .from('chat_rooms')
+              .insert({
+                name: `Liderança - ${unitData?.name || 'Unidade'}`,
+                type: 'leaders',
+                unit_id: unitId,
+                team: null
+              })
+              .select()
+              .single();
+
+            if (!createError && newLeadersRoom) {
+              allRooms = [...allRooms, newLeadersRoom];
+            }
+          }
+        }
       }
 
       // Create global room if doesn't exist
@@ -292,7 +368,7 @@ export function ChatPanel({ agentId, unitId, team, agentName }: ChatPanelProps) 
         const { data: newGlobalRoom, error: createError } = await (supabase as any)
           .from('chat_rooms')
           .insert({
-            name: 'Todas as Unidades',
+            name: 'Sistema FASE - Todas as Unidades',
             type: 'all',
             unit_id: null,
             team: null
@@ -311,7 +387,7 @@ export function ChatPanel({ agentId, unitId, team, agentName }: ChatPanelProps) 
       const defaultRoom = allRooms.find(r => r.type === 'team') || allRooms[0];
       if (defaultRoom) {
         setActiveRoom(defaultRoom);
-        setChatType(defaultRoom.type as 'team' | 'unit' | 'all');
+        setChatType(defaultRoom.type as ChatType);
       }
 
       // Join the rooms
@@ -368,7 +444,6 @@ export function ChatPanel({ agentId, unitId, team, agentName }: ChatPanelProps) 
           filter: `room_id=eq.${activeRoom.id}`
         },
         async (payload) => {
-          // Fetch the sender info with team and role
           const { data: senderData } = await supabase
             .from('agents')
             .select('name, team, role')
@@ -382,7 +457,6 @@ export function ChatPanel({ agentId, unitId, team, agentName }: ChatPanelProps) 
 
           setMessages(prev => [...prev, newMsg]);
 
-          // Create notification for other users with more details
           if (payload.new.sender_id !== agentId) {
             const roleName = getRoleLabel(senderData?.role);
             const teamInfo = senderData?.team ? ` • Equipe ${senderData.team}` : '';
@@ -432,7 +506,7 @@ export function ChatPanel({ agentId, unitId, team, agentName }: ChatPanelProps) 
     }
   };
 
-  const switchRoom = (type: 'team' | 'unit' | 'all') => {
+  const switchRoom = (type: ChatType) => {
     setChatType(type);
     const room = rooms.find(r => r.type === type);
     if (room) {
@@ -440,17 +514,13 @@ export function ChatPanel({ agentId, unitId, team, agentName }: ChatPanelProps) 
     }
   };
 
-  const getRoomIcon = (type: string) => {
-    switch (type) {
-      case 'team':
-        return <Users className="h-4 w-4" />;
-      case 'unit':
-        return <Building2 className="h-4 w-4" />;
-      case 'all':
-        return <Globe className="h-4 w-4" />;
-      default:
-        return <MessageCircle className="h-4 w-4" />;
-    }
+  const getAvailableRoomTypes = (): ChatType[] => {
+    const types: ChatType[] = [];
+    if (team) types.push('team');
+    types.push('unit');
+    if (isLeader) types.push('leaders');
+    types.push('all');
+    return types;
   };
 
   if (isLoading) {
@@ -463,6 +533,9 @@ export function ChatPanel({ agentId, unitId, team, agentName }: ChatPanelProps) 
     );
   }
 
+  const availableTypes = getAvailableRoomTypes();
+  const currentConfig = chatRoomConfig[chatType];
+
   return (
     <Card className="bg-slate-800/50 border-slate-700 h-[600px] flex flex-col">
       <CardHeader className="pb-2 border-b border-slate-700">
@@ -470,6 +543,9 @@ export function ChatPanel({ agentId, unitId, team, agentName }: ChatPanelProps) 
           <CardTitle className="flex items-center gap-2 text-lg">
             <MessageCircle className="h-5 w-5 text-amber-500" />
             <span>Chat</span>
+            <Badge variant="outline" className={`text-xs ${currentConfig.color} border-current`}>
+              {currentConfig.label}
+            </Badge>
           </CardTitle>
           
           {/* Online Users Indicator */}
@@ -517,34 +593,47 @@ export function ChatPanel({ agentId, unitId, team, agentName }: ChatPanelProps) 
           </TooltipProvider>
         </div>
         
-        {/* Room Tabs */}
-        <Tabs value={chatType} onValueChange={(v) => switchRoom(v as 'team' | 'unit' | 'all')} className="mt-2">
-          <TabsList className="bg-slate-700/50 h-9">
-            {team && (
-              <TabsTrigger 
-                value="team" 
-                className="text-xs data-[state=active]:bg-amber-500 data-[state=active]:text-black"
-              >
-                <Users className="h-3 w-3 mr-1" />
-                Equipe
-              </TabsTrigger>
-            )}
-            <TabsTrigger 
-              value="unit"
-              className="text-xs data-[state=active]:bg-amber-500 data-[state=active]:text-black"
-            >
-              <Building2 className="h-3 w-3 mr-1" />
-              Unidade
-            </TabsTrigger>
-            <TabsTrigger 
-              value="all"
-              className="text-xs data-[state=active]:bg-amber-500 data-[state=active]:text-black"
-            >
-              <Globe className="h-3 w-3 mr-1" />
-              Geral
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+        {/* Room Selection - Organized buttons */}
+        <div className="mt-3 flex flex-wrap gap-2">
+          {availableTypes.map((type) => {
+            const config = chatRoomConfig[type];
+            const isActive = chatType === type;
+            
+            return (
+              <TooltipProvider key={type}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant={isActive ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => switchRoom(type)}
+                      className={`
+                        flex items-center gap-1.5 text-xs transition-all
+                        ${isActive 
+                          ? 'bg-amber-500 hover:bg-amber-600 text-black border-amber-500' 
+                          : `border-slate-600 hover:border-slate-500 ${config.color}`
+                        }
+                      `}
+                    >
+                      {config.icon}
+                      <span className="hidden sm:inline">{config.label}</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="bg-slate-800 border-slate-700">
+                    <p className="text-xs font-medium">{config.label}</p>
+                    <p className="text-xs text-slate-400">{config.description}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            );
+          })}
+        </div>
+
+        {/* Room Description */}
+        <p className="text-xs text-slate-400 mt-2 flex items-center gap-1">
+          {currentConfig.icon}
+          {currentConfig.description}
+        </p>
       </CardHeader>
 
       <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
@@ -564,22 +653,41 @@ export function ChatPanel({ agentId, unitId, team, agentName }: ChatPanelProps) 
                 const isOwn = msg.sender_id === agentId;
                 const roleLabel = getRoleLabel(msg.sender?.role);
                 const teamLabel = msg.sender?.team ? `Equipe ${msg.sender.team}` : null;
+                const isLeaderRole = msg.sender?.role === 'team_leader' || msg.sender?.role === 'support';
+                
                 return (
                   <div
                     key={msg.id}
                     className={`flex gap-2 group ${isOwn ? 'flex-row-reverse' : ''}`}
                   >
-                    <Avatar className="h-8 w-8 flex-shrink-0">
-                      <AvatarFallback className={`text-xs ${isOwn ? 'bg-amber-500 text-black' : 'bg-slate-600'}`}>
+                    <Avatar className={`h-8 w-8 flex-shrink-0 ${
+                      isLeaderRole ? 'ring-2 ring-amber-500/50' : ''
+                    }`}>
+                      <AvatarFallback className={`text-xs ${
+                        isOwn ? 'bg-amber-500 text-black' : 
+                        msg.sender?.role === 'team_leader' ? 'bg-amber-600 text-white' :
+                        msg.sender?.role === 'support' ? 'bg-blue-600 text-white' :
+                        'bg-slate-600'
+                      }`}>
                         {(msg.sender?.name || 'A').charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className={`max-w-[70%] ${isOwn ? 'items-end' : 'items-start'}`}>
                       {!isOwn && (
                         <div className="mb-1 px-1">
-                          <p className="text-xs font-medium text-slate-300">
-                            {msg.sender?.name || 'Agente'}
-                          </p>
+                          <div className="flex items-center gap-1">
+                            {msg.sender?.role === 'team_leader' && (
+                              <Crown className="h-3 w-3 text-amber-500" />
+                            )}
+                            {msg.sender?.role === 'support' && (
+                              <Shield className="h-3 w-3 text-blue-500" />
+                            )}
+                            <p className={`text-xs font-medium ${
+                              isLeaderRole ? 'text-amber-400' : 'text-slate-300'
+                            }`}>
+                              {msg.sender?.name || 'Agente'}
+                            </p>
+                          </div>
                           <p className="text-[10px] text-slate-500">
                             {roleLabel}
                             {teamLabel && ` • ${teamLabel}`}
