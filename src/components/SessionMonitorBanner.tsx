@@ -58,7 +58,14 @@ export function SessionMonitorBanner({
   const sessionStatus = useMemo(() => {
     if (isLoading) return 'loading';
     if (!user || !session) return 'no-session';
-    if (timeUntilExpiry !== null && timeUntilExpiry < 5 * 60 * 1000) return 'expiring-soon';
+
+    // Supabase tokens rotate frequently; warning too early creates false alarms.
+    // Only warn when it's actually very close to expiring.
+    if (timeUntilExpiry !== null) {
+      if (timeUntilExpiry === 0) return 'expired';
+      if (timeUntilExpiry < 60 * 1000) return 'expiring-soon';
+    }
+
     return 'active';
   }, [isLoading, user, session, timeUntilExpiry]);
 
@@ -66,15 +73,17 @@ export function SessionMonitorBanner({
     if (!isOnline) return 'bg-yellow-600';
     if (isRetrying) return 'bg-blue-600';
     if (lastError) return 'bg-red-600';
+    if (sessionStatus === 'expired' || sessionStatus === 'no-session') return 'bg-red-600';
     if (sessionStatus === 'expiring-soon') return 'bg-amber-600';
-    if (sessionStatus === 'no-session') return 'bg-red-600';
     return 'bg-emerald-600';
   };
 
   const getStatusIcon = () => {
     if (!isOnline) return <WifiOff className="h-4 w-4" />;
     if (isRetrying) return <RefreshCw className="h-4 w-4 animate-spin" />;
-    if (lastError || sessionStatus === 'no-session') return <ShieldOff className="h-4 w-4" />;
+    if (lastError || sessionStatus === 'no-session' || sessionStatus === 'expired') {
+      return <ShieldOff className="h-4 w-4" />;
+    }
     if (sessionStatus === 'expiring-soon') return <AlertTriangle className="h-4 w-4" />;
     return <Shield className="h-4 w-4" />;
   };
@@ -83,9 +92,10 @@ export function SessionMonitorBanner({
     if (!isOnline) return 'Offline';
     if (isRetrying) return `Reconectando (${retryCount})`;
     if (lastError) return 'Erro de autenticação';
+    if (sessionStatus === 'expired') return 'Sessão expirada';
     if (sessionStatus === 'no-session') return 'Sem sessão';
-    if (sessionStatus === 'expiring-soon') return 'Sessão expirando';
-    return 'Online';
+    if (sessionStatus === 'expiring-soon') return 'Sessão quase expirando';
+    return 'Sessão OK';
   };
 
   return (
