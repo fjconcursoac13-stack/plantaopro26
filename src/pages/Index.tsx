@@ -354,10 +354,9 @@ export default function Index() {
       errors.cpf = 'CPF inválido';
     }
     
+    // Matrícula is optional at registration - validated only if provided
     const matriculaNumbers = formData.matricula.replace(/\D/g, '');
-    if (!matriculaNumbers) {
-      errors.matricula = 'Matrícula é obrigatória';
-    } else if (matriculaNumbers.length !== 9) {
+    if (matriculaNumbers && matriculaNumbers.length !== 9) {
       errors.matricula = 'Matrícula deve ter 9 dígitos';
     }
     
@@ -395,23 +394,35 @@ export default function Index() {
     setIsSubmitting(true);
     
     try {
-      const matriculaClean = getMatriculaNumbers(formData.matricula);
-      const { data: existingAgent, error: checkError } = await supabase
+      const matriculaClean = formData.matricula ? getMatriculaNumbers(formData.matricula) : null;
+      
+      // Build query based on whether matricula is provided
+      let query = supabase
         .from('agents')
         .select('id, cpf, matricula')
-        .or(`cpf.eq.${formData.cpf.replace(/\D/g, '')},matricula.eq.${matriculaClean}`)
-        .maybeSingle();
+        .eq('cpf', formData.cpf.replace(/\D/g, ''));
+      
+      const { data: existingByCpf } = await query.maybeSingle();
 
-      if (checkError) throw checkError;
-
-      if (existingAgent) {
-        if (existingAgent.cpf === formData.cpf.replace(/\D/g, '')) {
-          setRegErrors({ cpf: 'CPF já cadastrado' });
-        } else {
-          setRegErrors({ matricula: 'Matrícula já cadastrada' });
-        }
+      if (existingByCpf) {
+        setRegErrors({ cpf: 'CPF já cadastrado' });
         setIsSubmitting(false);
         return;
+      }
+      
+      // Check matricula only if provided
+      if (matriculaClean) {
+        const { data: existingByMatricula } = await supabase
+          .from('agents')
+          .select('id, matricula')
+          .eq('matricula', matriculaClean)
+          .maybeSingle();
+          
+        if (existingByMatricula) {
+          setRegErrors({ matricula: 'Matrícula já cadastrada' });
+          setIsSubmitting(false);
+          return;
+        }
       }
 
       let birthDate: string | null = null;
@@ -456,7 +467,7 @@ export default function Index() {
         id: sessionUserId,
         name: formData.name.toUpperCase().trim(),
         cpf: cleanCpf,
-        matricula: getMatriculaNumbers(formData.matricula),
+        matricula: matriculaClean || null,
         unit_id: formData.unit_id,
         team: selectedTeam,
         birth_date: birthDate,
@@ -1285,7 +1296,7 @@ export default function Index() {
                 )}
               </div>
               <div className="space-y-1">
-                <Label className="text-slate-300 text-sm">Matrícula *</Label>
+                <Label className="text-slate-300 text-sm">Matrícula</Label>
                 <Input
                   value={formData.matricula}
                   onChange={(e) => setFormData({ ...formData, matricula: formatMatricula(e.target.value) })}
