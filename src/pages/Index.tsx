@@ -732,10 +732,9 @@ export default function Index() {
             {teams.map((team, index) => (
               <div
                 key={team}
-                className="animate-fade-in"
+                className="animate-fade-in-scale"
                 style={{
-                  animationDelay: `${index * 100}ms`,
-                  animationFillMode: 'backwards'
+                  animationDelay: `${index * 120}ms`,
                 }}
               >
                 <ThemedTeamCard
