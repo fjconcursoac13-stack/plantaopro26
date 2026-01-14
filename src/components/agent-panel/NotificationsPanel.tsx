@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Bell, MessageCircle, Calendar, ArrowRightLeft, Clock, AlertCircle, Check, Loader2 } from 'lucide-react';
+import { Bell, Calendar, Clock, AlertCircle, Check, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -12,63 +12,64 @@ interface NotificationsPanelProps {
   agentId: string;
 }
 
-interface NotificationItem {
+interface AlertItem {
   id: string;
-  type: string;
+  alert_type: string;
   title: string;
-  content: string | null;
+  message: string;
   is_read: boolean;
   created_at: string;
 }
 
 export function NotificationsPanel({ agentId }: NotificationsPanelProps) {
-  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [alerts, setAlerts] = useState<AlertItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetchNotifications();
-    const cleanup = subscribeToNotifications();
+    if (!agentId) return;
+    fetchAlerts();
+    const cleanup = subscribeToAlerts();
     return cleanup;
   }, [agentId]);
 
-  const fetchNotifications = async () => {
+  const fetchAlerts = async () => {
     try {
       setIsLoading(true);
-      const { data, error } = await (supabase as any)
-        .from('notifications')
-        .select('*')
+      const { data, error } = await supabase
+        .from('shift_alerts')
+        .select('id, alert_type, title, message, is_read, created_at')
         .eq('agent_id', agentId)
         .order('created_at', { ascending: false })
         .limit(20);
 
       if (error) throw error;
 
-      const items = (data || []) as NotificationItem[];
-      setNotifications(items);
+      const items = (data || []) as AlertItem[];
+      setAlerts(items);
       setUnreadCount(items.filter(n => !n.is_read).length);
     } catch (error) {
-      console.error('Error fetching notifications:', error);
+      console.error('Error fetching alerts:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const subscribeToNotifications = () => {
+  const subscribeToAlerts = () => {
     const channel = supabase
-      .channel(`notifications-${agentId}`)
+      .channel(`shift_alerts-${agentId}`)
       .on(
         'postgres_changes',
         {
           event: 'INSERT',
           schema: 'public',
-          table: 'notifications',
+          table: 'shift_alerts',
           filter: `agent_id=eq.${agentId}`
         },
         (payload) => {
-          const newNotification = payload.new as NotificationItem;
-          setNotifications(prev => [newNotification, ...prev]);
+          const newAlert = payload.new as AlertItem;
+          setAlerts(prev => [newAlert, ...prev]);
           setUnreadCount(prev => prev + 1);
         }
       )
@@ -81,49 +82,48 @@ export function NotificationsPanel({ agentId }: NotificationsPanelProps) {
 
   const markAsRead = async (id: string) => {
     try {
-      const { error } = await (supabase as any)
-        .from('notifications')
+      const { error } = await supabase
+        .from('shift_alerts')
         .update({ is_read: true })
         .eq('id', id);
 
       if (error) throw error;
 
-      setNotifications(prev =>
+      setAlerts(prev =>
         prev.map(n => n.id === id ? { ...n, is_read: true } : n)
       );
       setUnreadCount(prev => Math.max(0, prev - 1));
     } catch (error) {
-      console.error('Error marking notification as read:', error);
+      console.error('Error marking alert as read:', error);
     }
   };
 
   const markAllAsRead = async () => {
     try {
-      const { error } = await (supabase as any)
-        .from('notifications')
+      const { error } = await supabase
+        .from('shift_alerts')
         .update({ is_read: true })
         .eq('agent_id', agentId)
         .eq('is_read', false);
 
       if (error) throw error;
 
-      setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+      setAlerts(prev => prev.map(n => ({ ...n, is_read: true })));
       setUnreadCount(0);
     } catch (error) {
       console.error('Error marking all as read:', error);
     }
   };
 
-  const getNotificationIcon = (type: string) => {
+  const getAlertIcon = (type: string) => {
     switch (type) {
-      case 'message':
-        return <MessageCircle className="h-4 w-4 text-blue-400" />;
+      case 'shift_reminder':
       case 'shift':
         return <Calendar className="h-4 w-4 text-green-400" />;
-      case 'swap':
-        return <ArrowRightLeft className="h-4 w-4 text-purple-400" />;
+      case 'bh_reminder':
       case 'bh':
         return <Clock className="h-4 w-4 text-amber-400" />;
+      case 'conflict':
       case 'alert':
         return <AlertCircle className="h-4 w-4 text-red-400" />;
       default:
@@ -168,43 +168,43 @@ export function NotificationsPanel({ agentId }: NotificationsPanelProps) {
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-6 w-6 animate-spin text-amber-500" />
             </div>
-          ) : notifications.length === 0 ? (
+          ) : alerts.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-8 text-slate-400">
               <Bell className="h-8 w-8 mb-2 opacity-50" />
               <p className="text-sm">Nenhuma notificação</p>
             </div>
           ) : (
             <div className="divide-y divide-slate-700">
-              {notifications.map((notification) => (
+              {alerts.map((alert) => (
                 <div
-                  key={notification.id}
-                  onClick={() => !notification.is_read && markAsRead(notification.id)}
+                  key={alert.id}
+                  onClick={() => !alert.is_read && markAsRead(alert.id)}
                   className={`p-3 hover:bg-slate-700/50 cursor-pointer transition-colors ${
-                    !notification.is_read ? 'bg-slate-700/30' : ''
+                    !alert.is_read ? 'bg-slate-700/30' : ''
                   }`}
                 >
                   <div className="flex gap-3">
                     <div className="flex-shrink-0 mt-0.5">
-                      {getNotificationIcon(notification.type)}
+                      {getAlertIcon(alert.alert_type)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <p className={`text-sm font-medium truncate ${
-                          notification.is_read ? 'text-slate-300' : 'text-white'
+                          alert.is_read ? 'text-slate-300' : 'text-white'
                         }`}>
-                          {notification.title}
+                          {alert.title}
                         </p>
-                        {!notification.is_read && (
+                        {!alert.is_read && (
                           <div className="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0" />
                         )}
                       </div>
-                      {notification.content && (
+                      {alert.message && (
                         <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">
-                          {notification.content}
+                          {alert.message}
                         </p>
                       )}
                       <p className="text-xs text-slate-500 mt-1">
-                        {format(new Date(notification.created_at), "dd/MM HH:mm", { locale: ptBR })}
+                        {format(new Date(alert.created_at), "dd/MM HH:mm", { locale: ptBR })}
                       </p>
                     </div>
                   </div>
