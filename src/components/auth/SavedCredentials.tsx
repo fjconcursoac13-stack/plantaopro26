@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Trash2, User, Key } from 'lucide-react';
+import { Trash2, User, Key, KeyRound } from 'lucide-react';
 import { formatCPF } from '@/lib/validators';
 
 interface SavedCredential {
@@ -14,8 +14,9 @@ interface SavedCredential {
 
 interface SavedCredentialsProps {
   onSelectCredential: (cpf: string, password?: string) => void;
-  onSaveChange: (save: boolean) => void;
-  saveCredentials: boolean;
+  onSaveChange: (saveCpf: boolean, savePassword: boolean) => void;
+  saveCpf: boolean;
+  savePassword: boolean;
 }
 
 const STORAGE_KEY = 'plantao_pro_saved_credentials';
@@ -70,6 +71,15 @@ export function saveCredential(cpf: string, name?: string, password?: string) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(credentials));
 }
 
+export function removeCredentialPassword(cpf: string) {
+  const credentials = getSavedCredentials();
+  const cleanCpf = cpf.replace(/\D/g, '');
+  const updated = credentials.map(c => 
+    c.cpf === cleanCpf ? { ...c, password: undefined } : c
+  );
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+}
+
 export function removeCredential(cpf: string) {
   const credentials = getSavedCredentials();
   const cleanCpf = cpf.replace(/\D/g, '');
@@ -81,7 +91,7 @@ export function clearAllCredentials() {
   localStorage.removeItem(STORAGE_KEY);
 }
 
-export function SavedCredentials({ onSelectCredential, onSaveChange, saveCredentials }: SavedCredentialsProps) {
+export function SavedCredentials({ onSelectCredential, onSaveChange, saveCpf, savePassword }: SavedCredentialsProps) {
   const [credentials, setCredentials] = useState<SavedCredential[]>([]);
   
   useEffect(() => {
@@ -94,6 +104,12 @@ export function SavedCredentials({ onSelectCredential, onSaveChange, saveCredent
     setCredentials(getSavedCredentials());
   };
 
+  const handleRemovePassword = (cpf: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    removeCredentialPassword(cpf);
+    setCredentials(getSavedCredentials());
+  };
+
   const handleClearAll = () => {
     clearAllCredentials();
     setCredentials([]);
@@ -102,6 +118,19 @@ export function SavedCredentials({ onSelectCredential, onSaveChange, saveCredent
   const handleSelectCredential = (cred: SavedCredential) => {
     const password = cred.password ? deobfuscate(cred.password) : undefined;
     onSelectCredential(cred.cpf, password);
+  };
+
+  const handleSaveCpfChange = (checked: boolean) => {
+    // If unchecking CPF, also uncheck password
+    if (!checked) {
+      onSaveChange(false, false);
+    } else {
+      onSaveChange(true, savePassword);
+    }
+  };
+
+  const handleSavePasswordChange = (checked: boolean) => {
+    onSaveChange(saveCpf, checked);
   };
 
   return (
@@ -133,9 +162,14 @@ export function SavedCredentials({ onSelectCredential, onSaveChange, saveCredent
                   {formatCPF(cred.cpf).slice(0, 7)}***
                 </span>
                 {cred.password && (
-                  <span title="Senha salva">
-                    <Key className="h-3 w-3 text-primary" />
-                  </span>
+                  <button
+                    type="button"
+                    onClick={(e) => handleRemovePassword(cred.cpf, e)}
+                    className="text-primary hover:text-destructive transition-colors"
+                    title="Clique para remover a senha salva"
+                  >
+                    <Key className="h-3 w-3" />
+                  </button>
                 )}
                 {cred.name && (
                   <span className="text-xs text-muted-foreground">
@@ -146,6 +180,7 @@ export function SavedCredentials({ onSelectCredential, onSaveChange, saveCredent
                   type="button"
                   onClick={(e) => handleRemove(cred.cpf, e)}
                   className="opacity-0 group-hover:opacity-100 text-destructive hover:text-destructive/80 transition-opacity"
+                  title="Remover CPF"
                 >
                   <Trash2 className="h-3 w-3" />
                 </button>
@@ -155,15 +190,36 @@ export function SavedCredentials({ onSelectCredential, onSaveChange, saveCredent
         </div>
       )}
       
-      <div className="flex items-center gap-2">
-        <Checkbox
-          id="save-credentials"
-          checked={saveCredentials}
-          onCheckedChange={(checked) => onSaveChange(!!checked)}
-        />
-        <Label htmlFor="save-credentials" className="text-xs text-muted-foreground cursor-pointer">
-          Lembrar meu CPF e senha neste dispositivo
-        </Label>
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <Checkbox
+            id="save-cpf"
+            checked={saveCpf}
+            onCheckedChange={(checked) => handleSaveCpfChange(!!checked)}
+          />
+          <Label htmlFor="save-cpf" className="text-xs text-muted-foreground cursor-pointer flex items-center gap-1">
+            <User className="h-3 w-3" />
+            Lembrar meu CPF
+          </Label>
+        </div>
+        
+        <div className="flex items-center gap-2 ml-4">
+          <Checkbox
+            id="save-password"
+            checked={savePassword}
+            disabled={!saveCpf}
+            onCheckedChange={(checked) => handleSavePasswordChange(!!checked)}
+          />
+          <Label 
+            htmlFor="save-password" 
+            className={`text-xs cursor-pointer flex items-center gap-1 ${
+              saveCpf ? 'text-muted-foreground' : 'text-muted-foreground/50'
+            }`}
+          >
+            <KeyRound className="h-3 w-3" />
+            Lembrar minha senha também
+          </Label>
+        </div>
       </div>
     </div>
   );
