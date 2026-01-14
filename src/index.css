@@ -91,24 +91,52 @@
   }
 }
 
-/* Light theme overrides */
+/* Light theme overrides - Professional & High Contrast */
 .light-theme {
-  --shadow-glow: 0 0 40px hsl(217 91% 45% / 0.12);
-  --shadow-card: 0 4px 20px hsl(220 20% 50% / 0.08), 0 1px 3px hsl(220 20% 50% / 0.06);
-  --shadow-soft: 0 2px 12px hsl(220 20% 50% / 0.06);
+  /* Core semantic colors */
+  --background: 210 40% 98%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --primary: 217 91% 40%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 210 40% 92%;
+  --secondary-foreground: 222 47% 20%;
+  --muted: 210 40% 94%;
+  --muted-foreground: 215 25% 35%;
+  --accent: 217 91% 45%;
+  --accent-foreground: 0 0% 100%;
+  --border: 214 32% 80%;
+  --input: 214 32% 90%;
+  --ring: 217 91% 45%;
+  
+  /* Shadows for light mode */
+  --shadow-glow: 0 0 30px hsl(217 91% 45% / 0.1);
+  --shadow-card: 0 2px 8px hsl(220 20% 50% / 0.06), 0 1px 2px hsl(220 20% 50% / 0.04);
+  --shadow-soft: 0 1px 4px hsl(220 20% 50% / 0.05);
   --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(210 40% 99%) 100%);
+  --gradient-primary: linear-gradient(135deg, hsl(217 91% 40%) 0%, hsl(200 85% 45%) 100%);
+  --gradient-dark: linear-gradient(180deg, hsl(210 40% 98%) 0%, hsl(210 40% 96%) 100%);
   
-  /* Destructive - better visibility on light */
-  --destructive: 0 84% 40%;
+  /* Status colors - higher contrast */
+  --destructive: 0 72% 45%;
   --destructive-foreground: 0 0% 100%;
-  
-  /* Success - deeper green */
-  --success: 142 76% 32%;
+  --success: 142 70% 30%;
   --success-foreground: 0 0% 100%;
-  
-  /* Warning - darker amber */
-  --warning: 38 92% 45%;
+  --warning: 38 92% 40%;
   --warning-foreground: 0 0% 100%;
+  
+  /* Sidebar colors */
+  --sidebar-background: 0 0% 100%;
+  --sidebar-foreground: 222 47% 25%;
+  --sidebar-primary: 217 91% 40%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 210 40% 94%;
+  --sidebar-accent-foreground: 222 47% 11%;
+  --sidebar-border: 214 32% 85%;
+  --sidebar-ring: 217 91% 45%;
 }
 
 .light-theme body,
@@ -116,60 +144,165 @@
   background: hsl(var(--background));
 }
 
+/* Scrollbar for light theme */
 .light-theme ::-webkit-scrollbar-track {
   background: hsl(210 40% 96%);
 }
 
 .light-theme ::-webkit-scrollbar-thumb {
-  background: hsl(214 32% 80%);
+  background: hsl(214 32% 75%);
   border: 2px solid hsl(210 40% 96%);
+  border-radius: 4px;
 }
 
 .light-theme ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--primary) / 0.6);
+  background: hsl(217 91% 50%);
 }
 
-/* Light theme component overrides */
+/* Glass effects for light theme */
 .light-theme .glass {
-  @apply bg-white/90 backdrop-blur-xl;
+  @apply bg-white/95 backdrop-blur-xl shadow-sm;
 }
 
 .light-theme .glass-border {
-  @apply border border-border;
+  @apply border border-border/80;
 }
 
-/* Better text contrast for gradients in light mode */
+/* Text gradient with better contrast */
 .light-theme .text-gradient {
-  background-image: linear-gradient(135deg, hsl(217 91% 40%) 0%, hsl(200 85% 45%) 100%);
+  background-image: linear-gradient(135deg, hsl(217 91% 35%) 0%, hsl(200 85% 40%) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
 }
 
-/* Input fields with better visibility */
+/* Form elements with clear visibility */
 .light-theme input,
 .light-theme textarea,
 .light-theme select {
   background-color: hsl(0 0% 100%) !important;
-  border-color: hsl(214 32% 85%) !important;
+  border-color: hsl(214 32% 80%) !important;
+  color: hsl(222 47% 11%) !important;
+}
+
+.light-theme input::placeholder,
+.light-theme textarea::placeholder {
+  color: hsl(215 20% 55%) !important;
 }
 
 .light-theme input:focus,
 .light-theme textarea:focus,
 .light-theme select:focus {
-  border-color: hsl(var(--primary)) !important;
+  border-color: hsl(217 91% 45%) !important;
+  box-shadow: 0 0 0 2px hsl(217 91% 45% / 0.15) !important;
 }
 
-/* Card hover states */
-.light-theme [class*="hover:bg-"] {
-  transition: background-color 0.15s ease;
+/* Button improvements */
+.light-theme button[class*="bg-primary"] {
+  box-shadow: 0 1px 3px hsl(217 91% 40% / 0.25);
 }
 
-/* Badge improvements */
-.light-theme [data-slot="badge"] {
+.light-theme button[class*="bg-secondary"] {
+  border: 1px solid hsl(214 32% 85%);
+}
+
+/* Card improvements */
+.light-theme [class*="bg-card"],
+.light-theme .card {
+  box-shadow: 0 1px 3px hsl(220 20% 50% / 0.06);
+  border: 1px solid hsl(214 32% 90%);
+}
+
+/* Table styling */
+.light-theme table {
+  border-color: hsl(214 32% 88%);
+}
+
+.light-theme th {
+  background-color: hsl(210 40% 96%);
+  color: hsl(222 47% 20%);
+  font-weight: 600;
+}
+
+.light-theme td {
+  border-color: hsl(214 32% 92%);
+}
+
+.light-theme tr:hover {
+  background-color: hsl(210 40% 97%);
+}
+
+/* Badge improvements - better contrast */
+.light-theme [class*="bg-primary"][class*="text-primary-foreground"],
+.light-theme [class*="bg-destructive"],
+.light-theme [class*="bg-success"] {
   font-weight: 500;
 }
 
-/* Table row hover */
-.light-theme tr:hover {
+.light-theme [class*="border-primary"] {
+  border-color: hsl(217 91% 45%);
+}
+
+/* Dropdown and popover */
+.light-theme [role="menu"],
+.light-theme [role="listbox"],
+.light-theme [data-radix-popper-content-wrapper] > * {
+  background-color: hsl(0 0% 100%) !important;
+  border: 1px solid hsl(214 32% 85%) !important;
+  box-shadow: 0 4px 16px hsl(220 20% 50% / 0.12) !important;
+}
+
+.light-theme [role="menuitem"]:hover,
+.light-theme [role="option"]:hover,
+.light-theme [cmdk-item][aria-selected="true"] {
+  background-color: hsl(210 40% 95%) !important;
+}
+
+/* Dialog and sheet */
+.light-theme [role="dialog"] {
+  background-color: hsl(0 0% 100%);
+  border: 1px solid hsl(214 32% 88%);
+}
+
+/* Tabs styling */
+.light-theme [role="tablist"] {
+  background-color: hsl(210 40% 95%);
+  border: 1px solid hsl(214 32% 88%);
+}
+
+.light-theme [role="tab"][aria-selected="true"] {
+  background-color: hsl(0 0% 100%);
+  box-shadow: 0 1px 2px hsl(220 20% 50% / 0.08);
+}
+
+/* Avatar and icons */
+.light-theme [class*="text-muted-foreground"] {
+  color: hsl(215 25% 40%);
+}
+
+/* Progress bar */
+.light-theme [role="progressbar"] {
+  background-color: hsl(210 40% 92%);
+}
+
+/* Alert styling */
+.light-theme [role="alert"] {
+  border: 1px solid hsl(214 32% 85%);
+}
+
+/* Switch styling */
+.light-theme [role="switch"][data-state="unchecked"] {
+  background-color: hsl(214 32% 80%);
+}
+
+/* Accordion */
+.light-theme [data-state="open"] > [class*="AccordionTrigger"] {
   background-color: hsl(210 40% 97%);
+}
+
+/* Separator */
+.light-theme [data-orientation="horizontal"][class*="Separator"],
+.light-theme hr {
+  background-color: hsl(214 32% 88%);
 }
 
 @layer utilities {
