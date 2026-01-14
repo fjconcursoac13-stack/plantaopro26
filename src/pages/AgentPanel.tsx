@@ -34,8 +34,9 @@ import { SessionMonitorBanner } from '@/components/SessionMonitorBanner';
 import { DiagnosticReportButton } from '@/components/DiagnosticReportButton';
 import { SafeModeToggle } from '@/components/SafeModeToggle';
 import { ThemedPanelBackground } from '@/components/ThemedPanelBackground';
+import { WelcomeTrialDialog, shouldShowWelcomeToday, getRemainingTrialDays } from '@/components/WelcomeTrialDialog';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, Users, MessageCircle, Calendar, Clock, ArrowRightLeft, CalendarOff, Settings, User, CalendarDays, Calculator, LogOut, Home, WifiOff, RefreshCw, Droplet, Radar } from 'lucide-react';
+import { Loader2, Users, MessageCircle, Calendar, Clock, ArrowRightLeft, CalendarOff, Settings, User, CalendarDays, Calculator, LogOut, Home, WifiOff, RefreshCw, Droplet, Radar, Gift } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -49,6 +50,21 @@ export default function AgentPanel() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('equipe');
   const [hasShifts, setHasShifts] = useState(true);
+  const [showWelcomeDialog, setShowWelcomeDialog] = useState(false);
+
+  // Check for first access or daily welcome
+  useEffect(() => {
+    if (!agent?.name) return;
+    
+    // Check if we should show welcome today (once per day on first access)
+    if (shouldShowWelcomeToday()) {
+      // Small delay to ensure UI is ready
+      const timer = setTimeout(() => {
+        setShowWelcomeDialog(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [agent?.name]);
 
   // ESC key navigation - goes back to previous page or home
   useBackNavigation({ enabled: true, fallbackPath: '/' });
@@ -205,6 +221,7 @@ export default function AgentPanel() {
   };
 
   return (
+    <>
     <ThemedPanelBackground team={agent?.team || null} showTeamImage={true}>
       {/* License Warning Banner */}
       {showLicenseWarning && (
@@ -231,6 +248,19 @@ export default function AgentPanel() {
             <div className="flex items-center justify-between">
               <BackButton fallbackPath="/" />
               <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowWelcomeDialog(true)}
+                  className="border-amber-600/50 text-amber-400 hover:bg-amber-900/20 hover:border-amber-500"
+                  title={`${getRemainingTrialDays()} dias restantes`}
+                >
+                  <Gift className="h-4 w-4 mr-2" />
+                  <span className="hidden sm:inline">Trial</span>
+                  <span className="ml-1 text-xs bg-amber-500/20 px-1.5 py-0.5 rounded">
+                    {getRemainingTrialDays()}d
+                  </span>
+                </Button>
                 <Button
                   variant="outline"
                   size="sm"
@@ -469,5 +499,14 @@ export default function AgentPanel() {
         </main>
       </div>
     </ThemedPanelBackground>
+
+    {/* Welcome Trial Dialog */}
+    {showWelcomeDialog && agent && (
+      <WelcomeTrialDialog 
+        agentName={agent.name} 
+        onClose={() => setShowWelcomeDialog(false)} 
+      />
+    )}
+    </>
   );
 }
