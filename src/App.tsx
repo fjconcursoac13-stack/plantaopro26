@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { useGlobalNavigation } from "@/hooks/useGlobalNavigation";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { GlobalOfflineBanner } from "@/components/OfflineIndicator";
+import { ReconnectingGuard } from "@/components/ReconnectingGuard";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -45,28 +46,34 @@ const App = () => (
             <GlobalNavigationHandler>
               {/* Global Offline Banner */}
               <GlobalOfflineBanner />
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/agent-panel" element={<AgentPanel />} />
-                <Route path="/agent-profile" element={<AgentProfileEdit />} />
-                <Route path="/unit/:unitId" element={<UnitDashboard />} />
-                <Route path="/agents" element={<Agents />} />
-                <Route path="/agents/:id" element={<AgentProfile />} />
+              {/* Reconnecting Guard - Shows recovery screen instead of redirecting */}
+              <ReconnectingGuard
+                publicRoutes={['/', '/auth', '/install', '/debug/auth', '/master']}
+                maxWaitTime={10000}
+              >
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/agent-panel" element={<AgentPanel />} />
+                  <Route path="/agent-profile" element={<AgentProfileEdit />} />
+                  <Route path="/unit/:unitId" element={<UnitDashboard />} />
+                  <Route path="/agents" element={<Agents />} />
+                  <Route path="/agents/:id" element={<AgentProfile />} />
 
-                <Route path="/overtime" element={<Overtime />} />
-                <Route path="/units" element={<Units />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/admin" element={<Admin />} />
-                <Route path="/master" element={<Master />} />
-                <Route path="/install" element={<Install />} />
+                  <Route path="/overtime" element={<Overtime />} />
+                  <Route path="/units" element={<Units />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/admin" element={<Admin />} />
+                  <Route path="/master" element={<Master />} />
+                  <Route path="/install" element={<Install />} />
 
-                {/* Debug */}
-                <Route path="/debug/auth" element={<DebugAuth />} />
+                  {/* Debug */}
+                  <Route path="/debug/auth" element={<DebugAuth />} />
 
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </ReconnectingGuard>
               {/* PWA Install Prompt - Shows on all pages when installable */}
               <PWAInstallPrompt />
             </GlobalNavigationHandler>
