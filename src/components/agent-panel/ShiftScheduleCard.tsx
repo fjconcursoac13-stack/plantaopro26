@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,9 +10,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { toast } from 'sonner';
-import { Calendar as CalendarIcon, Plus, Loader2, RefreshCw, Check, X, AlertTriangle, Palmtree, ChevronDown, ChevronUp } from 'lucide-react';
+import { Calendar as CalendarIcon, Plus, Loader2, RefreshCw, Check, X, AlertTriangle, Palmtree, ChevronDown, ChevronUp, WifiOff, Wifi } from 'lucide-react';
 import { format, parseISO, isToday, isBefore, startOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { useOfflineCache, useNetworkStatus } from '@/hooks/useOfflineCache';
+import { OfflineIndicator } from '@/components/OfflineIndicator';
 
 interface ShiftScheduleCardProps {
   agentId: string;
@@ -34,6 +36,8 @@ interface AgentShift {
 export function ShiftScheduleCard({ agentId }: ShiftScheduleCardProps) {
   const [shifts, setShifts] = useState<AgentShift[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFromCache, setIsFromCache] = useState(false);
+  const [lastSync, setLastSync] = useState<Date | null>(null);
   const [showConfig, setShowConfig] = useState(false);
   const [firstShiftDate, setFirstShiftDate] = useState<Date | undefined>();
   const [isGenerating, setIsGenerating] = useState(false);
@@ -46,27 +50,69 @@ export function ShiftScheduleCard({ agentId }: ShiftScheduleCardProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
 
-  useEffect(() => {
-    fetchShifts();
-  }, [agentId]);
+  const { isOnline } = useNetworkStatus();
+  const cache = useOfflineCache<AgentShift[]>({
+    cacheKey: `shifts_${agentId}`,
+    expirationMinutes: 120,
+  });
 
-  const fetchShifts = async () => {
+  const fetchShifts = useCallback(async () => {
     try {
       setIsLoading(true);
-      const { data, error } = await supabase
-        .from('agent_shifts')
-        .select('*')
-        .eq('agent_id', agentId)
-        .order('shift_date', { ascending: true });
 
-      if (error) throw error;
-      setShifts((data || []) as AgentShift[]);
+      // Try network first if online
+      if (isOnline) {
+        const { data, error } = await supabase
+          .from('agent_shifts')
+          .select('*')
+          .eq('agent_id', agentId)
+          .order('shift_date', { ascending: true });
+
+        if (!error && data) {
+          setShifts(data as AgentShift[]);
+          setIsFromCache(false);
+          setLastSync(new Date());
+          cache.saveToCache(data as AgentShift[]);
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      // Fallback to cache
+      const cachedData = cache.getFromCache();
+      if (cachedData) {
+        setShifts(cachedData);
+        setIsFromCache(true);
+        setLastSync(cache.getCacheTimestamp());
+      }
     } catch (error) {
       console.error('Error fetching shifts:', error);
+      // Try cache on error
+      const cachedData = cache.getFromCache();
+      if (cachedData) {
+        setShifts(cachedData);
+        setIsFromCache(true);
+        setLastSync(cache.getCacheTimestamp());
+      }
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [agentId, isOnline, cache]);
+
+  useEffect(() => {
+    fetchShifts();
+  }, [fetchShifts]);
+
+  // Sync when coming back online
+  useEffect(() => {
+    const handleBackOnline = () => {
+      console.log('[ShiftSchedule] Back online, syncing...');
+      fetchShifts();
+    };
+
+    window.addEventListener('app:back-online', handleBackOnline);
+    return () => window.removeEventListener('app:back-online', handleBackOnline);
+  }, [fetchShifts]);
 
   const generateShifts = async () => {
     if (!firstShiftDate) {
@@ -177,6 +223,13 @@ export function ShiftScheduleCard({ agentId }: ShiftScheduleCardProps) {
               <CardTitle className="flex items-center gap-2 text-lg cursor-pointer hover:opacity-80 transition-opacity">
                 <CalendarIcon className="h-5 w-5 text-amber-500" />
                 <span>Escala de Plantões</span>
+                {/* Offline indicator */}
+                {isFromCache && (
+                  <span className="flex items-center gap-1 text-amber-400 text-[10px] font-normal">
+                    <WifiOff className="h-3 w-3" />
+                    offline
+                  </span>
+                )}
                 {isExpanded ? (
                   <ChevronUp className="h-4 w-4 text-muted-foreground ml-auto" />
                 ) : (

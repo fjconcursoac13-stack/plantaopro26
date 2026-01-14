@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { useGlobalNavigation } from "@/hooks/useGlobalNavigation";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
+import { GlobalOfflineBanner } from "@/components/OfflineIndicator";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -41,6 +42,8 @@ const App = () => (
         <BrowserRouter>
           <AuthProvider>
             <GlobalNavigationHandler>
+              {/* Global Offline Banner */}
+              <GlobalOfflineBanner />
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/auth" element={<Auth />} />
