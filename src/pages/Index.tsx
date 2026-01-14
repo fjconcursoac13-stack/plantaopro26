@@ -37,7 +37,7 @@ import { ForgotPasswordDialog } from '@/components/ForgotPasswordDialog';
 import { SavedCredentials, saveCredential, getAutoLoginCredential, getSavedCredentials } from '@/components/auth/SavedCredentials';
 import { ManageCredentialsDialog } from '@/components/auth/ManageCredentialsDialog';
 import { useTheme } from '@/contexts/ThemeContext';
-import { ThemedBackground } from '@/components/ThemedBackground';
+import { ThemedHomeBackground } from '@/components/ThemedHomeBackground';
 import { ThemedTeamCard } from '@/components/ThemedTeamCard';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
 import { ThemeSelector } from '@/components/ThemeSelector';
@@ -782,8 +782,8 @@ export default function Index() {
 
   return (
     <div className="h-[100dvh] flex flex-col bg-background relative overflow-hidden">
-      {/* Themed Animated Background */}
-      <ThemedBackground />
+      {/* Themed Animated Background with Rotating Team Images */}
+      <ThemedHomeBackground />
 
       {/* Security Status Bar - Fixed at top */}
       <div className="bg-slate-900/95 backdrop-blur-sm border-b border-primary/20 py-2 px-4 relative z-20 shrink-0">

@@ -22,7 +22,7 @@ import { TeamUnlinkDialog } from '@/components/agents/TeamUnlinkDialog';
 import { TransferRequestDialog } from '@/components/agents/TransferRequestDialog';
 import { LicenseWarningBanner } from '@/components/LicenseWarningBanner';
 import { useAgentProfile } from '@/hooks/useAgentProfile';
-import { TeamPanelBackground } from '@/components/TeamPanelBackground';
+import { ThemedPanelBackground } from '@/components/ThemedPanelBackground';
 import { Users, Clock, Calendar, TrendingUp, Loader2, MapPin, Shield, Building2, Settings, MessageSquare, ArrowLeft, WifiOff, RefreshCw } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -224,7 +224,7 @@ export default function Dashboard() {
   }
 
   return (
-    <TeamPanelBackground team={agent?.team || null} opacity={0.1}>
+    <ThemedPanelBackground team={agent?.team || null} showTeamImage={true}>
       <div className="min-h-screen flex">
       {/* License Warning Banner */}
       {showLicenseWarning && (
@@ -488,6 +488,6 @@ export default function Dashboard() {
         </main>
       </div>
     </div>
-    </TeamPanelBackground>
+    </ThemedPanelBackground>
   );
 }
