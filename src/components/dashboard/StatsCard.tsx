@@ -15,15 +15,14 @@ interface StatsCardProps {
 export function StatsCard({ title, value, icon: Icon, description, trend, loading }: StatsCardProps) {
   if (loading) {
     return (
-      <Card className="glass glass-border shadow-card">
-        <CardContent className="p-6">
-          <div className="flex items-start justify-between">
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-8 w-16" />
-              <Skeleton className="h-3 w-32" />
+      <Card className="glass glass-border">
+        <CardContent className="p-3">
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-9 w-9 rounded-lg" />
+            <div className="flex-1 space-y-1">
+              <Skeleton className="h-3 w-16" />
+              <Skeleton className="h-5 w-12" />
             </div>
-            <Skeleton className="h-12 w-12 rounded-xl" />
           </div>
         </CardContent>
       </Card>
@@ -31,26 +30,25 @@ export function StatsCard({ title, value, icon: Icon, description, trend, loadin
   }
 
   return (
-    <Card className="glass glass-border shadow-card hover:shadow-glow transition-all duration-300 group">
-      <CardContent className="p-6">
-        <div className="flex items-start justify-between">
-          <div className="space-y-1">
-            <p className="text-sm font-medium text-muted-foreground">{title}</p>
-            <p className="text-3xl font-bold text-foreground">{value}</p>
-            {description && (
-              <p className="text-xs text-muted-foreground">{description}</p>
-            )}
-            {trend && (
-              <p className={cn(
-                "text-xs font-medium",
-                trend.includes('+') || trend === 'positivo' ? 'text-success' : 'text-muted-foreground'
-              )}>
-                {trend}
-              </p>
-            )}
+    <Card className="glass glass-border hover:border-primary/30 transition-all duration-200 group">
+      <CardContent className="p-3">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors shrink-0">
+            <Icon className="h-5 w-5 text-primary" />
           </div>
-          <div className="p-3 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors">
-            <Icon className="h-6 w-6 text-primary" />
+          <div className="flex-1 min-w-0">
+            <p className="text-xs text-muted-foreground truncate">{title}</p>
+            <div className="flex items-baseline gap-2">
+              <p className="text-xl font-bold text-foreground">{value}</p>
+              {trend && (
+                <span className={cn(
+                  "text-[10px] font-medium",
+                  trend.includes('+') || trend === 'positivo' ? 'text-green-400' : 'text-muted-foreground'
+                )}>
+                  {trend}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </CardContent>

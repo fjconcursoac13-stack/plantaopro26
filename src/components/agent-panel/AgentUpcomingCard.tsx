@@ -141,82 +141,66 @@ export function AgentUpcomingCard({ agentId }: AgentUpcomingCardProps) {
 
   return (
     <Card className="bg-slate-800/50 border-slate-700">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <CalendarDays className="h-5 w-5 text-amber-500" />
+      <CardHeader className="pb-2 pt-3 px-3">
+        <CardTitle className="flex items-center gap-2 text-sm">
+          <CalendarDays className="h-4 w-4 text-amber-500" />
           Próximos Eventos
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="px-3 pb-3 space-y-3">
         {hasNoData ? (
-          <div className="text-center py-6 text-slate-400">
-            <AlertCircle className="h-8 w-8 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">Nenhum evento próximo</p>
+          <div className="text-center py-4 text-slate-400">
+            <AlertCircle className="h-6 w-6 mx-auto mb-1 opacity-50" />
+            <p className="text-xs">Nenhum evento próximo</p>
           </div>
         ) : (
           <>
-            {/* Upcoming Shifts */}
+            {/* Upcoming Shifts - Compact */}
             {shifts.length > 0 && (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium text-blue-400">
-                  <Calendar className="h-4 w-4" />
-                  <span>Próximos Plantões</span>
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5 text-xs font-medium text-blue-400">
+                  <Calendar className="h-3 w-3" />
+                  <span>Plantões</span>
                 </div>
-                <div className="space-y-1.5">
-                  {shifts.slice(0, 3).map(shift => (
+                <div className="space-y-1">
+                  {shifts.slice(0, 2).map(shift => (
                     <div 
                       key={shift.id} 
-                      className="flex items-center justify-between p-2 bg-blue-500/10 rounded-lg border border-blue-500/20"
+                      className="flex items-center justify-between p-1.5 bg-blue-500/10 rounded border border-blue-500/20"
                     >
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-white">
-                          {format(new Date(shift.shift_date + 'T12:00:00'), "dd 'de' MMM", { locale: ptBR })}
-                        </span>
-                        <span className="text-xs text-slate-400">
-                          {shift.start_time?.slice(0, 5)} - {shift.end_time?.slice(0, 5)}
-                        </span>
-                      </div>
-                      <Badge 
-                        variant="outline" 
-                        className={shift.status === 'scheduled' ? 'border-blue-500/50 text-blue-400' : 'border-green-500/50 text-green-400'}
-                      >
-                        {shift.status === 'scheduled' ? 'Agendado' : shift.status}
-                      </Badge>
+                      <span className="text-xs font-medium text-white">
+                        {format(new Date(shift.shift_date + 'T12:00:00'), "dd/MM", { locale: ptBR })}
+                      </span>
+                      <span className="text-[10px] text-slate-400">
+                        {shift.start_time?.slice(0, 5)}
+                      </span>
                     </div>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Upcoming Leaves */}
+            {/* Upcoming Leaves - Compact */}
             {leaves.length > 0 && (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium text-green-400">
-                  <Palmtree className="h-4 w-4" />
-                  <span>Folgas Programadas</span>
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5 text-xs font-medium text-green-400">
+                  <Palmtree className="h-3 w-3" />
+                  <span>Folgas</span>
                 </div>
-                <div className="space-y-1.5">
-                  {leaves.slice(0, 3).map(leave => (
+                <div className="space-y-1">
+                  {leaves.slice(0, 2).map(leave => (
                     <div 
                       key={leave.id} 
-                      className="flex items-center justify-between p-2 bg-green-500/10 rounded-lg border border-green-500/20"
+                      className="flex items-center justify-between p-1.5 bg-green-500/10 rounded border border-green-500/20"
                     >
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-white">
-                          {format(new Date(leave.start_date + 'T12:00:00'), "dd/MM", { locale: ptBR })}
-                          {leave.start_date !== leave.end_date && (
-                            <> - {format(new Date(leave.end_date + 'T12:00:00'), "dd/MM", { locale: ptBR })}</>
-                          )}
-                        </span>
-                        <span className="text-xs text-slate-400">
-                          {LEAVE_TYPE_LABELS[leave.leave_type] || leave.leave_type}
-                        </span>
-                      </div>
+                      <span className="text-xs font-medium text-white">
+                        {format(new Date(leave.start_date + 'T12:00:00'), "dd/MM", { locale: ptBR })}
+                      </span>
                       <Badge 
                         variant="outline" 
-                        className={leave.status === 'approved' ? 'border-green-500/50 text-green-400' : 'border-amber-500/50 text-amber-400'}
+                        className={`text-[10px] px-1 py-0 h-4 ${leave.status === 'approved' ? 'border-green-500/50 text-green-400' : 'border-amber-500/50 text-amber-400'}`}
                       >
-                        {leave.status === 'approved' ? 'Aprovada' : 'Pendente'}
+                        {leave.status === 'approved' ? '✓' : '⏳'}
                       </Badge>
                     </div>
                   ))}
@@ -224,29 +208,24 @@ export function AgentUpcomingCard({ agentId }: AgentUpcomingCardProps) {
               </div>
             )}
 
-            {/* Recent BH Entries */}
+            {/* Recent BH - Compact */}
             {bhEntries.length > 0 && (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium text-amber-400">
-                  <Clock className="h-4 w-4" />
-                  <span>Últimos Lançamentos BH</span>
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5 text-xs font-medium text-amber-400">
+                  <Clock className="h-3 w-3" />
+                  <span>BH Recente</span>
                 </div>
-                <div className="space-y-1.5">
-                  {bhEntries.slice(0, 3).map(bh => (
+                <div className="space-y-1">
+                  {bhEntries.slice(0, 2).map(bh => (
                     <div 
                       key={bh.id} 
-                      className="flex items-center justify-between p-2 bg-amber-500/10 rounded-lg border border-amber-500/20"
+                      className="flex items-center justify-between p-1.5 bg-amber-500/10 rounded border border-amber-500/20"
                     >
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-white">
-                          {format(new Date(bh.created_at), "dd/MM/yyyy", { locale: ptBR })}
-                        </span>
-                        <span className="text-xs text-slate-400 truncate max-w-[120px]">
-                          {bh.description || 'Sem descrição'}
-                        </span>
-                      </div>
+                      <span className="text-xs text-slate-300 truncate max-w-[100px]">
+                        {bh.description || format(new Date(bh.created_at), "dd/MM", { locale: ptBR })}
+                      </span>
                       <Badge 
-                        className={bh.operation_type === 'credit' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}
+                        className={`text-[10px] px-1 py-0 h-4 ${bh.operation_type === 'credit' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}
                       >
                         {bh.operation_type === 'credit' ? '+' : '-'}{bh.hours}h
                       </Badge>
@@ -256,32 +235,25 @@ export function AgentUpcomingCard({ agentId }: AgentUpcomingCardProps) {
               </div>
             )}
 
-            {/* Upcoming Events/Agenda */}
+            {/* Events - Compact */}
             {events.length > 0 && (
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm font-medium text-purple-400">
-                  <CalendarDays className="h-4 w-4" />
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5 text-xs font-medium text-purple-400">
+                  <CalendarDays className="h-3 w-3" />
                   <span>Agenda</span>
                 </div>
-                <div className="space-y-1.5">
-                  {events.slice(0, 3).map(event => (
+                <div className="space-y-1">
+                  {events.slice(0, 2).map(event => (
                     <div 
                       key={event.id} 
-                      className="flex items-center justify-between p-2 bg-purple-500/10 rounded-lg border border-purple-500/20"
+                      className="flex items-center justify-between p-1.5 bg-purple-500/10 rounded border border-purple-500/20"
                     >
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-white">
-                          {format(new Date(event.event_date + 'T12:00:00'), "dd 'de' MMM", { locale: ptBR })}
-                        </span>
-                        <span className="text-xs text-slate-400 truncate max-w-[120px]">
-                          {event.title}
-                        </span>
-                      </div>
-                      {event.start_time && (
-                        <Badge variant="outline" className="border-purple-500/50 text-purple-400">
-                          {event.start_time.slice(0, 5)}
-                        </Badge>
-                      )}
+                      <span className="text-xs text-slate-300 truncate max-w-[100px]">
+                        {event.title}
+                      </span>
+                      <span className="text-[10px] text-purple-400">
+                        {format(new Date(event.event_date + 'T12:00:00'), "dd/MM", { locale: ptBR })}
+                      </span>
                     </div>
                   ))}
                 </div>

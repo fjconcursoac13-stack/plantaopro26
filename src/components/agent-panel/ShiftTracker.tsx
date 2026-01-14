@@ -42,40 +42,25 @@ function CountdownToShift({ shift }: { shift: CurrentShift }) {
 
   const formatUnit = (value: number) => value.toString().padStart(2, '0');
 
+  // Compact inline countdown for the card
   return (
-    <div className="p-4 bg-gradient-to-br from-primary/10 via-primary/5 to-slate-800 rounded-xl border border-primary/20">
-      <div className="flex items-center gap-2 mb-3">
-        <Clock className="h-4 w-4 text-primary" />
-        <span className="text-sm text-primary font-medium">Próximo Plantão</span>
+    <div className="grid grid-cols-4 gap-1">
+      <div className="bg-slate-800/80 rounded px-2 py-1 text-center border border-slate-700">
+        <span className="font-mono text-lg font-bold text-primary block">{formatUnit(countdown.days)}</span>
+        <span className="text-[8px] text-slate-500 uppercase">Dias</span>
       </div>
-      
-      <p className="text-lg font-bold text-white capitalize mb-4">
-        {format(parseISO(shift.shift_date), "EEEE, dd 'de' MMMM", { locale: ptBR })}
-      </p>
-      
-      {/* Countdown Display */}
-      <div className="grid grid-cols-4 gap-2">
-        <div className="bg-slate-800/80 rounded-lg p-2 text-center border border-slate-700">
-          <span className="font-mono text-2xl font-bold text-primary block">{formatUnit(countdown.days)}</span>
-          <span className="text-[10px] text-slate-500 uppercase">Dias</span>
-        </div>
-        <div className="bg-slate-800/80 rounded-lg p-2 text-center border border-slate-700">
-          <span className="font-mono text-2xl font-bold text-primary block">{formatUnit(countdown.hours)}</span>
-          <span className="text-[10px] text-slate-500 uppercase">Horas</span>
-        </div>
-        <div className="bg-slate-800/80 rounded-lg p-2 text-center border border-slate-700">
-          <span className="font-mono text-2xl font-bold text-primary block">{formatUnit(countdown.minutes)}</span>
-          <span className="text-[10px] text-slate-500 uppercase">Min</span>
-        </div>
-        <div className="bg-slate-800/80 rounded-lg p-2 text-center border border-slate-700">
-          <span className="font-mono text-2xl font-bold text-primary block animate-pulse">{formatUnit(countdown.seconds)}</span>
-          <span className="text-[10px] text-slate-500 uppercase">Seg</span>
-        </div>
+      <div className="bg-slate-800/80 rounded px-2 py-1 text-center border border-slate-700">
+        <span className="font-mono text-lg font-bold text-primary block">{formatUnit(countdown.hours)}</span>
+        <span className="text-[8px] text-slate-500 uppercase">Hrs</span>
       </div>
-      
-      <p className="text-center text-sm text-primary mt-3 font-mono">
-        Início às {shift.start_time}
-      </p>
+      <div className="bg-slate-800/80 rounded px-2 py-1 text-center border border-slate-700">
+        <span className="font-mono text-lg font-bold text-primary block">{formatUnit(countdown.minutes)}</span>
+        <span className="text-[8px] text-slate-500 uppercase">Min</span>
+      </div>
+      <div className="bg-slate-800/80 rounded px-2 py-1 text-center border border-slate-700">
+        <span className="font-mono text-lg font-bold text-primary block animate-pulse">{formatUnit(countdown.seconds)}</span>
+        <span className="text-[8px] text-slate-500 uppercase">Seg</span>
+      </div>
     </div>
   );
 }
@@ -393,161 +378,140 @@ export function ShiftTracker({ agentId, compact = false }: ShiftTrackerProps) {
 
   return (
     <Card className="bg-slate-800/50 border-slate-700 overflow-hidden">
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-2 pt-3 px-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <Timer className="h-5 w-5 text-amber-500" />
+          <CardTitle className="flex items-center gap-2 text-sm">
+            <Timer className="h-4 w-4 text-amber-500" />
             <span>Controle de Plantão</span>
           </CardTitle>
-          <div className="flex items-center gap-2">
-            {isOnDuty && (
-              <Badge className="bg-green-500 text-white animate-pulse">
-                EM SERVIÇO
-              </Badge>
-            )}
-          </div>
+          {isOnDuty && (
+            <Badge className="bg-green-500 text-white text-[10px] px-1.5 py-0.5 animate-pulse">
+              EM SERVIÇO
+            </Badge>
+          )}
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="px-3 pb-3 space-y-3">
         {isOnDuty && currentShift ? (
-          <div className="space-y-4">
-            {/* Professional Timer Display */}
-            <div className="bg-gradient-to-br from-green-500/20 via-emerald-500/10 to-slate-800 border border-green-500/30 rounded-xl p-5">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
+          <div className="space-y-3">
+            {/* Compact Timer Display */}
+            <div className="bg-gradient-to-br from-green-500/20 via-emerald-500/10 to-slate-800 border border-green-500/30 rounded-lg p-3">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-1.5">
                   <div className="relative">
-                    <Play className="h-5 w-5 text-green-400" />
-                    <span className="absolute -top-1 -right-1 h-2 w-2 bg-green-400 rounded-full animate-ping" />
+                    <Play className="h-4 w-4 text-green-400" />
+                    <span className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 bg-green-400 rounded-full animate-ping" />
                   </div>
-                  <span className="text-green-400 font-medium">Plantão em Andamento</span>
+                  <span className="text-xs text-green-400 font-medium">Ativo</span>
                 </div>
-                <Badge variant="outline" className="text-green-400 border-green-500/50 font-mono">
+                <Badge variant="outline" className="text-[10px] text-green-400 border-green-500/50 font-mono px-1.5 py-0">
                   24h
                 </Badge>
               </div>
               
-              {/* Digital Clock Style Timer */}
-              <div className="bg-slate-900/80 rounded-xl p-4 mb-4 border border-slate-700/50">
-                <p className="text-xs text-center text-amber-400 mb-2 uppercase tracking-wider">Tempo Decorrido</p>
-                <div className="flex items-center justify-center gap-1">
-                  <div className="bg-slate-800 rounded-lg px-3 py-2 border border-amber-500/30">
-                    <span className="font-mono text-3xl font-bold text-amber-400">{formatUnit(timeElapsed.hours)}</span>
-                  </div>
-                  <span className="text-2xl font-bold text-amber-400 animate-pulse">:</span>
-                  <div className="bg-slate-800 rounded-lg px-3 py-2 border border-amber-500/30">
-                    <span className="font-mono text-3xl font-bold text-amber-400">{formatUnit(timeElapsed.minutes)}</span>
-                  </div>
-                  <span className="text-2xl font-bold text-amber-400 animate-pulse">:</span>
-                  <div className="bg-slate-800 rounded-lg px-3 py-2 border border-amber-500/30">
-                    <span className="font-mono text-3xl font-bold text-amber-400">{formatUnit(timeElapsed.seconds)}</span>
-                  </div>
+              {/* Compact Digital Timer */}
+              <div className="bg-slate-900/80 rounded-lg p-2 mb-2 border border-slate-700/50">
+                <div className="flex items-center justify-center gap-0.5">
+                  <span className="font-mono text-2xl font-bold text-amber-400">{formatUnit(timeElapsed.hours)}</span>
+                  <span className="text-xl font-bold text-amber-400 animate-pulse">:</span>
+                  <span className="font-mono text-2xl font-bold text-amber-400">{formatUnit(timeElapsed.minutes)}</span>
+                  <span className="text-xl font-bold text-amber-400 animate-pulse">:</span>
+                  <span className="font-mono text-2xl font-bold text-amber-400">{formatUnit(timeElapsed.seconds)}</span>
                 </div>
-                <div className="flex justify-center gap-6 mt-1 text-[10px] text-slate-500 uppercase tracking-wider">
-                  <span>Horas</span>
-                  <span>Min</span>
-                  <span>Seg</span>
-                </div>
+                <p className="text-[10px] text-center text-slate-500 uppercase">Decorrido</p>
               </div>
 
-              {/* Remaining Time */}
-              <div className="bg-slate-900/60 rounded-xl p-4 border border-slate-700/50">
-                <p className="text-xs text-center text-green-400 mb-2 uppercase tracking-wider">Tempo Restante</p>
-                <div className="flex items-center justify-center gap-1">
-                  <div className="bg-slate-800/80 rounded-lg px-2.5 py-1.5 border border-green-500/20">
-                    <span className="font-mono text-2xl font-bold text-green-400">{formatUnit(timeRemaining.hours)}</span>
-                  </div>
-                  <span className="text-xl font-bold text-green-400 animate-pulse">:</span>
-                  <div className="bg-slate-800/80 rounded-lg px-2.5 py-1.5 border border-green-500/20">
-                    <span className="font-mono text-2xl font-bold text-green-400">{formatUnit(timeRemaining.minutes)}</span>
-                  </div>
-                  <span className="text-xl font-bold text-green-400 animate-pulse">:</span>
-                  <div className="bg-slate-800/80 rounded-lg px-2.5 py-1.5 border border-green-500/20">
-                    <span className="font-mono text-2xl font-bold text-green-400">{formatUnit(timeRemaining.seconds)}</span>
-                  </div>
-                </div>
+              {/* Compact Remaining */}
+              <div className="flex items-center justify-between px-2 py-1.5 bg-slate-900/60 rounded border border-slate-700/50">
+                <span className="text-[10px] text-green-400 uppercase">Restante</span>
+                <span className="font-mono text-sm font-bold text-green-400">
+                  {formatUnit(timeRemaining.hours)}:{formatUnit(timeRemaining.minutes)}:{formatUnit(timeRemaining.seconds)}
+                </span>
               </div>
               
-              {/* Progress Bar */}
-              <div className="mt-4 space-y-2">
-                <div className="relative h-4 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
+              {/* Compact Progress Bar */}
+              <div className="mt-2">
+                <div className="relative h-2 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
                   <div 
                     className="absolute inset-y-0 left-0 bg-gradient-to-r from-amber-500 to-green-500 transition-all duration-1000 rounded-full"
                     style={{ width: `${progress}%` }}
                   />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-xs font-bold text-white drop-shadow-md">
-                      {progress.toFixed(1)}%
-                    </span>
-                  </div>
                 </div>
-                <div className="flex justify-between text-xs text-slate-400">
-                  <span>Início: {currentShift.start_time}</span>
-                  <span>Término: {format(addHours(parseISO(currentShift.shift_date + 'T' + currentShift.start_time), 24), 'HH:mm')}</span>
+                <div className="flex justify-between text-[10px] text-slate-500 mt-1">
+                  <span>{currentShift.start_time}</span>
+                  <span className="font-medium">{progress.toFixed(0)}%</span>
+                  <span>{format(addHours(parseISO(currentShift.shift_date + 'T' + currentShift.start_time), 24), 'HH:mm')}</span>
                 </div>
               </div>
             </div>
           </div>
         ) : (
-          <div className="py-4">
+          <div>
             {nextShift ? (
-              <div className="space-y-4">
-                {/* Countdown to next shift */}
-                <CountdownToShift shift={nextShift} />
+              <div className="space-y-2">
+                {/* Compact Countdown */}
+                <div className="p-3 bg-gradient-to-br from-primary/10 via-primary/5 to-slate-800 rounded-lg border border-primary/20">
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <Clock className="h-3 w-3 text-primary" />
+                    <span className="text-[10px] text-primary font-medium uppercase">Próximo Plantão</span>
+                  </div>
+                  <p className="text-sm font-bold text-white capitalize mb-2">
+                    {format(parseISO(nextShift.shift_date), "EEE, dd/MM", { locale: ptBR })} às {nextShift.start_time}
+                  </p>
+                  <CountdownToShift shift={nextShift} />
+                </div>
                 
-                {/* Reminder Toggle */}
-                <div className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg border border-slate-600/50">
-                  <div className="flex items-center gap-2">
+                {/* Compact Reminder Toggle */}
+                <div className="flex items-center justify-between p-2 bg-slate-700/30 rounded border border-slate-600/50">
+                  <div className="flex items-center gap-1.5">
                     {reminderEnabled ? (
-                      <Bell className="h-4 w-4 text-primary" />
+                      <Bell className="h-3 w-3 text-primary" />
                     ) : (
-                      <BellOff className="h-4 w-4 text-slate-400" />
+                      <BellOff className="h-3 w-3 text-slate-400" />
                     )}
-                    <span className="text-sm text-slate-300">Lembrete 1h antes</span>
+                    <span className="text-xs text-slate-300">Lembrete 1h antes</span>
                   </div>
                   <Switch
                     checked={reminderEnabled}
                     onCheckedChange={toggleReminder}
-                    className="data-[state=checked]:bg-primary"
+                    className="data-[state=checked]:bg-primary scale-75"
                   />
                 </div>
               </div>
             ) : (
-              <div className="flex flex-col items-center gap-2 text-slate-400 py-4">
-                <AlertCircle className="h-8 w-8" />
-                <p>Nenhum plantão agendado</p>
-                <p className="text-xs">Configure sua escala na aba Plantões</p>
+              <div className="flex flex-col items-center gap-1 text-slate-400 py-3">
+                <AlertCircle className="h-6 w-6" />
+                <p className="text-xs">Nenhum plantão agendado</p>
               </div>
             )}
           </div>
         )}
 
+        {/* Compact Next Shift Info */}
         {nextShift && isOnDuty && (
-          <div className="pt-3 border-t border-slate-700">
-            <p className="text-xs text-slate-400 mb-1">Próximo plantão:</p>
-            <p className="text-sm text-white">
-              {format(parseISO(nextShift.shift_date), "dd/MM/yyyy", { locale: ptBR })} às {nextShift.start_time}
-            </p>
+          <div className="pt-2 border-t border-slate-700">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-slate-400">Próximo:</span>
+              <span className="text-xs text-white font-mono">
+                {format(parseISO(nextShift.shift_date), "dd/MM", { locale: ptBR })} {nextShift.start_time}
+              </span>
+            </div>
           </div>
         )}
 
-        {/* Recent Completed Shifts */}
+        {/* Compact Completed Shifts */}
         {recentCompletedShifts.length > 0 && !isOnDuty && (
-          <div className="pt-3 border-t border-slate-700">
-            <div className="flex items-center gap-2 mb-2">
-              <CheckCircle2 className="h-4 w-4 text-green-400" />
-              <p className="text-sm font-medium text-slate-300">Plantões Cumpridos</p>
+          <div className="pt-2 border-t border-slate-700">
+            <div className="flex items-center gap-1.5 mb-1">
+              <CheckCircle2 className="h-3 w-3 text-green-400" />
+              <span className="text-[10px] font-medium text-slate-300">Cumpridos</span>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {recentCompletedShifts.slice(0, 3).map((shift) => (
-                <Badge key={shift.id} variant="outline" className="text-green-400 border-green-500/50">
+            <div className="flex flex-wrap gap-1">
+              {recentCompletedShifts.slice(0, 4).map((shift) => (
+                <Badge key={shift.id} variant="outline" className="text-[10px] px-1.5 py-0 text-green-400 border-green-500/50">
                   {format(parseISO(shift.shift_date), "dd/MM", { locale: ptBR })}
                 </Badge>
               ))}
-              {recentCompletedShifts.length > 3 && (
-                <Badge variant="outline" className="text-slate-400 border-slate-600">
-                  +{recentCompletedShifts.length - 3} mais
-                </Badge>
-              )}
             </div>
           </div>
         )}
