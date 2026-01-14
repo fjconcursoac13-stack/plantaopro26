@@ -48,7 +48,7 @@ function use3DTilt() {
 
 export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
   const { playSound } = useSoundEffects();
-  const { theme, resolvedTheme, themeConfig } = useTheme();
+  const { theme, resolvedTheme } = useTheme();
   const { ref, transform, glare, handleMouseMove, handleMouseLeave } = use3DTilt();
   const hasPlayedHover = useRef(false);
   
@@ -61,7 +61,6 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
   // Extract color name from class like "text-blue-400" -> "blue"
   const colorMatch = colors.color.match(/text-(\w+)-/);
   const colorName = colorMatch ? colorMatch[1] : 'blue';
-  const glowColor = `rgba(var(--${colorName}-500, 59, 130, 246), 0.4)`;
   const gradient = `from-${colorName}-500 via-${colorName}-600 to-${colorName}-800`;
 
   const handleClick = () => {
@@ -95,16 +94,16 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
         {/* Animated glow ring on hover */}
         <div 
           className="absolute -inset-0.5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-md"
-          style={{ background: `linear-gradient(135deg, ${config.glowColor}, transparent, ${config.glowColor})` }}
+          style={{ background: `linear-gradient(135deg, ${colors.glowColor.replace('shadow-', 'var(--').replace('/30', ', 0.3)')}, transparent, ${colors.glowColor.replace('shadow-', 'var(--').replace('/30', ', 0.3)')})` }}
         />
         
         {/* Pulsing outer glow */}
         <div 
-          className="absolute -inset-2 rounded-xl opacity-0 group-hover:opacity-60 transition-opacity duration-700 blur-xl animate-pulse"
-          style={{ 
-            background: config.glowColor,
-            animationDuration: '2s',
-          }}
+          className={cn(
+            "absolute -inset-2 rounded-xl opacity-0 group-hover:opacity-60 transition-opacity duration-700 blur-xl animate-pulse",
+            colors.glowColor
+          )}
+          style={{ animationDuration: '2s' }}
         />
         
         {/* Glare effect */}
@@ -119,31 +118,29 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
         <div 
           className={cn(
             "relative overflow-hidden rounded-lg md:rounded-xl backdrop-blur-sm",
-            "bg-gradient-to-br from-slate-800/95 via-slate-850/95 to-slate-900/98",
+            "bg-gradient-to-br",
+            colors.bgGradient,
             "border-2 transition-all duration-300",
-            config.borderColor,
+            colors.borderColor,
             "group-hover:border-opacity-100 group-hover:shadow-xl",
           )}
         >
           {/* Top gradient stripe */}
-          <div className={cn("h-0.5 md:h-1.5 w-full bg-gradient-to-r", config.gradient)} />
+          <div className={cn("h-0.5 md:h-1.5 w-full bg-gradient-to-r", gradient)} />
           
           {/* Animated scan line */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
             <div 
-              className="absolute w-full h-12 -translate-y-full animate-scan"
-              style={{
-                background: `linear-gradient(180deg, transparent 0%, ${config.glowColor} 50%, transparent 100%)`,
-                animationDuration: '2s',
-              }}
+              className={cn("absolute w-full h-12 -translate-y-full animate-scan", colors.glowColor)}
+              style={{ animationDuration: '2s' }}
             />
           </div>
           
           {/* Corner accents - Hidden on mobile for cleaner look */}
-          <div className={cn("absolute top-2 left-2 w-3 h-3 md:w-4 md:h-4 border-l-2 border-t-2 transition-colors hidden sm:block", config.borderColor, "group-hover:border-opacity-100")} />
-          <div className={cn("absolute top-2 right-2 w-3 h-3 md:w-4 md:h-4 border-r-2 border-t-2 transition-colors hidden sm:block", config.borderColor, "group-hover:border-opacity-100")} />
-          <div className={cn("absolute bottom-2 left-2 w-3 h-3 md:w-4 md:h-4 border-l-2 border-b-2 transition-colors hidden sm:block", config.borderColor, "group-hover:border-opacity-100")} />
-          <div className={cn("absolute bottom-2 right-2 w-3 h-3 md:w-4 md:h-4 border-r-2 border-b-2 transition-colors hidden sm:block", config.borderColor, "group-hover:border-opacity-100")} />
+          <div className={cn("absolute top-2 left-2 w-3 h-3 md:w-4 md:h-4 border-l-2 border-t-2 transition-colors hidden sm:block", colors.borderColor, "group-hover:border-opacity-100")} />
+          <div className={cn("absolute top-2 right-2 w-3 h-3 md:w-4 md:h-4 border-r-2 border-t-2 transition-colors hidden sm:block", colors.borderColor, "group-hover:border-opacity-100")} />
+          <div className={cn("absolute bottom-2 left-2 w-3 h-3 md:w-4 md:h-4 border-l-2 border-b-2 transition-colors hidden sm:block", colors.borderColor, "group-hover:border-opacity-100")} />
+          <div className={cn("absolute bottom-2 right-2 w-3 h-3 md:w-4 md:h-4 border-r-2 border-b-2 transition-colors hidden sm:block", colors.borderColor, "group-hover:border-opacity-100")} />
           
           {/* Status dots */}
           <div className="absolute top-2 right-2 flex gap-0.5 md:gap-1">
@@ -158,9 +155,9 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
                 {/* Outer ring animation - Hidden on mobile */}
                 <div className={cn(
                   "absolute -inset-2 rounded-full border opacity-30 group-hover:opacity-60 transition-opacity animate-[spin_10s_linear_infinite] hidden md:block",
-                  config.borderColor
+                  colors.borderColor
                 )}>
-                  <div className={cn("absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-gradient-to-r", config.gradient)} />
+                  <div className={cn("absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-gradient-to-r", gradient)} />
                 </div>
                 
                 {/* Icon background */}
@@ -168,7 +165,7 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
                   className={cn(
                     "relative w-10 h-10 sm:w-11 sm:h-11 md:w-14 md:h-14 rounded-full flex items-center justify-center",
                     "bg-gradient-to-br shadow-xl",
-                    config.gradient,
+                    gradient,
                     "border-2 border-white/20 group-hover:border-white/40 transition-all duration-300"
                   )}
                 >
@@ -186,24 +183,24 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
               
               {/* Team identifier */}
               <div className="flex items-center gap-1 mb-0.5 md:mb-1">
-                <Star className={cn("h-2 w-2 md:h-2.5 md:w-2.5", config.textColor)} />
+                <Star className={cn("h-2 w-2 md:h-2.5 md:w-2.5", colors.color)} />
                 <h3 className={cn(
                   "text-sm sm:text-base md:text-lg font-black tracking-[0.15em] md:tracking-[0.2em]",
-                  config.textColor
+                  colors.color
                 )}>
                   {team}
                 </h3>
-                <Star className={cn("h-2 w-2 md:h-2.5 md:w-2.5", config.textColor)} />
+                <Star className={cn("h-2 w-2 md:h-2.5 md:w-2.5", colors.color)} />
               </div>
               
               {/* Description */}
               <p className="text-slate-300 text-[8px] sm:text-[9px] md:text-[10px] text-center font-semibold tracking-wider mb-0.5 md:mb-1 leading-tight">
-                {config.description}
+                {descriptions.description}
               </p>
               
               {/* Slogan - Hidden on smallest screens */}
-              <p className={cn("text-[7px] sm:text-[8px] md:text-[9px] text-center font-medium tracking-widest opacity-80 hidden xs:block", config.textColor)}>
-                {config.slogan}
+              <p className={cn("text-[7px] sm:text-[8px] md:text-[9px] text-center font-medium tracking-widest opacity-80 hidden xs:block", colors.color)}>
+                {descriptions.slogan}
               </p>
               
               {/* Action button */}
@@ -212,7 +209,7 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
                   "flex items-center justify-center gap-1.5 md:gap-2 px-2 py-1.5 md:px-3 md:py-2.5 rounded-md md:rounded-lg",
                   "bg-gradient-to-r from-slate-700/80 to-slate-800/80",
                   "border transition-all duration-300",
-                  config.borderColor,
+                  colors.borderColor,
                   "group-hover:from-slate-600/80 group-hover:to-slate-700/80",
                   "group-hover:shadow-lg"
                 )}>
@@ -220,7 +217,7 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
                   <span className="text-[8px] sm:text-[9px] md:text-[10px] font-bold text-white tracking-[0.1em] md:tracking-[0.15em] uppercase">
                     Acessar Sistema
                   </span>
-                  <Zap className={cn("w-2.5 h-2.5 md:w-3 md:h-3 opacity-0 group-hover:opacity-100 transition-opacity", config.textColor)} />
+                  <Zap className={cn("w-2.5 h-2.5 md:w-3 md:h-3 opacity-0 group-hover:opacity-100 transition-opacity", colors.color)} />
                 </div>
               </div>
             </div>
@@ -229,7 +226,7 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
           {/* Bottom accent line */}
           <div className={cn(
             "h-0.5 w-full bg-gradient-to-r opacity-50 group-hover:opacity-100 transition-opacity",
-            config.gradient
+            gradient
           )} />
         </div>
       </div>
