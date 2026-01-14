@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,7 +21,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Shield, Loader2, AlertTriangle, Eye, EyeOff, UserCheck, Lock, Sword, Target, Users, Palette, Fingerprint } from 'lucide-react';
+import { Loader2, AlertTriangle, Eye, EyeOff, UserCheck, Lock, Palette, Fingerprint, Shield, Users } from 'lucide-react';
 import { 
   validateCPF, 
   formatCPF, 
@@ -40,6 +41,7 @@ import { ThemedTeamCard } from '@/components/ThemedTeamCard';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
 import { ThemeSelector } from '@/components/ThemeSelector';
 import { useBiometricAuth } from '@/hooks/useBiometricAuth';
+import { getThemeAssets } from '@/lib/themeAssets';
 
 interface Unit {
   id: string;
@@ -47,63 +49,15 @@ interface Unit {
   municipality: string;
 }
 
-interface TeamConfig {
-  icon: any;
-  color: string;
-  bgGradient: string;
-  borderColor: string;
-  glowColor: string;
-  description: string;
-  slogan: string;
-}
-
-const teamConfigs: Record<string, TeamConfig> = {
-  ALFA: {
-    icon: Shield,
-    color: 'text-blue-400',
-    bgGradient: 'from-blue-900/80 via-blue-800/60 to-slate-900/90',
-    borderColor: 'border-blue-500/60',
-    glowColor: 'shadow-blue-500/30',
-    description: 'Primeira Linha de Defesa',
-    slogan: 'Proteção e Vigilância',
-  },
-  BRAVO: {
-    icon: Sword,
-    color: 'text-red-400',
-    bgGradient: 'from-red-900/80 via-red-800/60 to-slate-900/90',
-    borderColor: 'border-red-500/60',
-    glowColor: 'shadow-red-500/30',
-    description: 'Força de Resposta Rápida',
-    slogan: 'Ação e Determinação',
-  },
-  CHARLIE: {
-    icon: Target,
-    color: 'text-green-400',
-    bgGradient: 'from-green-900/80 via-green-800/60 to-slate-900/90',
-    borderColor: 'border-green-500/60',
-    glowColor: 'shadow-green-500/30',
-    description: 'Operações Especializadas',
-    slogan: 'Precisão e Eficiência',
-  },
-  DELTA: {
-    icon: Users,
-    color: 'text-purple-400',
-    bgGradient: 'from-purple-900/80 via-purple-800/60 to-slate-900/90',
-    borderColor: 'border-purple-500/60',
-    glowColor: 'shadow-purple-500/30',
-    description: 'Suporte e Coordenação',
-    slogan: 'União e Estratégia',
-  },
-};
-
-const teams = ['ALFA', 'BRAVO', 'CHARLIE', 'DELTA'];
+const teams = ['ALFA', 'BRAVO', 'CHARLIE', 'DELTA'] as const;
 
 export default function Index() {
   const { user, isLoading, signIn, signUp, setMasterSession } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { playSound } = useSoundEffects();
-  const { themeConfig } = useTheme();
+  const { themeConfig, theme, resolvedTheme } = useTheme();
+  const themeAssets = getThemeAssets(theme, resolvedTheme);
   const { isAvailable: isBiometricAvailable, isEnrolled: isBiometricEnrolled, enrolledCpf, enrollBiometric, authenticateBiometric } = useBiometricAuth();
 
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
@@ -756,7 +710,11 @@ export default function Index() {
   };
 
   const selectedUnit = units.find(u => u.id === formData.unit_id);
-  const currentTeamConfig = selectedTeam ? teamConfigs[selectedTeam] : null;
+  const currentTeamConfig = selectedTeam ? {
+    icon: themeAssets.teamIcons[selectedTeam as keyof typeof themeAssets.teamIcons],
+    ...themeAssets.teamColors[selectedTeam as keyof typeof themeAssets.teamColors],
+    ...themeAssets.teamDescriptions[selectedTeam as keyof typeof themeAssets.teamDescriptions],
+  } : null;
 
   if (isLoading) {
     return (
@@ -830,8 +788,16 @@ export default function Index() {
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-1 h-1 bg-accent rounded-full" />
               </div>
               {/* Main badge - Smaller on mobile */}
-              <div className="relative w-14 h-14 sm:w-18 sm:h-18 md:w-24 md:h-24 rounded-full bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 border-2 border-primary/40 flex items-center justify-center shadow-2xl shadow-primary/20 group-hover:border-primary/60 transition-all duration-500">
-                <Shield className="h-7 w-7 sm:h-9 sm:w-9 md:h-12 md:w-12 text-primary drop-shadow-lg" />
+              <div className={cn(
+                "relative w-14 h-14 sm:w-18 sm:h-18 md:w-24 md:h-24 rounded-full border-2 border-primary/40 flex items-center justify-center shadow-2xl shadow-primary/20 group-hover:border-primary/60 transition-all duration-500",
+                themeConfig.colors.isLight 
+                  ? "bg-gradient-to-br from-white via-gray-50 to-gray-100"
+                  : "bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900"
+              )}>
+                {(() => {
+                  const MainIcon = themeAssets.mainIcon;
+                  return <MainIcon className="h-7 w-7 sm:h-9 sm:w-9 md:h-12 md:w-12 text-primary drop-shadow-lg" />;
+                })()}
                 {/* Pulse effect */}
                 <div className="absolute inset-0 rounded-full bg-primary/10 animate-ping opacity-30" style={{ animationDuration: '3s' }} />
               </div>
@@ -850,7 +816,7 @@ export default function Index() {
             <div className="flex items-center justify-center gap-2 sm:gap-3">
               <div className="w-6 sm:w-12 h-[1px] sm:h-[2px] bg-gradient-to-r from-transparent via-primary/50 to-primary" />
               <span className="text-[8px] sm:text-[10px] md:text-xs font-bold text-muted-foreground tracking-[0.15em] sm:tracking-[0.25em] uppercase">
-                Sistema de Gestão de Escalas
+                {themeAssets.subtitle}
               </span>
               <div className="w-6 sm:w-12 h-[1px] sm:h-[2px] bg-gradient-to-l from-transparent via-primary/50 to-primary" />
             </div>
@@ -864,7 +830,10 @@ export default function Index() {
           {/* Team selection prompt - More compact */}
           <div className="mt-3 sm:mt-6 animate-fade-in" style={{ animationDelay: '0.7s' }}>
             <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary/10 border border-primary/30">
-              <Users className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
+              {(() => {
+                const TeamIcon = themeAssets.teamIcons.ALFA;
+                return <TeamIcon className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />;
+              })()}
               <span className="text-xs sm:text-sm font-medium text-foreground">Selecione sua equipe</span>
             </div>
           </div>
@@ -920,7 +889,10 @@ export default function Index() {
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="flex items-center gap-1.5 sm:gap-2">
-              <Shield className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
+              {(() => {
+                const FooterIcon = themeAssets.mainIcon;
+                return <FooterIcon className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />;
+              })()}
               <span className="text-[10px] sm:text-xs font-bold text-foreground">
                 PLANTÃO PRO
               </span>
@@ -1283,17 +1255,20 @@ export default function Index() {
             
             {/* Selected Unit Display */}
             {selectedUnit && (
-              <div className="p-3 bg-gradient-to-r from-amber-500/20 to-amber-600/10 rounded-lg border border-amber-500/30">
+              <div className="p-3 bg-primary/10 rounded-lg border border-primary/30">
                 <div className="flex items-center gap-2 mb-1">
-                  <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
-                    <Shield className="h-4 w-4 text-amber-400" />
+                  <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                    {(() => {
+                      const UnitIcon = themeAssets.mainIcon;
+                      return <UnitIcon className="h-4 w-4 text-primary" />;
+                    })()}
                   </div>
                   <div>
-                    <p className="font-semibold text-white text-sm">{selectedUnit.name}</p>
-                    <p className="text-xs text-amber-400">Município: {selectedUnit.municipality}</p>
+                    <p className="font-semibold text-foreground text-sm">{selectedUnit.name}</p>
+                    <p className="text-xs text-primary">Município: {selectedUnit.municipality}</p>
                   </div>
                 </div>
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   Após o cadastro você será direcionado ao painel desta unidade
                 </p>
               </div>
