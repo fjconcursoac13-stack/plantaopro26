@@ -161,7 +161,7 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
         {/* Main Card */}
         <div 
           className={cn(
-            "relative overflow-hidden rounded-xl backdrop-blur-sm",
+            "relative overflow-hidden rounded-lg md:rounded-xl backdrop-blur-sm",
             "bg-gradient-to-br from-slate-800/95 via-slate-850/95 to-slate-900/98",
             "border-2 transition-all duration-300",
             config.borderColor,
@@ -169,7 +169,7 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
           )}
         >
           {/* Top gradient stripe */}
-          <div className={cn("h-1 md:h-1.5 w-full bg-gradient-to-r", config.gradient)} />
+          <div className={cn("h-0.5 md:h-1.5 w-full bg-gradient-to-r", config.gradient)} />
           
           {/* Animated scan line */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
@@ -182,25 +182,25 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
             />
           </div>
           
-          {/* Corner accents */}
-          <div className={cn("absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 transition-colors", config.borderColor, "group-hover:border-opacity-100")} />
-          <div className={cn("absolute top-2 right-2 w-4 h-4 border-r-2 border-t-2 transition-colors", config.borderColor, "group-hover:border-opacity-100")} />
-          <div className={cn("absolute bottom-2 left-2 w-4 h-4 border-l-2 border-b-2 transition-colors", config.borderColor, "group-hover:border-opacity-100")} />
-          <div className={cn("absolute bottom-2 right-2 w-4 h-4 border-r-2 border-b-2 transition-colors", config.borderColor, "group-hover:border-opacity-100")} />
+          {/* Corner accents - Hidden on mobile for cleaner look */}
+          <div className={cn("absolute top-2 left-2 w-3 h-3 md:w-4 md:h-4 border-l-2 border-t-2 transition-colors hidden sm:block", config.borderColor, "group-hover:border-opacity-100")} />
+          <div className={cn("absolute top-2 right-2 w-3 h-3 md:w-4 md:h-4 border-r-2 border-t-2 transition-colors hidden sm:block", config.borderColor, "group-hover:border-opacity-100")} />
+          <div className={cn("absolute bottom-2 left-2 w-3 h-3 md:w-4 md:h-4 border-l-2 border-b-2 transition-colors hidden sm:block", config.borderColor, "group-hover:border-opacity-100")} />
+          <div className={cn("absolute bottom-2 right-2 w-3 h-3 md:w-4 md:h-4 border-r-2 border-b-2 transition-colors hidden sm:block", config.borderColor, "group-hover:border-opacity-100")} />
           
           {/* Status dots */}
-          <div className="absolute top-3 right-3 flex gap-1">
+          <div className="absolute top-2 right-2 flex gap-0.5 md:gap-1">
             <div className="w-1 h-1 rounded-full bg-green-500 animate-pulse" />
             <div className="w-1 h-1 rounded-full bg-green-500/50 animate-pulse" style={{ animationDelay: '0.3s' }} />
           </div>
           
-          <div className="p-4 md:p-5 relative">
+          <div className="p-2.5 sm:p-3 md:p-5 relative">
             <div className="flex flex-col items-center" style={{ transform: 'translateZ(30px)' }}>
               {/* Icon container with animated rings */}
-              <div className="relative mb-3 md:mb-4">
-                {/* Outer ring animation */}
+              <div className="relative mb-2 md:mb-4">
+                {/* Outer ring animation - Hidden on mobile */}
                 <div className={cn(
-                  "absolute -inset-2 rounded-full border opacity-30 group-hover:opacity-60 transition-opacity animate-[spin_10s_linear_infinite]",
+                  "absolute -inset-2 rounded-full border opacity-30 group-hover:opacity-60 transition-opacity animate-[spin_10s_linear_infinite] hidden md:block",
                   config.borderColor
                 )}>
                   <div className={cn("absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-gradient-to-r", config.gradient)} />
@@ -209,13 +209,13 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
                 {/* Icon background */}
                 <div 
                   className={cn(
-                    "relative w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center",
+                    "relative w-10 h-10 sm:w-11 sm:h-11 md:w-14 md:h-14 rounded-full flex items-center justify-center",
                     "bg-gradient-to-br shadow-xl",
                     config.gradient,
                     "border-2 border-white/20 group-hover:border-white/40 transition-all duration-300"
                   )}
                 >
-                  <Icon className="h-6 w-6 md:h-7 md:w-7 text-white drop-shadow-lg" />
+                  <Icon className="h-5 w-5 sm:h-5.5 sm:w-5.5 md:h-7 md:w-7 text-white drop-shadow-lg" />
                   
                   {/* Inner glow */}
                   <div className="absolute inset-0 rounded-full bg-white/10 group-hover:bg-white/20 transition-colors" />
@@ -223,47 +223,47 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
                 
                 {/* Status indicator with glow */}
                 <div className="absolute -bottom-0.5 -right-0.5">
-                  <div className="w-3 h-3 md:w-3.5 md:h-3.5 rounded-full bg-green-500 border-2 border-slate-800 shadow-lg shadow-green-500/50 animate-pulse" />
+                  <div className="w-2.5 h-2.5 md:w-3.5 md:h-3.5 rounded-full bg-green-500 border-2 border-slate-800 shadow-lg shadow-green-500/50 animate-pulse" />
                 </div>
               </div>
               
               {/* Team identifier */}
-              <div className="flex items-center gap-1.5 mb-1">
-                <Star className={cn("h-2.5 w-2.5", config.textColor)} />
+              <div className="flex items-center gap-1 mb-0.5 md:mb-1">
+                <Star className={cn("h-2 w-2 md:h-2.5 md:w-2.5", config.textColor)} />
                 <h3 className={cn(
-                  "text-base md:text-lg font-black tracking-[0.2em]",
+                  "text-sm sm:text-base md:text-lg font-black tracking-[0.15em] md:tracking-[0.2em]",
                   config.textColor
                 )}>
                   {team}
                 </h3>
-                <Star className={cn("h-2.5 w-2.5", config.textColor)} />
+                <Star className={cn("h-2 w-2 md:h-2.5 md:w-2.5", config.textColor)} />
               </div>
               
               {/* Description */}
-              <p className="text-slate-300 text-[9px] md:text-[10px] text-center font-semibold tracking-wider mb-1">
+              <p className="text-slate-300 text-[8px] sm:text-[9px] md:text-[10px] text-center font-semibold tracking-wider mb-0.5 md:mb-1 leading-tight">
                 {config.description}
               </p>
               
-              {/* Slogan */}
-              <p className={cn("text-[8px] md:text-[9px] text-center font-medium tracking-widest opacity-80", config.textColor)}>
+              {/* Slogan - Hidden on smallest screens */}
+              <p className={cn("text-[7px] sm:text-[8px] md:text-[9px] text-center font-medium tracking-widest opacity-80 hidden xs:block", config.textColor)}>
                 {config.slogan}
               </p>
               
               {/* Action button */}
-              <div className="mt-3 md:mt-4 w-full">
+              <div className="mt-2 md:mt-4 w-full">
                 <div className={cn(
-                  "flex items-center justify-center gap-2 px-3 py-2 md:py-2.5 rounded-lg",
+                  "flex items-center justify-center gap-1.5 md:gap-2 px-2 py-1.5 md:px-3 md:py-2.5 rounded-md md:rounded-lg",
                   "bg-gradient-to-r from-slate-700/80 to-slate-800/80",
                   "border transition-all duration-300",
                   config.borderColor,
                   "group-hover:from-slate-600/80 group-hover:to-slate-700/80",
                   "group-hover:shadow-lg"
                 )}>
-                  <Radio className="w-3 h-3 text-green-400 animate-pulse" />
-                  <span className="text-[9px] md:text-[10px] font-bold text-white tracking-[0.15em] uppercase">
+                  <Radio className="w-2.5 h-2.5 md:w-3 md:h-3 text-green-400 animate-pulse" />
+                  <span className="text-[8px] sm:text-[9px] md:text-[10px] font-bold text-white tracking-[0.1em] md:tracking-[0.15em] uppercase">
                     Acessar Sistema
                   </span>
-                  <Zap className={cn("w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity", config.textColor)} />
+                  <Zap className={cn("w-2.5 h-2.5 md:w-3 md:h-3 opacity-0 group-hover:opacity-100 transition-opacity", config.textColor)} />
                 </div>
               </div>
             </div>
