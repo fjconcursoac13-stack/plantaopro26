@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { pushDiagEvent } from '@/lib/diagLog';
 
 type UserRole = 'admin' | 'user' | 'master';
 
@@ -49,12 +50,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .select('role')
         .eq('user_id', userId)
         .maybeSingle();
-      
+
       if (error) {
         console.error('Error fetching user role:', error);
         return;
       }
-      
+
       if (data) {
         setUserRole(data.role as UserRole);
       }
@@ -66,9 +67,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        // Diagnostics only (no tokens stored)
+        pushDiagEvent('info', 'auth_state_change', {
+          event,
+          hasSession: !!session,
+          userId: session?.user?.id ?? null,
+          expiresAt: (session as any)?.expires_at ?? null,
+          expiresIn: (session as any)?.expires_in ?? null,
+        });
+
         setSession(session);
         setUser(session?.user ?? null);
-        
+
         if (session?.user) {
           setTimeout(() => {
             fetchUserRole(session.user.id);
@@ -76,19 +86,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } else {
           setUserRole(null);
         }
-        
+
         setIsLoading(false);
       }
     );
 
     supabase.auth.getSession().then(({ data: { session } }) => {
+      pushDiagEvent('info', 'auth_get_session', {
+        hasSession: !!session,
+        userId: session?.user?.id ?? null,
+        expiresAt: (session as any)?.expires_at ?? null,
+        expiresIn: (session as any)?.expires_in ?? null,
+      });
+
       setSession(session);
       setUser(session?.user ?? null);
-      
+
       if (session?.user) {
         fetchUserRole(session.user.id);
       }
-      
+
       setIsLoading(false);
     });
 
@@ -105,11 +122,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (!canAttempt) {
+        pushDiagEvent('warn', 'login_rate_limited', { identifier: email });
         return { error: new Error('Muitas tentativas de login. Tente novamente em 15 minutos.') };
       }
 
+      pushDiagEvent('info', 'login_attempt', { identifier: email });
+
       const { error } = await supabase.auth.signInWithPassword({ email, password });
-      
+
       // Record attempt
       await supabase.rpc('record_login_attempt', {
         p_identifier: email,
@@ -118,11 +138,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (error) {
+        pushDiagEvent('error', 'login_failed', { identifier: email, message: error.message });
         return { error };
       }
-      
+
+      pushDiagEvent('info', 'login_success', { identifier: email });
       return { error: null };
     } catch (err) {
+      pushDiagEvent('error', 'login_exception', { identifier: email, message: String((err as any)?.message ?? err) });
       return { error: err as Error };
     }
   };
@@ -130,7 +153,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signUp = async (email: string, password: string, fullName?: string) => {
     try {
       const redirectUrl = `${window.location.origin}/`;
-      
+
+      pushDiagEvent('info', 'signup_attempt', { identifier: email });
+
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -141,18 +166,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           },
         },
       });
-      
+
       if (error) {
+        pushDiagEvent('error', 'signup_failed', { identifier: email, message: error.message });
         return { error };
       }
-      
+
+      pushDiagEvent('info', 'signup_success', { identifier: email });
       return { error: null };
     } catch (err) {
+      pushDiagEvent('error', 'signup_exception', { identifier: email, message: String((err as any)?.message ?? err) });
       return { error: err as Error };
     }
   };
 
   const signOut = async () => {
+    pushDiagEvent('info', 'signout');
     await supabase.auth.signOut();
     setUser(null);
     setSession(null);
@@ -189,3 +218,4 @@ export function useAuth() {
   }
   return context;
 }
+

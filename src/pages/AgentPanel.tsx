@@ -137,24 +137,16 @@ export default function AgentPanel() {
   };
 
   // Redirect only after loading is complete
+  // IMPORTANT:
+  // Do not force redirects here; route protection/recovery is centralized in ReconnectingGuard.
+  // This prevents premature bounce to the home screen while auth is hydrating.
   useEffect(() => {
     if (isLoading || isLoadingAgent) return;
 
     // Master session must never access the agent panel
     if (masterSession && !user) {
       navigate('/master', { replace: true });
-      return;
     }
-
-    // Don't redirect if we have user session
-    if (user) return;
-
-    // Small delay to ensure state is settled before redirecting to login
-    const timer = setTimeout(() => {
-      navigate('/', { replace: true });
-    }, 300);
-
-    return () => clearTimeout(timer);
   }, [user, masterSession, isLoading, isLoadingAgent, navigate]);
 
   if (isLoading || isLoadingAgent) {
