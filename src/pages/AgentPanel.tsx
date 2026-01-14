@@ -7,6 +7,7 @@ import { useSessionPersistence } from '@/hooks/useSessionPersistence';
 import { useLicenseCheck } from '@/hooks/useLicenseCheck';
 import { useShiftNotifications } from '@/hooks/useShiftNotifications';
 import { useBHReminder } from '@/hooks/useBHReminder';
+import { useBHReminderHour } from '@/components/agent-panel/BHReminderSettings';
 import { TeamMembersCard } from '@/components/agent-panel/TeamMembersCard';
 import { ProfessionalShiftTimer } from '@/components/agent-panel/ProfessionalShiftTimer';
 import { BHTracker } from '@/components/agent-panel/BHTracker';
@@ -23,6 +24,7 @@ import { AgentSettingsCard } from '@/components/agent-panel/AgentSettingsCard';
 import { AgentEventsCard } from '@/components/agent-panel/AgentEventsCard';
 import ShiftPlannerCard from '@/components/agent-panel/ShiftPlannerCard';
 import { ShiftCalendarOverview } from '@/components/agent-panel/ShiftCalendarOverview';
+import { BHReminderSettings } from '@/components/agent-panel/BHReminderSettings';
 import { BirthdayCard } from '@/components/agent-panel/BirthdayCard';
 import { LicenseWarningBanner } from '@/components/LicenseWarningBanner';
 import { supabase } from '@/integrations/supabase/client';
@@ -96,11 +98,14 @@ export default function AgentPanel() {
     reminderHoursBefore: [24, 1], // 24h and 1h before
   });
 
+  // Get saved BH reminder hour preference
+  const bhReminderHour = useBHReminderHour(agent?.id || '');
+
   // BH daily reminder - reminds to register BH if not done today
   useBHReminder({
     agentId: agent?.id || '',
     enabled: !!agent?.id,
-    reminderHour: 18, // Remind at 6 PM
+    reminderHour: bhReminderHour, // Use saved preference
   });
 
   useEffect(() => {
@@ -463,7 +468,10 @@ export default function AgentPanel() {
                     currentAvatarUrl={(agent as any).avatar_url}
                     onUpdate={() => window.location.reload()}
                   />
-                  <NotificationSettings />
+                  <div className="space-y-4">
+                    <NotificationSettings />
+                    <BHReminderSettings agentId={agent.id} />
+                  </div>
                 </div>
               </TabsContent>
             </Tabs>
