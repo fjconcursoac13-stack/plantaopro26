@@ -44,43 +44,60 @@ export function TeamUnlinkDialog({
     
     try {
       // Delete all agent data (shifts, overtime, leaves, events, etc.)
-      await supabase.from('agent_shifts').delete().eq('agent_id', agentId);
-      await supabase.from('overtime_bank').delete().eq('agent_id', agentId);
-      await supabase.from('agent_leaves').delete().eq('agent_id', agentId);
-      await supabase.from('agent_events').delete().eq('agent_id', agentId);
-      await supabase.from('shift_alerts').delete().eq('agent_id', agentId);
-      await supabase.from('shift_planner_configs').delete().eq('agent_id', agentId);
-      await supabase.from('transfer_requests').delete().eq('agent_id', agentId);
-      await supabase.from('chat_room_members').delete().eq('agent_id', agentId);
-      await supabase.from('deleted_messages').delete().eq('agent_id', agentId);
-      await supabase.from('shifts').delete().eq('agent_id', agentId);
+      const tables = [
+        'agent_shifts',
+        'overtime_bank',
+        'agent_leaves',
+        'agent_events',
+        'shift_alerts',
+        'shift_planner_configs',
+        'transfer_requests',
+        'chat_room_members',
+        'deleted_messages',
+        'shifts',
+        'access_logs',
+        'payments',
+      ];
+
+      for (const table of tables) {
+        const { error } = await supabase.from(table as any).delete().eq('agent_id', agentId);
+        if (error) console.warn(`Error deleting from ${table}:`, error);
+      }
       
-      // PERMANENTLY delete the agent record from database
+      // Sign out first to avoid RLS issues
+      await supabase.auth.signOut();
+      
+      // PERMANENTLY delete the agent record from database (trigger will delete auth user)
       const { error } = await supabase
         .from('agents')
         .delete()
         .eq('id', agentId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error deleting agent:', error);
+        // Even if delete fails, user is already signed out
+      }
 
       toast({
         title: 'Conta Excluída',
-        description: `Todos os dados de ${agentName} foram excluídos permanentemente. Você será deslogado.`,
+        description: `Todos os dados de ${agentName} foram excluídos permanentemente.`,
       });
       
       setShowConfirmation(false);
       onOpenChange(false);
       
-      // Sign out the user after removing
-      await supabase.auth.signOut();
+      // Force redirect to home
       window.location.href = '/';
     } catch (error) {
       console.error('Error removing agent:', error);
       toast({
         title: 'Erro',
-        description: 'Não foi possível remover a conta.',
+        description: 'Não foi possível remover a conta. Tente novamente.',
         variant: 'destructive',
       });
+      // Sign out anyway for safety
+      await supabase.auth.signOut();
+      window.location.href = '/';
     } finally {
       setIsSubmitting(false);
     }

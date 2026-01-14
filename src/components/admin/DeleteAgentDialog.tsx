@@ -42,19 +42,25 @@ export function DeleteAgentDialog({ agentId, agentName, onSuccess, trigger }: De
         'transfer_requests',
         'chat_room_members',
         'deleted_messages',
+        'shifts',
+        'access_logs',
+        'payments',
       ];
 
       for (const table of tables) {
         const { error: tableError } = await supabase.from(table as any).delete().eq('agent_id', agentId);
         if (tableError) {
-          console.error(`Error deleting from ${table}:`, tableError);
+          console.warn(`Warning deleting from ${table}:`, tableError);
         }
       }
 
-      // Also delete from shifts table
-      await supabase.from('shifts').delete().eq('agent_id', agentId);
+      // Delete user_roles if exists
+      await supabase.from('user_roles').delete().eq('user_id', agentId);
+      
+      // Delete profile if exists
+      await supabase.from('profiles').delete().eq('user_id', agentId);
 
-      // Now PERMANENTLY delete the agent record from database
+      // Now PERMANENTLY delete the agent record (trigger will delete auth user)
       const { error } = await supabase
         .from('agents')
         .delete()
