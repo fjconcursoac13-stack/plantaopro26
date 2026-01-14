@@ -4,6 +4,7 @@ import { useSoundEffects } from '@/hooks/useSoundEffects';
 import { cn } from '@/lib/utils';
 import { Radio, Zap, Star } from 'lucide-react';
 import { getThemeAssets } from '@/lib/themeAssets';
+import { teamPosters, teamColors } from '@/lib/teamAssets';
 
 interface ThemedTeamCardProps {
   team: string;
@@ -129,19 +130,30 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
         {/* Main Card */}
         <div 
           className={cn(
-            "relative overflow-hidden rounded-lg md:rounded-xl backdrop-blur-sm",
-            "bg-gradient-to-br",
-            colors.bgGradient,
+            "relative overflow-hidden rounded-lg md:rounded-xl",
             "border-2 transition-all duration-300",
             colors.borderColor,
             "group-hover:border-opacity-100 group-hover:shadow-2xl",
           )}
         >
+          {/* Team Poster Background */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{ 
+              backgroundImage: `url(${teamPosters[team as keyof typeof teamPosters]})`,
+            }}
+          />
+          {/* Dark overlay for readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/40 group-hover:from-black/80 group-hover:via-black/50 group-hover:to-black/30 transition-all duration-300" />
+          
           {/* Top gradient stripe - animated on hover */}
-          <div className={cn(
-            "h-0.5 md:h-1.5 w-full bg-gradient-to-r transition-all duration-300 group-hover:h-1 md:group-hover:h-2", 
-            gradient
-          )} />
+          <div 
+            className={cn(
+              "relative h-0.5 md:h-1.5 w-full bg-gradient-to-r transition-all duration-300 group-hover:h-1 md:group-hover:h-2", 
+              gradient
+            )} 
+            style={{ backgroundColor: teamColors[team as keyof typeof teamColors]?.primary }}
+          />
           
           {/* Animated scan line - more visible */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
@@ -174,7 +186,7 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
           </div>
           
           {/* Content - landscape optimized */}
-          <div className="p-3 landscape:p-2 sm:p-5 md:p-6 relative">
+          <div className="p-3 landscape:p-2 sm:p-5 md:p-6 relative z-10">
             <div className="flex flex-col landscape:flex-row landscape:items-center landscape:gap-3 items-center" style={{ transform: 'translateZ(30px)' }}>
               {/* Icon container with animated rings */}
               <div className="relative mb-2 landscape:mb-0 md:mb-4">
