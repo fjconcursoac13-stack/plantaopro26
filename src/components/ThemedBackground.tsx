@@ -1,13 +1,18 @@
 import { useTheme, ThemeType } from '@/contexts/ThemeContext';
 import { useEffect, useState, useMemo } from 'react';
+import { TacticalGrid } from './dashboard/TacticalGrid';
 
 export function ThemedBackground() {
   const { resolvedTheme, themeConfig } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [showTacticalGrid, setShowTacticalGrid] = useState(false);
   
   useEffect(() => {
     setMounted(true);
-  }, []);
+    // Show tactical grid for tactical/military/sentinel themes
+    const tacticalThemes = ['tactical', 'military', 'sentinel', 'cyber', 'stealth'];
+    setShowTacticalGrid(tacticalThemes.includes(resolvedTheme));
+  }, [resolvedTheme]);
 
   // Memoize particles based on theme effects
   const particles = useMemo(() => {
@@ -321,6 +326,15 @@ export function ThemedBackground() {
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden">
+      {/* Tactical Grid Overlay - for tactical themes */}
+      {showTacticalGrid && (
+        <TacticalGrid 
+          nodeCount={40} 
+          animationSpeed="slow"
+          className="z-0"
+        />
+      )}
+
       {/* Base gradient */}
       <div 
         className="absolute inset-0 transition-all duration-1000"

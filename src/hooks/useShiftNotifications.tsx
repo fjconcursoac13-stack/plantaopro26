@@ -134,13 +134,14 @@ export function useShiftNotifications({
               }
             );
 
-            // Show push notification
+            // Show push notification with tactical sound
             if (isEnabled) {
               await showNotification({
                 title: reminderHours <= 1 ? '⏰ Plantão em Breve!' : '📋 Lembrete de Plantão',
                 body: `Seu plantão começa em ${timeDescription} (${dayDescription} às ${shift.start_time})`,
                 tag: `shift-reminder-${shift.id}`,
                 requireInteraction: reminderHours <= 1,
+                soundType: reminderHours <= 1 ? 'urgent' : 'shift',
               });
             }
           }
@@ -192,6 +193,7 @@ export function useShiftNotifications({
         body: 'Seu plantão começou agora. Bom trabalho!',
         tag: `shift-start-${shift.id}`,
         requireInteraction: false,
+        soundType: 'success',
       });
     }
   }, [isEnabled, showNotification, saveNotified]);
