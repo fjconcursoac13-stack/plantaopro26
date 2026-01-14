@@ -6,7 +6,7 @@ import { useBackNavigation } from '@/hooks/useBackNavigation';
 import { useSessionPersistence } from '@/hooks/useSessionPersistence';
 import { useLicenseCheck } from '@/hooks/useLicenseCheck';
 import { TeamMembersCard } from '@/components/agent-panel/TeamMembersCard';
-import { ShiftTracker } from '@/components/agent-panel/ShiftTracker';
+import { ProfessionalShiftTimer } from '@/components/agent-panel/ProfessionalShiftTimer';
 import { BHTracker } from '@/components/agent-panel/BHTracker';
 import { ShiftScheduleCard } from '@/components/agent-panel/ShiftScheduleCard';
 import { ChatPanel } from '@/components/agent-panel/ChatPanel';
@@ -20,6 +20,7 @@ import { NotificationSettings } from '@/components/agent-panel/NotificationSetti
 import { AgentSettingsCard } from '@/components/agent-panel/AgentSettingsCard';
 import { AgentEventsCard } from '@/components/agent-panel/AgentEventsCard';
 import ShiftPlannerCard from '@/components/agent-panel/ShiftPlannerCard';
+import { ShiftCalendarOverview } from '@/components/agent-panel/ShiftCalendarOverview';
 import { LicenseWarningBanner } from '@/components/LicenseWarningBanner';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2, Users, MessageCircle, Calendar, Clock, ArrowRightLeft, CalendarOff, Settings, User, CalendarDays, Calculator, LogOut, Home, WifiOff, RefreshCw, Droplet } from 'lucide-react';
@@ -323,7 +324,7 @@ export default function AgentPanel() {
 
             {/* Quick Stats Row */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <ShiftTracker agentId={agent.id} compact />
+              <ProfessionalShiftTimer agentId={agent.id} compact />
               <BHTracker agentId={agent.id} compact />
             </div>
 
@@ -385,9 +386,10 @@ export default function AgentPanel() {
 
               <TabsContent value="plantoes" className="space-y-4">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  <ShiftTracker agentId={agent.id} />
+                  <ProfessionalShiftTimer agentId={agent.id} />
                   <ShiftScheduleCard agentId={agent.id} />
                 </div>
+                <ShiftCalendarOverview agentId={agent.id} />
               </TabsContent>
 
               <TabsContent value="bh" className="space-y-4">

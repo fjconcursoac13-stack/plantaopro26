@@ -7,11 +7,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Settings as SettingsIcon, User, Shield, Loader2, Palette, Sparkles } from 'lucide-react';
-import { BackButton } from '@/components/BackButton';
+import { Settings as SettingsIcon, User, Shield, Loader2, Palette, Sparkles, ArrowLeft } from 'lucide-react';
 import { ChangePasswordDialog } from '@/components/ChangePasswordDialog';
 import { useBackNavigation } from '@/hooks/useBackNavigation';
 import { ThemeSelector } from '@/components/ThemeSelector';
+import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 
 export default function Settings() {
@@ -19,7 +19,8 @@ export default function Settings() {
   const navigate = useNavigate();
   const { themeConfig } = useTheme();
   
-  // Enable ESC key navigation
+  // Enable ESC key navigation - get goBack function
+  const { goBack } = useBackNavigation({ enabled: true, fallbackPath: '/dashboard' });
   useBackNavigation();
 
   // Redirect only after loading is complete
@@ -55,7 +56,15 @@ export default function Settings() {
         <main className="flex-1 p-6 overflow-auto">
           <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
             {/* Back Button */}
-            <BackButton />
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={goBack}
+              className="gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Voltar
+            </Button>
 
             {/* Page Header */}
             <div>
