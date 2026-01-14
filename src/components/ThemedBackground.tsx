@@ -317,6 +317,35 @@ export function ThemedBackground() {
           </>
         );
 
+      case 'nightops':
+        return (
+          <>
+            {/* Minimal visual noise for night operations */}
+            <div className="absolute inset-0 opacity-[0.015]">
+              <div className="absolute inset-0" style={{
+                backgroundImage: `
+                  radial-gradient(circle at 50% 50%, hsl(0 0% 30%) 1px, transparent 1px)
+                `,
+                backgroundSize: '60px 60px',
+              }} />
+            </div>
+            {/* Very subtle ambient glow */}
+            <div className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full blur-3xl opacity-5"
+              style={{ background: 'hsl(220 10% 40%)' }}
+            />
+            {/* Night vision style scanline */}
+            <div className="absolute inset-0 opacity-[0.02]" style={{
+              backgroundImage: `repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 3px,
+                hsl(0 0% 30% / 0.3) 3px,
+                hsl(0 0% 30% / 0.3) 4px
+              )`,
+            }} />
+          </>
+        );
+
       default:
         return null;
     }

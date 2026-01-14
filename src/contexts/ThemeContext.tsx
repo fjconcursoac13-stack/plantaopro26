@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import { Shield, Crosshair, Cpu, Award, Sun, Monitor, Flame, Snowflake, Radar, Eye } from 'lucide-react';
+import { Shield, Crosshair, Cpu, Award, Sun, Monitor, Flame, Snowflake, Radar, Eye, Moon } from 'lucide-react';
 
-export type ThemeType = 'tactical' | 'military' | 'cyber' | 'classic' | 'light' | 'system' | 'crimson' | 'arctic' | 'stealth' | 'sentinel';
+export type ThemeType = 'tactical' | 'military' | 'cyber' | 'classic' | 'light' | 'system' | 'crimson' | 'arctic' | 'stealth' | 'sentinel' | 'nightops';
 
 export interface ThemeConfig {
   id: ThemeType;
@@ -247,6 +247,32 @@ export const themes: Record<ThemeType, ThemeConfig> = {
       scanlineOpacity: 0.1,
     },
   },
+  nightops: {
+    id: 'nightops',
+    name: 'Ops Noturnas',
+    description: 'Ultra escuro para operações noturnas',
+    icon: Moon,
+    emoji: '🌙',
+    colors: {
+      primary: '0 0% 85%',
+      primaryForeground: '0 0% 3%',
+      accent: '220 10% 50%',
+      background: '0 0% 2%',
+      card: '0 0% 4%',
+      border: '0 0% 10%',
+      gradientFrom: '0 0% 85%',
+      gradientTo: '220 10% 60%',
+      foreground: '0 0% 75%',
+      muted: '0 0% 6%',
+      mutedForeground: '0 0% 45%',
+      isLight: false,
+    },
+    effects: {
+      glowIntensity: 'low',
+      particleColor: 'rgba(120, 120, 120, 0.2)',
+      scanlineOpacity: 0.02,
+    },
+  },
   light: {
     id: 'light',
     name: 'Diurno',
@@ -393,12 +419,15 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       );
     }
     
-    // Add/remove light theme class
+    // Add/remove theme classes
+    root.classList.remove('light-theme', 'nightops-theme');
+    
     if (config.colors.isLight) {
       root.classList.add('light-theme');
       root.classList.remove('dark');
+    } else if (resolvedTheme === 'nightops') {
+      root.classList.add('nightops-theme', 'dark');
     } else {
-      root.classList.remove('light-theme');
       root.classList.add('dark');
     }
   }, [activeConfig]);

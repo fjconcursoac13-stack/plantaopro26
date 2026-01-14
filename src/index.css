@@ -574,3 +574,120 @@
 .perspective-1000 {
   perspective: 1000px;
 }
+
+/* Night Operations Mode - Ultra Dark Theme */
+.nightops-theme {
+  --background: 0 0% 2%;
+  --foreground: 0 0% 75%;
+  --card: 0 0% 4%;
+  --card-foreground: 0 0% 75%;
+  --popover: 0 0% 5%;
+  --popover-foreground: 0 0% 75%;
+  --primary: 0 0% 85%;
+  --primary-foreground: 0 0% 3%;
+  --secondary: 0 0% 8%;
+  --secondary-foreground: 0 0% 70%;
+  --muted: 0 0% 6%;
+  --muted-foreground: 0 0% 45%;
+  --accent: 220 10% 50%;
+  --accent-foreground: 0 0% 95%;
+  --destructive: 0 50% 40%;
+  --destructive-foreground: 0 0% 95%;
+  --border: 0 0% 10%;
+  --input: 0 0% 8%;
+  --ring: 0 0% 60%;
+  
+  /* Reduced brightness for night use */
+  filter: brightness(0.95);
+}
+
+.nightops-theme body,
+.nightops-theme #root {
+  background: hsl(0 0% 2%);
+}
+
+/* Reduce all glows and highlights in night mode */
+.nightops-theme .shadow-glow {
+  box-shadow: 0 0 20px hsl(0 0% 50% / 0.1);
+}
+
+.nightops-theme .animate-glow {
+  animation: none;
+}
+
+.nightops-theme .animate-pulse {
+  animation-duration: 3s;
+}
+
+/* Dimmed text for night readability */
+.nightops-theme .text-primary {
+  color: hsl(0 0% 75%);
+}
+
+/* Night mode scrollbar */
+.nightops-theme ::-webkit-scrollbar-track {
+  background: hsl(0 0% 3%);
+}
+
+.nightops-theme ::-webkit-scrollbar-thumb {
+  background: hsl(0 0% 15%);
+}
+
+/* Card 3D tilt effect styles */
+.card-3d-tilt {
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease-out;
+}
+
+.card-3d-tilt:hover {
+  transform: perspective(1000px) rotateX(2deg) rotateY(-2deg) scale(1.02);
+}
+
+/* Subtle floating animation for 3D cards */
+@keyframes float3d {
+  0%, 100% {
+    transform: translateY(0) rotateX(0) rotateY(0);
+  }
+  25% {
+    transform: translateY(-3px) rotateX(1deg) rotateY(-1deg);
+  }
+  50% {
+    transform: translateY(-5px) rotateX(0) rotateY(1deg);
+  }
+  75% {
+    transform: translateY(-3px) rotateX(-1deg) rotateY(0);
+  }
+}
+
+.card-float-3d {
+  animation: float3d 6s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
+/* Holographic shimmer for premium cards */
+@keyframes holographic {
+  0% {
+    background-position: 200% 50%;
+  }
+  100% {
+    background-position: -200% 50%;
+  }
+}
+
+.card-holographic::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    hsl(var(--primary) / 0.1) 45%,
+    hsl(var(--accent) / 0.15) 50%,
+    hsl(var(--primary) / 0.1) 55%,
+    transparent 60%
+  );
+  background-size: 200% 100%;
+  animation: holographic 4s linear infinite;
+  pointer-events: none;
+  border-radius: inherit;
+}
