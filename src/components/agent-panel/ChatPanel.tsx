@@ -99,7 +99,7 @@ const chatRoomConfig: Record<ChatType, {
   },
   all: {
     icon: <Globe className="h-4 w-4" />,
-    label: 'Sistema FASE',
+    label: 'Sistema ISE/ACRE',
     description: 'Todas as unidades socioeducativas',
     color: 'text-green-500',
   },
@@ -368,7 +368,7 @@ export function ChatPanel({ agentId, unitId, team, agentName, agentRole }: ChatP
         const { data: newGlobalRoom, error: createError } = await (supabase as any)
           .from('chat_rooms')
           .insert({
-            name: 'Sistema FASE - Todas as Unidades',
+            name: 'Sistema ISE/ACRE - Todas as Unidades',
             type: 'all',
             unit_id: null,
             team: null
