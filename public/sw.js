@@ -63,8 +63,16 @@ self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (request.method !== 'GET') return;
 
-  // Handle API requests (Supabase) - Network first with cache fallback
+  // Handle API requests (Supabase)
+  // CRITICAL: never cache authentication endpoints (can break session persistence)
   if (url.hostname.includes('supabase.co')) {
+    if (url.pathname.includes('/auth/v1')) {
+      // Always go to network for auth
+      event.respondWith(fetch(request));
+      return;
+    }
+
+    // Other API requests - Network first with cache fallback
     event.respondWith(handleApiRequest(request));
     return;
   }
@@ -141,11 +149,15 @@ async function handleApiRequest(request) {
   try {
     const networkResponse = await fetch(request);
     
-    // Cache successful GET requests
-    if (networkResponse.ok && request.method === 'GET') {
+    // Cache successful GET requests (excluding auth endpoints)
+    if (
+      networkResponse.ok &&
+      request.method === 'GET' &&
+      !url.pathname.includes('/auth/v1')
+    ) {
       const responseClone = networkResponse.clone();
       const cache = await caches.open(DYNAMIC_CACHE);
-      
+
       // Create a response with timestamp header
       const responseBody = await responseClone.text();
       const cachedResponse = new Response(responseBody, {
@@ -156,7 +168,7 @@ async function handleApiRequest(request) {
           'x-cached-at': new Date().toISOString()
         }
       });
-      
+
       cache.put(cacheKey, cachedResponse);
     }
     

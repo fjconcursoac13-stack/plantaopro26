@@ -24,7 +24,9 @@ export function useSessionPersistence(config: SessionPersistenceConfig = {}) {
   const [lastError, setLastError] = useState<string | null>(null);
   const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const retryCountRef = useRef(0);
-  
+  const refreshInFlightRef = useRef(false);
+  const cooldownUntilRef = useRef<number>(0);
+
   // Keep refs in sync with callbacks
   const onMaxRetriesReachedRef = useRef(onMaxRetriesReached);
   useEffect(() => {
@@ -40,14 +42,32 @@ export function useSessionPersistence(config: SessionPersistenceConfig = {}) {
     };
   }, []);
 
-  // Refresh session with retry logic
+  const isInCooldown = () => Date.now() < cooldownUntilRef.current;
+
+  // Refresh session with retry logic (NOTE: Supabase already auto-refreshes tokens;
+  // this hook must be conservative to avoid refresh-token rate limits that can revoke sessions.)
   const refreshSession = useCallback(async (): Promise<boolean> => {
     if (!navigator.onLine) {
       console.log('[SessionPersistence] Offline, skipping refresh');
       return false;
     }
 
+    if (refreshInFlightRef.current) {
+      return false;
+    }
+
+    if (isInCooldown()) {
+      return false;
+    }
+
+    // Only attempt refresh if we actually have a session
+    const { data: { session: existingSession } } = await supabase.auth.getSession();
+    if (!existingSession) {
+      return false;
+    }
+
     try {
+      refreshInFlightRef.current = true;
       setIsRetrying(true);
       const currentRetry = retryCountRef.current;
       console.log(`[SessionPersistence] Attempting session refresh (attempt ${currentRetry + 1}/${maxRetries})`);
@@ -70,8 +90,18 @@ export function useSessionPersistence(config: SessionPersistenceConfig = {}) {
       setIsRetrying(false);
       return false;
     } catch (error: any) {
-      console.error('[SessionPersistence] Refresh failed:', error.message);
-      setLastError(error.message);
+      const msg = String(error?.message || error);
+      console.error('[SessionPersistence] Refresh failed:', msg);
+      setLastError(msg);
+
+      // If we hit rate limiting, STOP retrying for a while to avoid token revocation.
+      if (msg.includes('429') || msg.toLowerCase().includes('rate limit') || msg.toLowerCase().includes('over_request_rate_limit')) {
+        cooldownUntilRef.current = Date.now() + 60_000; // 60s cooldown
+        retryCountRef.current = 0;
+        setRetryCount(0);
+        setIsRetrying(false);
+        return false;
+      }
 
       retryCountRef.current += 1;
       const newRetryCount = retryCountRef.current;
@@ -81,7 +111,7 @@ export function useSessionPersistence(config: SessionPersistenceConfig = {}) {
         // Exponential backoff
         const delay = retryDelayMs * Math.pow(2, newRetryCount - 1);
         console.log(`[SessionPersistence] Scheduling retry in ${delay}ms`);
-        
+
         retryTimeoutRef.current = setTimeout(() => {
           refreshSession();
         }, delay);
@@ -92,6 +122,8 @@ export function useSessionPersistence(config: SessionPersistenceConfig = {}) {
       }
 
       return false;
+    } finally {
+      refreshInFlightRef.current = false;
     }
   }, [maxRetries, retryDelayMs]);
 
