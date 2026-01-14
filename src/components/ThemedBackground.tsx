@@ -2,6 +2,56 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useEffect, useState, useMemo } from 'react';
 import { TacticalGrid } from './dashboard/TacticalGrid';
 import { getThemeAssets, BackgroundEffect } from '@/lib/themeAssets';
+import { teamPosters, teamColors } from '@/lib/teamAssets';
+import { homeBackground } from '@/lib/teamAssets';
+
+// Team images mosaic for home screen background
+function TeamMosaicBackground() {
+  const teams = ['ALFA', 'BRAVO', 'CHARLIE', 'DELTA'] as const;
+  
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      {/* Home background image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-15"
+        style={{ backgroundImage: `url(${homeBackground})` }}
+      />
+      
+      {/* Team posters mosaic overlay */}
+      <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 opacity-10">
+        {teams.map((team) => (
+          <div
+            key={team}
+            className="relative bg-cover bg-center bg-no-repeat"
+            style={{ 
+              backgroundImage: `url(${teamPosters[team]})`,
+            }}
+          >
+            <div 
+              className="absolute inset-0"
+              style={{
+                background: `linear-gradient(180deg, 
+                  ${teamColors[team].glow} 0%, 
+                  transparent 30%,
+                  transparent 70%,
+                  ${teamColors[team].glow} 100%
+                )`,
+              }}
+            />
+          </div>
+        ))}
+      </div>
+      
+      {/* Central vignette overlay */}
+      <div 
+        className="absolute inset-0"
+        style={{
+          background: `radial-gradient(ellipse at center, transparent 0%, hsl(var(--background)) 70%)`,
+        }}
+      />
+    </div>
+  );
+}
 
 // Particle effect component
 function ParticleField({ effect }: { effect: BackgroundEffect }) {
@@ -446,6 +496,9 @@ export function ThemedBackground() {
 
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden">
+      {/* Team images mosaic background - always visible */}
+      <TeamMosaicBackground />
+      
       {/* Tactical Grid Overlay - for tactical themes */}
       {showTacticalGrid && (
         <TacticalGrid 
