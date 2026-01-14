@@ -20,7 +20,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Shield, Loader2, AlertTriangle, Eye, EyeOff, UserCheck, Lock, Sword, Target, Users, Palette } from 'lucide-react';
+import { Shield, Loader2, AlertTriangle, Eye, EyeOff, UserCheck, Lock, Sword, Target, Users, Palette, Fingerprint } from 'lucide-react';
 import { 
   validateCPF, 
   formatCPF, 
@@ -39,6 +39,7 @@ import { ThemedBackground } from '@/components/ThemedBackground';
 import { ThemedTeamCard } from '@/components/ThemedTeamCard';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
 import { ThemeSelector } from '@/components/ThemeSelector';
+import { useBiometricAuth } from '@/hooks/useBiometricAuth';
 
 interface Unit {
   id: string;
@@ -103,6 +104,7 @@ export default function Index() {
   const { toast } = useToast();
   const { playSound } = useSoundEffects();
   const { themeConfig } = useTheme();
+  const { isAvailable: isBiometricAvailable, isEnrolled: isBiometricEnrolled, enrolledCpf, enrollBiometric, authenticateBiometric } = useBiometricAuth();
 
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
   const [showCpfCheck, setShowCpfCheck] = useState(false);
@@ -114,6 +116,7 @@ export default function Index() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCheckingCpf, setIsCheckingCpf] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isBiometricLoading, setIsBiometricLoading] = useState(false);
   
   // Master login
   const [masterUsername, setMasterUsername] = useState('');
@@ -129,6 +132,7 @@ export default function Index() {
   const [loginPassword, setLoginPassword] = useState('');
   const [loginErrors, setLoginErrors] = useState<Record<string, string>>({});
   const [saveCredentialsEnabled, setSaveCredentialsEnabled] = useState(false);
+  const [enableBiometric, setEnableBiometric] = useState(false);
 
   // Registration form
   const [formData, setFormData] = useState({
@@ -560,13 +564,26 @@ export default function Index() {
     } else {
       // Save credentials if enabled
       if (saveCredentialsEnabled) {
-        // Get agent name for display
         const { data: agentData } = await supabase
           .from('agents')
           .select('name')
           .eq('cpf', cleanCpf)
           .single();
         saveCredential(cleanCpf, agentData?.name);
+      }
+      
+      // Enroll biometric if enabled and available
+      if (enableBiometric && isBiometricAvailable) {
+        const { data: agentData } = await supabase
+          .from('agents')
+          .select('name')
+          .eq('cpf', cleanCpf)
+          .single();
+        await enrollBiometric(cleanCpf, agentData?.name);
+        toast({
+          title: 'Biometria Configurada',
+          description: 'No próximo acesso, use sua biometria para entrar.',
+        });
       }
       
       toast({
