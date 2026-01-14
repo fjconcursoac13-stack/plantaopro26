@@ -2,10 +2,17 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>PlantaoPro - Gestão de Escalas</title>
     <meta name="description" content="Sistema completo para gestão de escalas e plantões. Simplifique o controle da sua equipe com o PlantaoPro." />
-    <meta name="theme-color" content="#0a0f1a" />
+    <meta name="theme-color" content="#f59e0b" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="PlantãoPro" />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/favicon.ico" />
 
     <meta property="og:title" content="PlantaoPro - Gestão de Escalas" />
     <meta property="og:description" content="Sistema completo para gestão de escalas e plantões." />
@@ -19,14 +26,16 @@
     </style>
 
     <script>
+      // Register service worker for push notifications
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function(registrations) {
-          for (let registration of registrations) { registration.unregister(); }
-        });
-      }
-      if ('caches' in window) {
-        caches.keys().then(function(names) {
-          for (let name of names) { caches.delete(name); }
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js', { scope: '/' })
+            .then(function(registration) {
+              console.log('SW registered:', registration.scope);
+            })
+            .catch(function(error) {
+              console.log('SW registration failed:', error);
+            });
         });
       }
     </script>
