@@ -13,6 +13,7 @@ import { AgentUpcomingCard } from '@/components/agent-panel/AgentUpcomingCard';
 import { ShiftCalendar } from '@/components/dashboard/ShiftCalendar';
 import { RecentActivity } from '@/components/dashboard/RecentActivity';
 import { OvertimeChart } from '@/components/dashboard/OvertimeChart';
+import { TeamShiftsPanel } from '@/components/dashboard/TeamShiftsPanel';
 import { ContributionMessage } from '@/components/ContributionMessage';
 import { UnitInfoCard } from '@/components/dashboard/UnitInfoCard';
 import { TeamUnlinkDialog } from '@/components/agents/TeamUnlinkDialog';
@@ -445,6 +446,13 @@ export default function Dashboard() {
                 {agent?.unit_id && <UnitInfoCard unitId={agent.unit_id} />}
               </div>
             </div>
+
+            {/* Team Shifts Panel - Admin only */}
+            {(isAdmin || masterSession) && (
+              <div>
+                <TeamShiftsPanel />
+              </div>
+            )}
 
             {/* Overtime Chart */}
             {isAdmin && (
