@@ -24,7 +24,8 @@ import {
   formatBirthDate, 
   parseBirthDate, 
   calculateAge,
-  formatPhone 
+  formatPhone,
+  validatePhone
 } from '@/lib/validators';
 import { SavedCredentials, saveCredential } from '@/components/auth/SavedCredentials';
 
@@ -57,6 +58,7 @@ export default function Auth() {
     unit_id: '',
     team: '',
     birth_date: '',
+    blood_type: '',
     phone: '',
     address: '',
     registerEmail: '',
@@ -167,12 +169,25 @@ export default function Auth() {
       errors.team = 'Selecione uma equipe';
     }
     
+    // Blood type validation (REQUIRED)
+    if (!formData.blood_type) {
+      errors.blood_type = 'Tipo sanguíneo é obrigatório';
+    }
+    
     // Birth date validation (optional but if provided must be valid)
     if (formData.birth_date && formData.birth_date.length > 0) {
       if (formData.birth_date.length !== 10) {
         errors.birth_date = 'Data incompleta (DD-MM-AAAA)';
       } else if (!parseBirthDate(formData.birth_date)) {
         errors.birth_date = 'Data de nascimento inválida';
+      }
+    }
+    
+    // Phone validation (optional but if provided must be valid)
+    if (formData.phone) {
+      const phoneValidation = validatePhone(formData.phone);
+      if (!phoneValidation.valid) {
+        errors.phone = phoneValidation.message || 'Telefone inválido';
       }
     }
     
@@ -377,6 +392,7 @@ export default function Auth() {
         team: formData.team,
         birth_date: birthDate,
         age: age,
+        blood_type: formData.blood_type,
         email: formData.registerEmail || null,
         phone: formData.phone || null,
         address: formData.address || null,
@@ -408,6 +424,7 @@ export default function Auth() {
         unit_id: '',
         team: '',
         birth_date: '',
+        blood_type: '',
         phone: '',
         address: '',
         registerEmail: '',
@@ -888,6 +905,35 @@ export default function Auth() {
                       </div>
                     )}
 
+                    {/* Blood Type - REQUIRED */}
+                    <div className="space-y-2">
+                      <Label className="text-slate-300 flex items-center gap-1">
+                        Tipo Sanguíneo *
+                        <span className="text-red-400 text-xs">(obrigatório)</span>
+                      </Label>
+                      <Select
+                        value={formData.blood_type}
+                        onValueChange={(value) => setFormData({ ...formData, blood_type: value })}
+                      >
+                        <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white">
+                          <SelectValue placeholder="Selecione seu tipo sanguíneo" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-slate-800 border-slate-700">
+                          {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map((type) => (
+                            <SelectItem key={type} value={type} className="text-white hover:bg-slate-700">
+                              {type}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {regErrors.blood_type && (
+                        <p className="text-sm text-red-400">{regErrors.blood_type}</p>
+                      )}
+                      <p className="text-xs text-amber-400">
+                        ⚠️ Informação essencial para emergências médicas durante o serviço.
+                      </p>
+                    </div>
+
                     {/* Birth Date */}
                     <div className="space-y-2">
                       <Label htmlFor="register-birth" className="text-slate-300">Data de Nascimento</Label>
@@ -955,18 +1001,33 @@ export default function Auth() {
                       )}
                     </div>
 
+                    {/* Optional fields notice */}
+                    <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/30 text-sm">
+                      <p className="text-blue-400 font-medium mb-1">📋 Informações Opcionais (mas importantes)</p>
+                      <p className="text-slate-400 text-xs">
+                        Telefone, endereço e email são opcionais, mas recomendamos preencher. 
+                        Sua equipe poderá contatar você em emergências e você receberá notificações importantes.
+                      </p>
+                    </div>
+
                     {/* Phone */}
                     <div className="space-y-2">
-                      <Label htmlFor="register-phone" className="text-slate-300">Telefone</Label>
+                      <Label htmlFor="register-phone" className="text-slate-300">Telefone / WhatsApp</Label>
                       <Input
                         id="register-phone"
                         type="text"
-                        placeholder="(00) 00000-0000"
+                        placeholder="(68) 99999-9999"
                         value={formData.phone}
                         onChange={handlePhoneChange}
                         className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500"
                         maxLength={15}
                       />
+                      {regErrors.phone && (
+                        <p className="text-sm text-red-400">{regErrors.phone}</p>
+                      )}
+                      <p className="text-xs text-slate-500">
+                        DDD + número com 9 dígitos. Ex: (68) 99999-9999
+                      </p>
                     </div>
 
                     {/* Address */}
@@ -975,12 +1036,15 @@ export default function Auth() {
                       <Input
                         id="register-address"
                         type="text"
-                        placeholder="Seu endereço"
+                        placeholder="Rua, número, bairro, cidade"
                         value={formData.address}
                         onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                         className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500"
                         maxLength={255}
                       />
+                      <p className="text-xs text-slate-500">
+                        Útil para colegas em caso de emergência.
+                      </p>
                     </div>
 
                     {/* Email (optional) */}
