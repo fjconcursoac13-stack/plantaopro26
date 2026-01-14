@@ -365,14 +365,14 @@ export default function Dashboard() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
                 { 
-                  icon: Calendar, 
-                  text: 'Gestão de Escalas', 
+                  icon: Building2, 
+                  text: 'Unidades', 
                   color: 'text-blue-400', 
                   bg: 'from-blue-500/20 to-blue-600/10', 
-                  route: '/shifts',
-                  tooltip: 'Visualize e gerencie todas as escalas de plantão dos agentes',
-                  count: stats.activeShifts,
-                  countLabel: 'hoje'
+                  route: '/units',
+                  tooltip: 'Visualize e gerencie as unidades do sistema',
+                  count: null,
+                  countLabel: ''
                 },
                 { 
                   icon: Users, 
