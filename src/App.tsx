@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { useGlobalNavigation } from "@/hooks/useGlobalNavigation";
+import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -20,6 +21,7 @@ import Units from "./pages/Units";
 import Settings from "./pages/Settings";
 import Admin from "./pages/Admin";
 import Master from "./pages/Master";
+import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -54,8 +56,11 @@ const App = () => (
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/master" element={<Master />} />
+                <Route path="/install" element={<Install />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              {/* PWA Install Prompt - Shows on all pages when installable */}
+              <PWAInstallPrompt />
             </GlobalNavigationHandler>
           </AuthProvider>
         </BrowserRouter>
