@@ -2,7 +2,7 @@ import { useState, useRef, MouseEvent, useCallback } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
 import { cn } from '@/lib/utils';
-import { Radio, Zap, Star } from 'lucide-react';
+import { Radio, Star } from 'lucide-react';
 import { getThemeAssets } from '@/lib/themeAssets';
 import { teamPosters, teamColors } from '@/lib/teamAssets';
 
@@ -96,27 +96,27 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
         <div 
           className="absolute -inset-1 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 blur-lg group-hover:blur-xl"
           style={{ 
-            background: `conic-gradient(from 0deg, ${colors.glowColor.replace('shadow-', '').replace('/30', '')} 0deg, transparent 60deg, ${colors.glowColor.replace('shadow-', '').replace('/30', '')} 120deg, transparent 180deg, ${colors.glowColor.replace('shadow-', '').replace('/30', '')} 240deg, transparent 300deg, ${colors.glowColor.replace('shadow-', '').replace('/30', '')} 360deg)`,
+            background: `conic-gradient(from 0deg, ${teamColors[team as keyof typeof teamColors]?.primary || '#fff'} 0deg, transparent 60deg, ${teamColors[team as keyof typeof teamColors]?.primary || '#fff'} 120deg, transparent 180deg, ${teamColors[team as keyof typeof teamColors]?.primary || '#fff'} 240deg, transparent 300deg, ${teamColors[team as keyof typeof teamColors]?.primary || '#fff'} 360deg)`,
             animation: 'spin 3s linear infinite'
           }}
         />
         
-        {/* Pulsing outer mega glow */}
+        {/* Pulsing outer mega glow with team color */}
         <div 
-          className={cn(
-            "absolute -inset-3 rounded-xl opacity-0 group-hover:opacity-80 transition-all duration-500 blur-2xl",
-            colors.glowColor
-          )}
-          style={{ animationDuration: '1.5s' }}
+          className="absolute -inset-3 rounded-xl opacity-0 group-hover:opacity-60 transition-all duration-500 blur-2xl"
+          style={{ 
+            backgroundColor: teamColors[team as keyof typeof teamColors]?.primary || '#fff',
+            animationDuration: '1.5s' 
+          }}
         />
         
         {/* Secondary pulse layer */}
         <div 
-          className={cn(
-            "absolute -inset-4 rounded-2xl opacity-0 group-hover:opacity-40 transition-all duration-700 blur-3xl animate-pulse",
-            colors.glowColor
-          )}
-          style={{ animationDuration: '2s' }}
+          className="absolute -inset-4 rounded-2xl opacity-0 group-hover:opacity-30 transition-all duration-700 blur-3xl animate-pulse"
+          style={{ 
+            backgroundColor: teamColors[team as keyof typeof teamColors]?.glow || 'rgba(255,255,255,0.3)',
+            animationDuration: '2s' 
+          }}
         />
         
         {/* Enhanced Glare effect */}
@@ -127,35 +127,34 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
           }}
         />
         
-        {/* Main Card */}
+        {/* Main Card - Fixed aspect ratio */}
         <div 
           className={cn(
             "relative overflow-hidden rounded-lg md:rounded-xl",
             "border-2 transition-all duration-300",
-            colors.borderColor,
-            "group-hover:border-opacity-100 group-hover:shadow-2xl",
+            "aspect-[3/4] landscape:aspect-[4/3]",
           )}
+          style={{ 
+            borderColor: teamColors[team as keyof typeof teamColors]?.primary || '#fff',
+          }}
         >
-          {/* Team Poster Background */}
+          {/* Team Poster Background - Full coverage */}
           <div 
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-110"
             style={{ 
               backgroundImage: `url(${teamPosters[team as keyof typeof teamPosters]})`,
             }}
           />
-          {/* Dark overlay for readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/40 group-hover:from-black/80 group-hover:via-black/50 group-hover:to-black/30 transition-all duration-300" />
+          {/* Dark overlay for readability - stronger at bottom for text */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-black/20 group-hover:from-black/90 group-hover:via-black/40 group-hover:to-black/10 transition-all duration-300" />
           
-          {/* Top gradient stripe - animated on hover */}
+          {/* Top gradient stripe with team color */}
           <div 
-            className={cn(
-              "relative h-0.5 md:h-1.5 w-full bg-gradient-to-r transition-all duration-300 group-hover:h-1 md:group-hover:h-2", 
-              gradient
-            )} 
+            className="absolute top-0 left-0 right-0 h-1 md:h-2 transition-all duration-300 group-hover:h-1.5 md:group-hover:h-2.5" 
             style={{ backgroundColor: teamColors[team as keyof typeof teamColors]?.primary }}
           />
           
-          {/* Animated scan line - more visible */}
+          {/* Animated scan line */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
             <div 
               className="absolute w-full h-16 -translate-y-full bg-gradient-to-b from-transparent via-white/20 to-transparent"
@@ -163,112 +162,68 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
             />
           </div>
           
-          {/* Shimmer effect on hover */}
-          <div 
-            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-            style={{
-              background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.1) 45%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0.1) 55%, transparent 60%)',
-              backgroundSize: '200% 100%',
-              animation: 'shimmer 2s infinite'
-            }}
-          />
-          
-          {/* Corner accents - Hidden on mobile for cleaner look */}
-          <div className={cn("absolute top-2 left-2 w-3 h-3 md:w-4 md:h-4 border-l-2 border-t-2 transition-all hidden sm:block", colors.borderColor, "group-hover:border-opacity-100 group-hover:w-4 group-hover:h-4 md:group-hover:w-5 md:group-hover:h-5")} />
-          <div className={cn("absolute top-2 right-2 w-3 h-3 md:w-4 md:h-4 border-r-2 border-t-2 transition-all hidden sm:block", colors.borderColor, "group-hover:border-opacity-100 group-hover:w-4 group-hover:h-4 md:group-hover:w-5 md:group-hover:h-5")} />
-          <div className={cn("absolute bottom-2 left-2 w-3 h-3 md:w-4 md:h-4 border-l-2 border-b-2 transition-all hidden sm:block", colors.borderColor, "group-hover:border-opacity-100 group-hover:w-4 group-hover:h-4 md:group-hover:w-5 md:group-hover:h-5")} />
-          <div className={cn("absolute bottom-2 right-2 w-3 h-3 md:w-4 md:h-4 border-r-2 border-b-2 transition-all hidden sm:block", colors.borderColor, "group-hover:border-opacity-100 group-hover:w-4 group-hover:h-4 md:group-hover:w-5 md:group-hover:h-5")} />
-          
-          {/* Status dots - more animated on hover */}
-          <div className="absolute top-2 right-2 flex gap-0.5 md:gap-1">
-            <div className="w-1 h-1 rounded-full bg-green-500 animate-pulse group-hover:w-1.5 group-hover:h-1.5 transition-all" />
-            <div className="w-1 h-1 rounded-full bg-green-500/50 animate-pulse group-hover:bg-green-500 transition-all" style={{ animationDelay: '0.3s' }} />
+          {/* Status indicator */}
+          <div className="absolute top-2 right-2 flex gap-1 z-10">
+            <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-green-500 animate-pulse" />
           </div>
           
-          {/* Content - landscape optimized */}
-          <div className="p-3 landscape:p-2 sm:p-5 md:p-6 relative z-10">
-            <div className="flex flex-col landscape:flex-row landscape:items-center landscape:gap-3 items-center" style={{ transform: 'translateZ(30px)' }}>
-              {/* Icon container with animated rings */}
-              <div className="relative mb-2 landscape:mb-0 md:mb-4">
-                {/* Outer ring animation - Hidden on mobile */}
-                <div className={cn(
-                  "absolute -inset-3 rounded-full border opacity-30 group-hover:opacity-80 transition-opacity animate-[spin_10s_linear_infinite] hidden md:block",
-                  colors.borderColor
-                )}>
-                  <div className={cn("absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-gradient-to-r group-hover:w-3 group-hover:h-3 transition-all", gradient)} />
-                </div>
-                
-                {/* Icon background - with hover scale */}
-                <div 
-                  className={cn(
-                    "relative w-10 h-10 landscape:w-12 landscape:h-12 sm:w-14 sm:h-14 md:w-20 md:h-20 rounded-full flex items-center justify-center",
-                    "bg-gradient-to-br shadow-xl group-hover:shadow-2xl transition-all duration-300 group-hover:scale-110",
-                    gradient,
-                    "border-2 border-white/20 group-hover:border-white/50"
-                  )}
-                >
-                  <Icon className="h-5 w-5 landscape:h-6 landscape:w-6 sm:h-7 sm:w-7 md:h-10 md:w-10 text-white drop-shadow-lg group-hover:drop-shadow-2xl transition-all" />
-                  
-                  {/* Inner glow - more intense on hover */}
-                  <div className="absolute inset-0 rounded-full bg-white/10 group-hover:bg-white/30 transition-colors duration-300" />
-                </div>
-                
-                {/* Status indicator with enhanced glow */}
-                <div className="absolute -bottom-0.5 -right-0.5">
-                  <div className="w-2.5 h-2.5 md:w-4 md:h-4 rounded-full bg-green-500 border-2 border-slate-800 shadow-lg shadow-green-500/50 animate-pulse group-hover:shadow-green-500/80 group-hover:shadow-xl transition-all" />
-                </div>
+          {/* Content - Bottom aligned for better image visibility */}
+          <div className="absolute inset-x-0 bottom-0 p-2 landscape:p-2 sm:p-4 z-10">
+            <div className="flex flex-col items-center landscape:flex-row landscape:items-center landscape:gap-3">
+              {/* Icon with team color */}
+              <div 
+                className="w-8 h-8 landscape:w-10 landscape:h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mb-1 landscape:mb-0 sm:mb-2 shadow-xl group-hover:scale-110 transition-transform duration-300"
+                style={{ 
+                  backgroundColor: teamColors[team as keyof typeof teamColors]?.primary,
+                  boxShadow: `0 0 20px ${teamColors[team as keyof typeof teamColors]?.glow}`,
+                }}
+              >
+                <Icon className="h-4 w-4 landscape:h-5 landscape:w-5 sm:h-6 sm:w-6 md:h-8 md:w-8 text-white drop-shadow-lg" />
               </div>
               
-              {/* Text content - landscape optimized */}
-              <div className="flex flex-col items-center landscape:items-start landscape:flex-1">
-                {/* Team identifier */}
-                <div className="flex items-center gap-1 mb-0.5 landscape:mb-0 md:mb-2">
-                  <Star className={cn("h-2 w-2 md:h-3 md:w-3 group-hover:animate-pulse", colors.color)} />
-                  <h3 className={cn(
-                    "text-sm landscape:text-base sm:text-lg md:text-xl font-black tracking-[0.1em] md:tracking-[0.2em] group-hover:tracking-[0.15em] md:group-hover:tracking-[0.25em] transition-all",
-                    colors.color
-                  )}>
+              {/* Team name - Fixed positioning */}
+              <div className="flex flex-col items-center landscape:items-start landscape:flex-1 min-w-0 max-w-full">
+                <div className="flex items-center gap-1 mb-0.5">
+                  <Star className="h-2 w-2 md:h-3 md:w-3 text-white/80 group-hover:animate-pulse shrink-0" />
+                  <h3 
+                    className="text-sm landscape:text-base sm:text-lg md:text-2xl font-black tracking-widest text-white drop-shadow-lg truncate"
+                    style={{ 
+                      textShadow: `0 0 20px ${teamColors[team as keyof typeof teamColors]?.glow}`,
+                    }}
+                  >
                     {team}
                   </h3>
-                  <Star className={cn("h-2 w-2 md:h-3 md:w-3 group-hover:animate-pulse", colors.color)} />
+                  <Star className="h-2 w-2 md:h-3 md:w-3 text-white/80 group-hover:animate-pulse shrink-0" />
                 </div>
                 
-                {/* Description - hidden in landscape mobile */}
-                <p className="text-slate-300 text-[9px] landscape:hidden sm:text-xs md:text-sm text-center landscape:text-left font-semibold tracking-wider mb-0.5 md:mb-2 leading-tight">
+                {/* Description - Hidden on small screens */}
+                <p className="hidden sm:block text-white/90 text-[10px] md:text-xs text-center landscape:text-left font-medium truncate max-w-full">
                   {descriptions.description}
-                </p>
-                
-                {/* Slogan - hidden in landscape mobile */}
-                <p className={cn("text-[8px] landscape:hidden sm:text-[10px] md:text-xs text-center landscape:text-left font-medium tracking-widest opacity-80 group-hover:opacity-100 transition-opacity", colors.color)}>
-                  {descriptions.slogan}
                 </p>
               </div>
               
-              {/* Action button - landscape optimized */}
-              <div className="mt-2 landscape:mt-0 md:mt-5 w-full landscape:w-auto">
-                <div className={cn(
-                  "flex items-center justify-center gap-1.5 md:gap-3 px-2 py-1.5 landscape:px-3 md:px-4 md:py-3 rounded-lg",
-                  "bg-gradient-to-r from-slate-700/80 to-slate-800/80",
-                  "border transition-all duration-300",
-                  colors.borderColor,
-                  "group-hover:from-slate-600/90 group-hover:to-slate-700/90",
-                  "group-hover:shadow-lg group-hover:scale-105"
-                )}>
-                  <Radio className="w-2.5 h-2.5 md:w-4 md:h-4 text-green-400 animate-pulse" />
-                  <span className="text-[8px] landscape:text-[9px] sm:text-xs md:text-sm font-bold text-white tracking-[0.05em] md:tracking-[0.15em] uppercase">
-                    Acessar Sistema
+              {/* Access button - simplified */}
+              <div className="mt-1.5 landscape:mt-0 sm:mt-3 w-full landscape:w-auto">
+                <div 
+                  className="flex items-center justify-center gap-1.5 px-2 py-1 landscape:px-3 sm:px-4 sm:py-2 rounded-lg bg-black/60 backdrop-blur-sm border transition-all duration-300 group-hover:bg-black/80 group-hover:scale-105"
+                  style={{ 
+                    borderColor: teamColors[team as keyof typeof teamColors]?.primary,
+                  }}
+                >
+                  <Radio className="w-2 h-2 sm:w-3 sm:h-3 text-green-400 animate-pulse shrink-0" />
+                  <span className="text-[8px] sm:text-[10px] md:text-xs font-bold text-white tracking-wider uppercase whitespace-nowrap">
+                    ACESSAR
                   </span>
-                  <Zap className={cn("w-2.5 h-2.5 md:w-4 md:h-4 opacity-0 group-hover:opacity-100 group-hover:animate-pulse transition-all", colors.color)} />
                 </div>
               </div>
             </div>
           </div>
           
-          {/* Bottom accent line - animated */}
-          <div className={cn(
-            "h-0.5 w-full bg-gradient-to-r opacity-50 group-hover:opacity-100 group-hover:h-1 transition-all duration-300",
-            gradient
-          )} />
+          {/* Bottom accent line with team color */}
+          <div 
+            className="absolute bottom-0 left-0 right-0 h-0.5 md:h-1 opacity-80 group-hover:opacity-100 transition-all duration-300"
+            style={{ backgroundColor: teamColors[team as keyof typeof teamColors]?.primary }}
+          />
         </div>
       </div>
     </div>
