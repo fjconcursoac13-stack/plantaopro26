@@ -725,12 +725,12 @@ export default function Index() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background relative overflow-hidden">
+    <div className="h-[100dvh] flex flex-col bg-background relative overflow-hidden">
       {/* Themed Animated Background */}
       <ThemedBackground />
 
-      {/* Security Status Bar - Professional */}
-      <div className="bg-slate-900/95 backdrop-blur-sm border-b border-primary/20 py-2 px-4 relative z-20">
+      {/* Security Status Bar - Fixed at top */}
+      <div className="bg-slate-900/95 backdrop-blur-sm border-b border-primary/20 py-2 px-4 relative z-20 shrink-0">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
@@ -773,8 +773,8 @@ export default function Index() {
         </div>
       </div>
 
-      {/* Hero Section - Compact */}
-      <header className="py-4 sm:py-6 px-3 sm:px-4 relative z-10">
+      {/* Hero Section - Fixed height, no scroll */}
+      <header className="py-3 sm:py-4 px-3 sm:px-4 relative z-10 shrink-0">
         <div className="max-w-4xl mx-auto text-center">
           {/* Animated Security Badge - Smaller on mobile */}
           <div className="mb-2 sm:mb-4 flex flex-col items-center">
@@ -862,8 +862,8 @@ export default function Index() {
         </div>
       </header>
 
-      {/* Teams Grid Section - Centered and proportional */}
-      <section className="flex-1 py-4 sm:py-6 px-3 sm:px-4 relative z-10 flex items-center justify-center">
+      {/* Teams Grid Section - Fills remaining space */}
+      <section className="flex-1 py-2 sm:py-4 px-3 sm:px-4 relative z-10 flex items-center justify-center min-h-0">
         <div className="w-full max-w-xs sm:max-w-md md:max-w-3xl lg:max-w-4xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
             {teams.map((team, index) => (
@@ -884,8 +884,8 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Footer - Professional - Compact for mobile */}
-      <footer className="py-2 sm:py-3 px-2 sm:px-4 bg-slate-900/90 backdrop-blur-sm border-t border-primary/20 relative z-10">
+      {/* Footer - Fixed at bottom */}
+      <footer className="py-2 px-2 sm:px-4 bg-slate-900/95 backdrop-blur-sm border-t border-primary/20 relative z-20 shrink-0">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="flex items-center gap-1.5 sm:gap-2">
