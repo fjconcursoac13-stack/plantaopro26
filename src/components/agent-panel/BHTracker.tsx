@@ -270,6 +270,7 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
   // Edit state
   const [editingEntry, setEditingEntry] = useState<OvertimeEntry | null>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showEditConfirm, setShowEditConfirm] = useState(false);
   const [editHours, setEditHours] = useState('');
   const [isEditing, setIsEditing] = useState(false);
 
@@ -640,13 +641,13 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
     }
   };
 
-  const handleEditEntry = (entry: OvertimeEntry) => {
-    setEditingEntry(entry);
-    setEditHours(entry.hours.toString());
-    setShowEditDialog(true);
+  const handleRequestEdit = () => {
+    // Close edit dialog and show confirmation
+    setShowEditDialog(false);
+    setShowEditConfirm(true);
   };
 
-  const handleSaveEdit = async () => {
+  const handleConfirmEdit = async () => {
     if (!editingEntry) return;
 
     const newHours = parseFloat(editHours);
@@ -683,6 +684,7 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
       if (error) throw error;
 
       toast.success(`Horas atualizadas para ${newHours}h`);
+      setShowEditConfirm(false);
       setShowEditDialog(false);
       setEditingEntry(null);
       fetchBHData();
@@ -692,6 +694,12 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
     } finally {
       setIsEditing(false);
     }
+  };
+
+  const handleEditEntry = (entry: OvertimeEntry) => {
+    setEditingEntry(entry);
+    setEditHours(entry.hours.toString());
+    setShowEditDialog(true);
   };
 
   const handleRequestDelete = (entry: OvertimeEntry) => {
@@ -740,9 +748,15 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
   }
 
   if (compact) {
+    const today = new Date();
+    const todayDay = today.getDate();
+    const isFirstFortnight = todayDay <= 15;
+    const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+
     return (
       <Card className="bg-gradient-to-br from-slate-800 to-slate-800/50 border-slate-700">
-        <CardContent className="p-4">
+        <CardContent className="p-4 space-y-3">
+          {/* Balance Header */}
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-lg ${balance >= 0 ? 'bg-green-500/20' : 'bg-red-500/20'}`}>
               {balance >= 0 ? (
@@ -757,15 +771,151 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
                 {balance >= 0 ? '+' : ''}{balance.toFixed(1)}h
               </p>
             </div>
+            <div className="text-right">
+              <p className="text-xs text-slate-500">Valor</p>
+              <p className="text-sm font-semibold text-amber-400">R$ {totalValue.toFixed(2)}</p>
+            </div>
           </div>
-          <div className="mt-2 flex items-center justify-between text-xs">
-            <span className="text-slate-400">R$ {totalValue.toFixed(2)}</span>
-            <span className="text-slate-500">{balance.toFixed(1)}/{bhLimit}h</span>
+
+          {/* Progress Bar */}
+          <div className="space-y-1">
+            <div className="flex items-center justify-between text-[10px]">
+              <span className="text-slate-500">{balance.toFixed(1)}/{bhLimit}h</span>
+              <span className={isNearLimit ? 'text-amber-400' : 'text-slate-500'}>
+                {progressPercent.toFixed(0)}%
+              </span>
+            </div>
+            <Progress 
+              value={progressPercent} 
+              className={`h-1.5 ${isNearLimit ? '[&>div]:bg-amber-500' : ''}`}
+            />
           </div>
-          <Progress 
-            value={progressPercent} 
-            className="mt-2 h-1.5"
-          />
+
+          {/* Compact Fortnight Scale */}
+          <div className="pt-2 border-t border-slate-700/50">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-1.5">
+                <Shield className="h-3 w-3 text-amber-500" />
+                <span className="text-[10px] font-medium text-slate-400">Quinzenas</span>
+              </div>
+              <Badge className={`text-[9px] py-0 px-1.5 ${
+                isFirstFortnight 
+                  ? 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+                  : 'bg-purple-500/20 text-purple-400 border-purple-500/30'
+              }`}>
+                {isFirstFortnight ? '1ª' : '2ª'} Ativa
+              </Badge>
+            </div>
+
+            {/* Mini Scale Grid */}
+            <div className="grid grid-cols-2 gap-1.5">
+              {/* First Fortnight Mini */}
+              <div className={`p-1.5 rounded border transition-all ${
+                isFirstFortnight 
+                  ? 'bg-blue-500/10 border-blue-500/40' 
+                  : 'bg-slate-700/20 border-slate-600/30 opacity-50'
+              }`}>
+                <div className="flex items-center gap-1 mb-1">
+                  {isFirstFortnight ? (
+                    <Unlock className="h-2.5 w-2.5 text-blue-400" />
+                  ) : (
+                    <Lock className="h-2.5 w-2.5 text-slate-500" />
+                  )}
+                  <span className={`text-[9px] font-medium ${isFirstFortnight ? 'text-blue-400' : 'text-slate-500'}`}>
+                    1ª (1-15)
+                  </span>
+                </div>
+                <div className="flex gap-px flex-wrap">
+                  {Array.from({ length: 15 }, (_, i) => {
+                    const day = i + 1;
+                    const isToday = todayDay === day && isFirstFortnight;
+                    const hasBH = bhDates.some(d => 
+                      d.getDate() === day && 
+                      d.getMonth() === today.getMonth() && 
+                      d.getFullYear() === today.getFullYear() &&
+                      day <= 15
+                    );
+                    return (
+                      <div
+                        key={day}
+                        className={`w-2 h-2 rounded-sm ${
+                          isToday 
+                            ? 'bg-blue-500 ring-1 ring-blue-300'
+                            : hasBH 
+                              ? 'bg-green-500/60'
+                              : isFirstFortnight && day <= todayDay
+                                ? 'bg-amber-500/40'
+                                : 'bg-slate-600/30'
+                        }`}
+                        title={`Dia ${day}${isToday ? ' (Hoje)' : ''}${hasBH ? ' - BH' : ''}`}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Second Fortnight Mini */}
+              <div className={`p-1.5 rounded border transition-all ${
+                !isFirstFortnight 
+                  ? 'bg-purple-500/10 border-purple-500/40' 
+                  : 'bg-slate-700/20 border-slate-600/30 opacity-50'
+              }`}>
+                <div className="flex items-center gap-1 mb-1">
+                  {!isFirstFortnight ? (
+                    <Unlock className="h-2.5 w-2.5 text-purple-400" />
+                  ) : (
+                    <Lock className="h-2.5 w-2.5 text-slate-500" />
+                  )}
+                  <span className={`text-[9px] font-medium ${!isFirstFortnight ? 'text-purple-400' : 'text-slate-500'}`}>
+                    2ª (16-{lastDayOfMonth})
+                  </span>
+                </div>
+                <div className="flex gap-px flex-wrap">
+                  {Array.from({ length: lastDayOfMonth - 15 }, (_, i) => {
+                    const day = i + 16;
+                    const isToday = todayDay === day && !isFirstFortnight;
+                    const hasBH = bhDates.some(d => 
+                      d.getDate() === day && 
+                      d.getMonth() === today.getMonth() && 
+                      d.getFullYear() === today.getFullYear() &&
+                      day >= 16
+                    );
+                    return (
+                      <div
+                        key={day}
+                        className={`w-2 h-2 rounded-sm ${
+                          isToday 
+                            ? 'bg-purple-500 ring-1 ring-purple-300'
+                            : hasBH 
+                              ? 'bg-green-500/60'
+                              : !isFirstFortnight && day <= todayDay
+                                ? 'bg-amber-500/40'
+                                : 'bg-slate-600/30'
+                        }`}
+                        title={`Dia ${day}${isToday ? ' (Hoje)' : ''}${hasBH ? ' - BH' : ''}`}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Compact Legend */}
+            <div className="flex items-center justify-center gap-3 mt-1.5 text-[8px]">
+              <div className="flex items-center gap-0.5">
+                <div className="w-1.5 h-1.5 rounded-sm bg-green-500/60" />
+                <span className="text-slate-500">BH</span>
+              </div>
+              <div className="flex items-center gap-0.5">
+                <div className="w-1.5 h-1.5 rounded-sm bg-amber-500/40" />
+                <span className="text-slate-500">Sem</span>
+              </div>
+              <div className="flex items-center gap-0.5">
+                <div className="w-1.5 h-1.5 rounded-sm bg-blue-500" />
+                <span className="text-slate-500">Hoje</span>
+              </div>
+            </div>
+          </div>
         </CardContent>
       </Card>
     );
@@ -1632,7 +1782,100 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
               Cancelar
             </Button>
             <Button
-              onClick={handleSaveEdit}
+              onClick={handleRequestEdit}
+              disabled={isEditing || parseFloat(editHours) === editingEntry?.hours}
+              className="bg-blue-500 hover:bg-blue-600 text-white"
+            >
+              Revisar Alteração
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Confirmation Dialog */}
+      <AlertDialog open={showEditConfirm} onOpenChange={setShowEditConfirm}>
+        <AlertDialogContent className="bg-slate-800 border-slate-700">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white flex items-center gap-2">
+              <Edit2 className="h-5 w-5 text-blue-400" />
+              Confirmar Alteração
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="text-slate-400">
+                {editingEntry && (
+                  <div className="space-y-3 mt-2">
+                    <p>Revise as alterações antes de confirmar:</p>
+                    
+                    {/* Entry Info */}
+                    <div className="p-3 bg-slate-700/30 rounded-lg">
+                      <p className="text-slate-300 font-medium text-sm">{editingEntry.description}</p>
+                      <p className="text-xs text-slate-500 mt-1">
+                        {format(new Date(editingEntry.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                      </p>
+                    </div>
+
+                    {/* Changes Preview */}
+                    <div className="grid grid-cols-2 gap-2">
+                      {/* Before */}
+                      <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                        <p className="text-[10px] text-red-400 uppercase font-semibold mb-1">Antes</p>
+                        <p className="text-xl font-bold text-red-400">{editingEntry.hours}h</p>
+                        <p className="text-xs text-slate-500">
+                          R$ {(editingEntry.hours * hourlyRate).toFixed(2)}
+                        </p>
+                      </div>
+                      
+                      {/* After */}
+                      <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                        <p className="text-[10px] text-green-400 uppercase font-semibold mb-1">Depois</p>
+                        <p className="text-xl font-bold text-green-400">{parseFloat(editHours) || 0}h</p>
+                        <p className="text-xs text-slate-500">
+                          R$ {((parseFloat(editHours) || 0) * hourlyRate).toFixed(2)}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Difference */}
+                    {(() => {
+                      const diff = (parseFloat(editHours) || 0) - editingEntry.hours;
+                      const diffValue = diff * hourlyRate;
+                      const isPositive = diff > 0;
+                      return (
+                        <div className={`p-2 rounded-lg text-center ${
+                          isPositive ? 'bg-green-500/10 border border-green-500/30' : 'bg-red-500/10 border border-red-500/30'
+                        }`}>
+                          <p className="text-xs text-slate-400">Diferença</p>
+                          <p className={`text-sm font-bold ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+                            {isPositive ? '+' : ''}{diff.toFixed(1)}h ({isPositive ? '+' : ''}R$ {diffValue.toFixed(2)})
+                          </p>
+                        </div>
+                      );
+                    })()}
+
+                    {/* Impact on Balance */}
+                    <div className="p-2 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                      <p className="text-xs text-slate-400 text-center">Novo saldo após alteração</p>
+                      <p className="text-center font-bold text-amber-400">
+                        {(balance - editingEntry.hours + (parseFloat(editHours) || 0)).toFixed(1)}h
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel 
+              className="border-slate-600 text-slate-300 hover:bg-slate-700"
+              onClick={() => {
+                setShowEditConfirm(false);
+                setShowEditDialog(true);
+              }}
+            >
+              Voltar e Editar
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmEdit}
               disabled={isEditing}
               className="bg-blue-500 hover:bg-blue-600 text-white"
             >
@@ -1642,12 +1885,12 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
                   Salvando...
                 </>
               ) : (
-                'Salvar Alteração'
+                'Confirmar Alteração'
               )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
