@@ -8,7 +8,11 @@ import {
   QrCode, Radio as RadioIcon, RefreshCw, Rocket, RotateCcw, Satellite, 
   ScanLine, Search, Send, Server, Settings, ShieldAlert, ShieldCheck, 
   Signal, Smartphone, Speaker, Star, Sword, Terminal, Timer, ToggleLeft, 
-  Truck, Tv, Users, Video, Volume2, Watch, WifiOff, Wrench
+  Truck, Tv, Users, Video, Volume2, Watch, WifiOff, Wrench,
+  Crown, Swords, CircleDot, Hexagon, ShieldHalf, UserCog, Milestone, Mountain,
+  Waves, Sparkles, Bolt, Diamond, Pentagon, Skull, Flame as FireIcon, Ghost,
+  Glasses, Orbit, PanelTop, Scan, Binary, Gem, Medal, BadgeCheck, 
+  CircleUser, UserCheck, Locate, LocateFixed
 } from 'lucide-react';
 import type { ThemeType } from '@/contexts/ThemeContext';
 import type { LucideIcon } from 'lucide-react';
@@ -66,10 +70,10 @@ export const themeAssets: Record<ThemeType, ThemeAssets> = {
     mainIcon: Crosshair,
     decorativeIcons: [Radio, Siren, Lock],
     teamIcons: {
-      ALFA: Shield,
-      BRAVO: Sword,
-      CHARLIE: Target,
-      DELTA: Users,
+      ALFA: Crown,
+      BRAVO: Swords,
+      CHARLIE: Crosshair,
+      DELTA: ShieldHalf,
     },
     teamColors: {
       ALFA: { color: 'text-amber-400', bgGradient: 'from-amber-900/80 via-amber-800/60 to-slate-900/90', borderColor: 'border-amber-500/60', glowColor: 'shadow-amber-500/30' },
@@ -100,10 +104,10 @@ export const themeAssets: Record<ThemeType, ThemeAssets> = {
     mainIcon: Shield,
     decorativeIcons: [Star, Compass, Anchor],
     teamIcons: {
-      ALFA: ShieldCheck,
-      BRAVO: Sword,
-      CHARLIE: Anchor,
-      DELTA: Compass,
+      ALFA: Medal,
+      BRAVO: Swords,
+      CHARLIE: Milestone,
+      DELTA: Mountain,
     },
     teamColors: {
       ALFA: { color: 'text-green-400', bgGradient: 'from-green-900/80 via-green-800/60 to-slate-900/90', borderColor: 'border-green-500/60', glowColor: 'shadow-green-500/30' },
@@ -134,10 +138,10 @@ export const themeAssets: Record<ThemeType, ThemeAssets> = {
     mainIcon: Cpu,
     decorativeIcons: [Zap, Wifi, BrainCircuit],
     teamIcons: {
-      ALFA: Terminal,
-      BRAVO: BrainCircuit,
-      CHARLIE: QrCode,
-      DELTA: Server,
+      ALFA: Binary,
+      BRAVO: Orbit,
+      CHARLIE: Hexagon,
+      DELTA: Atom,
     },
     teamColors: {
       ALFA: { color: 'text-cyan-400', bgGradient: 'from-cyan-900/80 via-cyan-800/60 to-slate-900/90', borderColor: 'border-cyan-500/60', glowColor: 'shadow-cyan-500/30' },
@@ -168,10 +172,10 @@ export const themeAssets: Record<ThemeType, ThemeAssets> = {
     mainIcon: Award,
     decorativeIcons: [Star, Key, ShieldCheck],
     teamIcons: {
-      ALFA: ShieldCheck,
-      BRAVO: Star,
+      ALFA: BadgeCheck,
+      BRAVO: Gem,
       CHARLIE: Award,
-      DELTA: Key,
+      DELTA: Crown,
     },
     teamColors: {
       ALFA: { color: 'text-blue-400', bgGradient: 'from-blue-900/80 via-blue-800/60 to-slate-900/90', borderColor: 'border-blue-500/60', glowColor: 'shadow-blue-500/30' },
@@ -202,10 +206,10 @@ export const themeAssets: Record<ThemeType, ThemeAssets> = {
     mainIcon: Flame,
     decorativeIcons: [AlertTriangle, Bomb, Biohazard],
     teamIcons: {
-      ALFA: Flame,
-      BRAVO: Bomb,
-      CHARLIE: AlertTriangle,
-      DELTA: Biohazard,
+      ALFA: Skull,
+      BRAVO: Flame,
+      CHARLIE: Zap,
+      DELTA: AlertTriangle,
     },
     teamColors: {
       ALFA: { color: 'text-red-400', bgGradient: 'from-red-900/80 via-red-800/60 to-slate-900/90', borderColor: 'border-red-500/60', glowColor: 'shadow-red-500/30' },
@@ -236,10 +240,10 @@ export const themeAssets: Record<ThemeType, ThemeAssets> = {
     mainIcon: Snowflake,
     decorativeIcons: [Cloud, Compass, Navigation],
     teamIcons: {
-      ALFA: Snowflake,
-      BRAVO: Navigation,
-      CHARLIE: Compass,
-      DELTA: Cloud,
+      ALFA: Diamond,
+      BRAVO: Sparkles,
+      CHARLIE: Waves,
+      DELTA: Snowflake,
     },
     teamColors: {
       ALFA: { color: 'text-sky-400', bgGradient: 'from-sky-900/80 via-sky-800/60 to-slate-900/90', borderColor: 'border-sky-500/60', glowColor: 'shadow-sky-500/30' },
@@ -270,10 +274,10 @@ export const themeAssets: Record<ThemeType, ThemeAssets> = {
     mainIcon: Eye,
     decorativeIcons: [Moon, Focus, ScanLine],
     teamIcons: {
-      ALFA: Eye,
-      BRAVO: Focus,
-      CHARLIE: ScanLine,
-      DELTA: Moon,
+      ALFA: Ghost,
+      BRAVO: Glasses,
+      CHARLIE: Scan,
+      DELTA: Aperture,
     },
     teamColors: {
       ALFA: { color: 'text-purple-400', bgGradient: 'from-purple-900/80 via-purple-800/60 to-slate-950/95', borderColor: 'border-purple-500/40', glowColor: 'shadow-purple-500/20' },
@@ -304,10 +308,10 @@ export const themeAssets: Record<ThemeType, ThemeAssets> = {
     mainIcon: Radar,
     decorativeIcons: [Signal, Satellite, Activity],
     teamIcons: {
-      ALFA: Radar,
-      BRAVO: Signal,
-      CHARLIE: Satellite,
-      DELTA: Activity,
+      ALFA: LocateFixed,
+      BRAVO: Satellite,
+      CHARLIE: Signal,
+      DELTA: Radar,
     },
     teamColors: {
       ALFA: { color: 'text-green-400', bgGradient: 'from-green-900/80 via-green-800/60 to-black/95', borderColor: 'border-green-500/60', glowColor: 'shadow-green-500/40' },
@@ -339,7 +343,7 @@ export const themeAssets: Record<ThemeType, ThemeAssets> = {
     decorativeIcons: [Eye, Lock, Focus],
     teamIcons: {
       ALFA: Eye,
-      BRAVO: Lock,
+      BRAVO: Fingerprint,
       CHARLIE: Focus,
       DELTA: Moon,
     },
@@ -371,9 +375,9 @@ export const themeAssets: Record<ThemeType, ThemeAssets> = {
     mainIcon: Sun,
     decorativeIcons: [Globe, Home, Heart],
     teamIcons: {
-      ALFA: ShieldCheck,
-      BRAVO: Star,
-      CHARLIE: Award,
+      ALFA: CircleUser,
+      BRAVO: UserCheck,
+      CHARLIE: BadgeCheck,
       DELTA: Users,
     },
     teamColors: {
@@ -404,10 +408,10 @@ export const themeAssets: Record<ThemeType, ThemeAssets> = {
     mainIcon: Monitor,
     decorativeIcons: [Settings, Cog, RefreshCw],
     teamIcons: {
-      ALFA: Shield,
-      BRAVO: Sword,
+      ALFA: ShieldCheck,
+      BRAVO: Swords,
       CHARLIE: Target,
-      DELTA: Users,
+      DELTA: UserCog,
     },
     teamColors: {
       ALFA: { color: 'text-blue-400', bgGradient: 'from-blue-900/80 via-blue-800/60 to-slate-900/90', borderColor: 'border-blue-500/60', glowColor: 'shadow-blue-500/30' },
