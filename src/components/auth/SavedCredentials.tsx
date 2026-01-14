@@ -91,6 +91,21 @@ export function clearAllCredentials() {
   localStorage.removeItem(STORAGE_KEY);
 }
 
+// Check if auto-login is possible (only one saved credential with password)
+export function getAutoLoginCredential(): { cpf: string; password: string } | null {
+  const credentials = getSavedCredentials();
+  const withPassword = credentials.filter(c => c.password);
+  
+  if (withPassword.length === 1 && withPassword[0].password) {
+    return {
+      cpf: withPassword[0].cpf,
+      password: deobfuscate(withPassword[0].password)
+    };
+  }
+  
+  return null;
+}
+
 export function SavedCredentials({ onSelectCredential, onSaveChange, saveCpf, savePassword }: SavedCredentialsProps) {
   const [credentials, setCredentials] = useState<SavedCredential[]>([]);
   
