@@ -24,6 +24,7 @@ import Admin from "./pages/Admin";
 import Master from "./pages/Master";
 import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
+import DebugAuth from "./pages/DebugAuth";
 
 const queryClient = new QueryClient();
 
@@ -53,13 +54,17 @@ const App = () => (
                 <Route path="/unit/:unitId" element={<UnitDashboard />} />
                 <Route path="/agents" element={<Agents />} />
                 <Route path="/agents/:id" element={<AgentProfile />} />
-                
+
                 <Route path="/overtime" element={<Overtime />} />
                 <Route path="/units" element={<Units />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/master" element={<Master />} />
                 <Route path="/install" element={<Install />} />
+
+                {/* Debug */}
+                <Route path="/debug/auth" element={<DebugAuth />} />
+
                 <Route path="*" element={<NotFound />} />
               </Routes>
               {/* PWA Install Prompt - Shows on all pages when installable */}
