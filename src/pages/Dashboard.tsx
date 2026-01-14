@@ -270,52 +270,45 @@ export default function Dashboard() {
       <Sidebar />
       <div className="flex-1 flex flex-col">
         <Header />
-        <main className={`flex-1 p-6 overflow-auto ${showLicenseWarning ? 'pt-32' : ''} ${(!isOnline || isRetrying) ? 'pt-12' : ''}`}>
-          <div className="max-w-7xl mx-auto space-y-6 animate-fade-in">
-            {/* Page Title with Unit Info */}
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div className="flex items-center gap-4">
+        <main className={`flex-1 p-3 md:p-4 overflow-auto ${showLicenseWarning ? 'pt-32' : ''} ${(!isOnline || isRetrying) ? 'pt-12' : ''}`}>
+          <div className="max-w-7xl mx-auto space-y-4 animate-fade-in">
+            {/* Compact Page Header */}
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+              <div className="flex items-center gap-3">
                 {masterSession && (
                   <Button 
                     variant="outline" 
                     size="sm"
                     onClick={() => navigate('/master')}
-                    className="gap-2"
+                    className="gap-1.5 h-8 text-xs"
                   >
-                    <ArrowLeft className="h-4 w-4" />
-                    Voltar ao Master
+                    <ArrowLeft className="h-3 w-3" />
+                    Master
                   </Button>
                 )}
                 <div>
-                  <h1 className="text-2xl font-bold">Dashboard</h1>
-                  <p className="text-muted-foreground">
-                    Visão geral do sistema de escalas
+                  <h1 className="text-lg md:text-xl font-bold">Dashboard</h1>
+                  <p className="text-xs text-muted-foreground">
+                    Sistema de Escalas
                   </p>
                 </div>
               </div>
               
-              {/* Agent Unit Card */}
+              {/* Compact Agent Unit Card */}
               {agent && agent.unit && (
-                <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-amber-500/20 to-amber-600/10 rounded-xl border border-amber-500/30">
-                  <div className="p-2 rounded-lg bg-amber-500/20">
-                    <Building2 className="h-6 w-6 text-amber-400" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-white">{agent.unit.name}</span>
+                <div className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-amber-500/20 to-amber-600/10 rounded-lg border border-amber-500/30">
+                  <Building2 className="h-4 w-4 text-amber-400 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-sm font-semibold text-white truncate">{agent.unit.name}</span>
                       {agent.team && (
-                        <Badge variant="outline" className="text-amber-400 border-amber-400/50">
-                          Equipe {agent.team}
-                        </Badge>
-                      )}
-                      {!agent.team && (
-                        <Badge variant="secondary" className="text-muted-foreground">
-                          Sem Equipe
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0 text-amber-400 border-amber-400/50">
+                          Eq. {agent.team}
                         </Badge>
                       )}
                     </div>
-                    <div className="flex items-center gap-1 text-sm text-slate-400">
-                      <MapPin className="h-3 w-3" />
+                    <div className="flex items-center gap-1 text-xs text-slate-400">
+                      <MapPin className="h-2.5 w-2.5" />
                       <span>{agent.unit.municipality}</span>
                     </div>
                   </div>
@@ -324,14 +317,13 @@ export default function Dashboard() {
                       variant="ghost"
                       size="sm"
                       onClick={() => setShowTeamManagement(true)}
-                      className="text-amber-400 hover:text-amber-300 hover:bg-amber-500/10"
+                      className="h-7 w-7 p-0 text-amber-400 hover:text-amber-300 hover:bg-amber-500/10"
                     >
-                      <Settings className="h-4 w-4" />
+                      <Settings className="h-3.5 w-3.5" />
                     </Button>
                   )}
                 </div>
               )}
-              
             </div>
 
             {/* Shift Conflicts Banner - Admin only */}
@@ -344,50 +336,45 @@ export default function Dashboard() {
               />
             )}
 
-            {/* Agent Shift Timer and Upcoming Events - Only visible for logged agents */}
-            {agent && (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <ShiftTracker agentId={agent.id} />
-                <AgentUpcomingCard agentId={agent.id} />
-              </div>
-            )}
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Compact Stats Grid - 2x2 on mobile, 4 cols on desktop */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
               <StatsCard
-                title="Total de Agentes"
+                title="Agentes"
                 value={stats.totalAgents}
                 icon={Users}
-                description="Agentes ativos"
-                trend="+2 este mês"
                 loading={isLoadingStats}
               />
               <StatsCard
                 title="Plantões Hoje"
                 value={stats.activeShifts}
                 icon={Calendar}
-                description="Turnos em andamento"
                 loading={isLoadingStats}
               />
               <StatsCard
-                title="Horas no Mês"
+                title="Horas/Mês"
                 value={stats.totalHoursThisMonth}
                 icon={Clock}
-                description="Total de horas trabalhadas"
                 loading={isLoadingStats}
               />
               <StatsCard
                 title="Banco de Horas"
-                value={`${stats.overtimeBalance > 0 ? '+' : ''}${stats.overtimeBalance.toFixed(1)}h`}
+                value={`${stats.overtimeBalance > 0 ? '+' : ''}${stats.overtimeBalance.toFixed(0)}h`}
                 icon={TrendingUp}
-                description="Saldo geral"
-                trend={stats.overtimeBalance >= 0 ? 'positivo' : 'negativo'}
+                trend={stats.overtimeBalance >= 0 ? 'positivo' : ''}
                 loading={isLoadingStats}
               />
             </div>
 
-            {/* Quick Access Features */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {/* Agent Shift Timer and Upcoming Events - Compact Grid */}
+            {agent && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                <ShiftTracker agentId={agent.id} />
+                <AgentUpcomingCard agentId={agent.id} />
+              </div>
+            )}
+
+            {/* Compact Quick Access */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
               {[
                 { 
                   icon: Building2, 
@@ -395,29 +382,23 @@ export default function Dashboard() {
                   color: 'text-blue-400', 
                   bg: 'from-blue-500/20 to-blue-600/10', 
                   route: '/units',
-                  tooltip: 'Visualize e gerencie as unidades do sistema',
-                  count: null,
-                  countLabel: ''
+                  count: null
                 },
                 { 
                   icon: Users, 
-                  text: 'Controle de Equipes', 
+                  text: 'Equipes', 
                   color: 'text-green-400', 
                   bg: 'from-green-500/20 to-green-600/10', 
                   route: '/agents',
-                  tooltip: 'Gerencie agentes, equipes e solicitações de transferência',
-                  count: stats.pendingTransfers,
-                  countLabel: 'pendentes'
+                  count: stats.pendingTransfers
                 },
                 { 
                   icon: Clock, 
-                  text: 'Banco de Horas', 
+                  text: 'BH', 
                   color: 'text-amber-400', 
                   bg: 'from-amber-500/20 to-amber-600/10', 
                   route: '/overtime',
-                  tooltip: 'Controle o saldo de horas extras e compensações',
-                  count: null,
-                  countLabel: ''
+                  count: null
                 },
                 { 
                   icon: MessageSquare, 
@@ -425,57 +406,46 @@ export default function Dashboard() {
                   color: 'text-purple-400', 
                   bg: 'from-purple-500/20 to-purple-600/10', 
                   route: '/agent-panel',
-                  tooltip: 'Acesse seu painel pessoal, plantões e comunicação',
-                  count: stats.pendingLeaves,
-                  countLabel: 'folgas pendentes'
+                  count: stats.pendingLeaves
                 },
               ].map((feature, i) => (
-                <Tooltip key={i}>
-                  <TooltipTrigger asChild>
-                    <div 
-                      onClick={() => navigate(feature.route)}
-                      className={`relative flex items-center gap-3 p-4 bg-gradient-to-br ${feature.bg} rounded-xl border border-slate-700/50 hover:border-slate-600 transition-colors cursor-pointer group`}
-                    >
-                      <div className={`p-2 rounded-lg bg-slate-800/50 ${feature.color} group-hover:scale-110 transition-transform`}>
-                        <feature.icon className="h-5 w-5" />
-                      </div>
-                      <span className="text-sm font-medium text-slate-300">{feature.text}</span>
-                      {feature.count !== null && feature.count > 0 && (
-                        <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1.5 py-0.5 min-w-[20px] h-5 flex items-center justify-center">
-                          {feature.count}
-                        </Badge>
-                      )}
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side="bottom" className="max-w-[200px] text-center">
-                    <p>{feature.tooltip}</p>
-                    {feature.count !== null && feature.count > 0 && (
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {feature.count} {feature.countLabel}
-                      </p>
-                    )}
-                  </TooltipContent>
-                </Tooltip>
+                <div 
+                  key={i}
+                  onClick={() => navigate(feature.route)}
+                  className={`relative flex items-center gap-2 p-2.5 bg-gradient-to-br ${feature.bg} rounded-lg border border-slate-700/50 hover:border-slate-600 transition-colors cursor-pointer group`}
+                >
+                  <div className={`p-1.5 rounded bg-slate-800/50 ${feature.color} group-hover:scale-110 transition-transform`}>
+                    <feature.icon className="h-4 w-4" />
+                  </div>
+                  <span className="text-xs font-medium text-slate-300">{feature.text}</span>
+                  {feature.count !== null && feature.count > 0 && (
+                    <Badge className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] px-1 py-0 min-w-[16px] h-4 flex items-center justify-center">
+                      {feature.count}
+                    </Badge>
+                  )}
+                </div>
               ))}
             </div>
 
-            {/* Charts and Activity */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Compact Charts and Activity */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
               <div className="lg:col-span-2">
                 <ShiftCalendar />
               </div>
-              <div className="space-y-6">
+              <div className="space-y-3">
                 <RecentActivity />
-                {/* Unit Info Card for agents */}
                 {agent?.unit_id && <UnitInfoCard unitId={agent.unit_id} />}
               </div>
             </div>
 
             {/* Team Shifts Panel - Admin only */}
             {(isAdmin || masterSession) && (
-              <div>
-                <TeamShiftsPanel />
-              </div>
+              <TeamShiftsPanel />
+            )}
+
+            {/* Overtime Chart - Admin only */}
+            {isAdmin && (
+              <OvertimeChart />
             )}
 
             {/* Overtime Chart */}

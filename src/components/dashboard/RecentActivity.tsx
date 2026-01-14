@@ -117,51 +117,51 @@ export function RecentActivity() {
   };
 
   return (
-    <Card className="glass glass-border shadow-card h-full">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Activity className="h-5 w-5 text-primary" />
+    <Card className="glass glass-border h-full">
+      <CardHeader className="pb-2 pt-3 px-3">
+        <CardTitle className="flex items-center gap-2 text-sm">
+          <Activity className="h-4 w-4 text-primary" />
           Atividade Recente
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-3 pb-3">
         {loading ? (
-          <div className="space-y-4">
+          <div className="space-y-2">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="animate-pulse flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-muted" />
+              <div key={i} className="animate-pulse flex items-center gap-2">
+                <div className="w-6 h-6 rounded bg-muted" />
                 <div className="flex-1">
-                  <div className="h-4 bg-muted rounded w-24 mb-1" />
-                  <div className="h-3 bg-muted rounded w-32" />
+                  <div className="h-3 bg-muted rounded w-20 mb-1" />
+                  <div className="h-2 bg-muted rounded w-28" />
                 </div>
               </div>
             ))}
           </div>
         ) : activities.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-8">
+          <p className="text-xs text-muted-foreground text-center py-4">
             Nenhuma atividade recente
           </p>
         ) : (
-          <div className="space-y-4">
-            {activities.map((activity) => {
+          <div className="space-y-2">
+            {activities.slice(0, 4).map((activity) => {
               const Icon = getIcon(activity.type);
               return (
-                <div key={activity.id} className="flex items-start gap-3">
-                  <div className="p-2 rounded-lg bg-secondary">
-                    <Icon className="h-4 w-4 text-primary" />
+                <div key={activity.id} className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-muted/50 transition-colors">
+                  <div className="p-1.5 rounded bg-secondary shrink-0">
+                    <Icon className="h-3 w-3 text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium">{activity.title}</p>
-                    <p className="text-xs text-muted-foreground truncate">
+                    <p className="text-xs font-medium truncate">{activity.title}</p>
+                    <p className="text-[10px] text-muted-foreground truncate">
                       {activity.description}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {formatDistanceToNow(new Date(activity.time), {
-                        addSuffix: true,
-                        locale: ptBR,
-                      })}
-                    </p>
                   </div>
+                  <span className="text-[10px] text-muted-foreground shrink-0">
+                    {formatDistanceToNow(new Date(activity.time), {
+                      addSuffix: false,
+                      locale: ptBR,
+                    })}
+                  </span>
                 </div>
               );
             })}
