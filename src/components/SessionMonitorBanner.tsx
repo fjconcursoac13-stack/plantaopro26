@@ -36,9 +36,24 @@ export function SessionMonitorBanner({
     return () => clearInterval(interval);
   }, []);
 
-  const expiresAt = (session as any)?.expires_at;
-  const expiresAtMs = expiresAt ? expiresAt * 1000 : null;
-  const timeUntilExpiry = expiresAtMs ? Math.max(0, expiresAtMs - now) : null;
+  const expiresAt = (session as any)?.expires_at as number | undefined;
+  const expiresIn = (session as any)?.expires_in as number | undefined;
+
+  // Prefer expires_at (epoch seconds). If it looks "already expiring" right after login,
+  // fall back to a computed expiry from expires_in to avoid false alarms caused by clock skew.
+  let expiresAtMs = typeof expiresAt === 'number' ? expiresAt * 1000 : null;
+  const nowMs = now;
+  const looksWrong =
+    expiresAtMs !== null &&
+    typeof expiresIn === 'number' &&
+    expiresIn > 5 * 60 &&
+    expiresAtMs < nowMs + 60_000;
+
+  if (looksWrong) {
+    expiresAtMs = nowMs + expiresIn * 1000;
+  }
+
+  const timeUntilExpiry = expiresAtMs ? Math.max(0, expiresAtMs - nowMs) : null;
 
   const formatTimeRemaining = (ms: number) => {
     const totalSeconds = Math.floor(ms / 1000);
@@ -155,6 +170,11 @@ export function SessionMonitorBanner({
               <div className="font-medium">
                 {timeUntilExpiry !== null ? formatTimeRemaining(timeUntilExpiry) : '—'}
               </div>
+              {looksWrong && (
+                <div className="text-[10px] text-white/70 mt-0.5">
+                  Ajustado (relógio do aparelho)
+                </div>
+              )}
             </div>
             <div className="bg-white/10 rounded px-2 py-1">
               <div className="text-white/60">User ID</div>
