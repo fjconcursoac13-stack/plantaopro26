@@ -2,67 +2,14 @@ import { useState, useRef, MouseEvent, useCallback } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
 import { cn } from '@/lib/utils';
-import { Shield, Sword, Target, Users, LucideIcon, Radio, Zap, Star } from 'lucide-react';
+import { Radio, Zap, Star } from 'lucide-react';
+import { getThemeAssets } from '@/lib/themeAssets';
 
 interface ThemedTeamCardProps {
   team: string;
   selected?: boolean;
   onClick: () => void;
 }
-
-interface TeamThemeConfig {
-  icon: LucideIcon;
-  gradient: string;
-  textColor: string;
-  borderColor: string;
-  glowColor: string;
-  accentColor: string;
-  description: string;
-  slogan: string;
-}
-
-const teamConfigs: Record<string, TeamThemeConfig> = {
-  ALFA: {
-    icon: Shield,
-    gradient: 'from-blue-500 via-blue-600 to-blue-800',
-    textColor: 'text-blue-400',
-    borderColor: 'border-blue-500/50',
-    glowColor: 'rgba(59, 130, 246, 0.4)',
-    accentColor: 'blue',
-    description: 'Primeira Linha de Defesa',
-    slogan: 'Proteção & Vigilância',
-  },
-  BRAVO: {
-    icon: Sword,
-    gradient: 'from-red-500 via-red-600 to-red-800',
-    textColor: 'text-red-400',
-    borderColor: 'border-red-500/50',
-    glowColor: 'rgba(239, 68, 68, 0.4)',
-    accentColor: 'red',
-    description: 'Força de Resposta Rápida',
-    slogan: 'Ação & Determinação',
-  },
-  CHARLIE: {
-    icon: Target,
-    gradient: 'from-emerald-500 via-emerald-600 to-emerald-800',
-    textColor: 'text-emerald-400',
-    borderColor: 'border-emerald-500/50',
-    glowColor: 'rgba(16, 185, 129, 0.4)',
-    accentColor: 'emerald',
-    description: 'Operações Especializadas',
-    slogan: 'Precisão & Eficiência',
-  },
-  DELTA: {
-    icon: Users,
-    gradient: 'from-violet-500 via-violet-600 to-violet-800',
-    textColor: 'text-violet-400',
-    borderColor: 'border-violet-500/50',
-    glowColor: 'rgba(139, 92, 246, 0.4)',
-    accentColor: 'violet',
-    description: 'Suporte e Coordenação',
-    slogan: 'União & Estratégia',
-  },
-};
 
 // 3D Tilt Hook
 function use3DTilt() {
@@ -101,11 +48,21 @@ function use3DTilt() {
 
 export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
   const { playSound } = useSoundEffects();
-  const { theme } = useTheme();
+  const { theme, resolvedTheme, themeConfig } = useTheme();
   const { ref, transform, glare, handleMouseMove, handleMouseLeave } = use3DTilt();
-  const config = teamConfigs[team] || teamConfigs.ALFA;
-  const Icon = config.icon;
   const hasPlayedHover = useRef(false);
+  
+  const themeAssets = getThemeAssets(theme, resolvedTheme);
+  const teamKey = team as 'ALFA' | 'BRAVO' | 'CHARLIE' | 'DELTA';
+  const Icon = themeAssets.teamIcons[teamKey];
+  const colors = themeAssets.teamColors[teamKey];
+  const descriptions = themeAssets.teamDescriptions[teamKey];
+  
+  // Extract color name from class like "text-blue-400" -> "blue"
+  const colorMatch = colors.color.match(/text-(\w+)-/);
+  const colorName = colorMatch ? colorMatch[1] : 'blue';
+  const glowColor = `rgba(var(--${colorName}-500, 59, 130, 246), 0.4)`;
+  const gradient = `from-${colorName}-500 via-${colorName}-600 to-${colorName}-800`;
 
   const handleClick = () => {
     playSound('card-select');
