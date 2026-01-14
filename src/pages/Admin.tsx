@@ -39,11 +39,13 @@ import {
   Unlock,
   Lock,
   TrendingUp,
-  AlertTriangle
+  AlertTriangle,
+  ArrowRightLeft
 } from 'lucide-react';
 import { format, differenceInDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { LicenseManagementDialog } from '@/components/admin/LicenseManagementDialog';
+import { AdminTransferDialog } from '@/components/admin/AdminTransferDialog';
 import { toast } from 'sonner';
 
 interface UserWithRole {
@@ -131,6 +133,7 @@ export default function Admin() {
   const [loadingData, setLoadingData] = useState(true);
   const [selectedAgent, setSelectedAgent] = useState<AgentWithLicense | null>(null);
   const [licenseDialogOpen, setLicenseDialogOpen] = useState(false);
+  const [transferDialogOpen, setTransferDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
 
   // Redirect only after loading is complete
@@ -285,6 +288,11 @@ export default function Admin() {
   const openLicenseDialog = (agent: AgentWithLicense) => {
     setSelectedAgent(agent);
     setLicenseDialogOpen(true);
+  };
+
+  const openTransferDialog = (agent: AgentWithLicense) => {
+    setSelectedAgent(agent);
+    setTransferDialogOpen(true);
   };
 
   if (isLoading || loadingData) {
@@ -544,12 +552,22 @@ export default function Admin() {
                                   : '-'
                                 }
                               </TableCell>
-                              <TableCell className="text-right">
+                              <TableCell className="text-right space-x-1">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => openTransferDialog(agent)}
+                                  className="text-slate-400 hover:text-white"
+                                  title="Transferir"
+                                >
+                                  <ArrowRightLeft className="h-4 w-4" />
+                                </Button>
                                 <Button
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => openLicenseDialog(agent)}
                                   className="text-slate-400 hover:text-white"
+                                  title="Gerenciar Licença"
                                 >
                                   <KeyRound className="h-4 w-4" />
                                 </Button>
@@ -749,6 +767,14 @@ export default function Admin() {
         agentName={selectedAgent?.name || ''}
         currentStatus={selectedAgent?.license_status || 'active'}
         currentExpiry={selectedAgent?.license_expires_at}
+        onSuccess={fetchData}
+      />
+
+      {/* Transfer Dialog */}
+      <AdminTransferDialog
+        open={transferDialogOpen}
+        onOpenChange={setTransferDialogOpen}
+        agent={selectedAgent}
         onSuccess={fetchData}
       />
     </div>
