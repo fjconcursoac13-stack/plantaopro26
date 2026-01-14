@@ -42,26 +42,25 @@ export function TeamUnlinkDialog({
 
   const handleUnlink = async () => {
     setIsSubmitting(true);
-    
-    try {
-      // Sign out first to avoid RLS issues
-      await supabase.auth.signOut();
-      
-      // Use centralized deletion function
-      const result = await deleteAgentCompletely(agentId);
 
+    try {
+      // 1) Delete everything while authenticated (RLS)
+      const result = await deleteAgentCompletely(agentId);
       if (!result.success) {
         console.error('Error deleting agent:', result.error);
       }
+
+      // 2) Sign out after deletion
+      await supabase.auth.signOut();
 
       toast({
         title: 'Conta Excluída',
         description: `Todos os dados de ${agentName} foram excluídos permanentemente.`,
       });
-      
+
       setShowConfirmation(false);
       onOpenChange(false);
-      
+
       // Force redirect to home
       window.location.href = '/';
     } catch (error) {
