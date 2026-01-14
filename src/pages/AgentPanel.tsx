@@ -5,6 +5,7 @@ import { useAgentProfile } from '@/hooks/useAgentProfile';
 import { useBackNavigation } from '@/hooks/useBackNavigation';
 import { useSessionPersistence } from '@/hooks/useSessionPersistence';
 import { useLicenseCheck } from '@/hooks/useLicenseCheck';
+import { useShiftNotifications } from '@/hooks/useShiftNotifications';
 import { TeamMembersCard } from '@/components/agent-panel/TeamMembersCard';
 import { ProfessionalShiftTimer } from '@/components/agent-panel/ProfessionalShiftTimer';
 import { BHTracker } from '@/components/agent-panel/BHTracker';
@@ -21,6 +22,7 @@ import { AgentSettingsCard } from '@/components/agent-panel/AgentSettingsCard';
 import { AgentEventsCard } from '@/components/agent-panel/AgentEventsCard';
 import ShiftPlannerCard from '@/components/agent-panel/ShiftPlannerCard';
 import { ShiftCalendarOverview } from '@/components/agent-panel/ShiftCalendarOverview';
+import { BirthdayCard } from '@/components/agent-panel/BirthdayCard';
 import { LicenseWarningBanner } from '@/components/LicenseWarningBanner';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2, Users, MessageCircle, Calendar, Clock, ArrowRightLeft, CalendarOff, Settings, User, CalendarDays, Calculator, LogOut, Home, WifiOff, RefreshCw, Droplet } from 'lucide-react';
@@ -84,6 +86,13 @@ export default function AgentPanel() {
     autoLogout: false,
     skipForMaster: true,
     isMasterSession: !!masterSession,
+  });
+
+  // Shift notifications - checks for upcoming shifts and sends reminders
+  useShiftNotifications({
+    agentId: agent?.id || '',
+    enabled: !!agent?.id,
+    reminderHoursBefore: [24, 1], // 24h and 1h before
   });
 
   useEffect(() => {
@@ -377,11 +386,18 @@ export default function AgentPanel() {
               </TabsList>
 
               <TabsContent value="equipe" className="space-y-4">
-                <TeamMembersCard 
-                  unitId={agent.unit_id} 
-                  team={agent.team} 
-                  currentAgentId={agent.id}
-                />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  <TeamMembersCard 
+                    unitId={agent.unit_id} 
+                    team={agent.team} 
+                    currentAgentId={agent.id}
+                  />
+                  <BirthdayCard 
+                    agentId={agent.id}
+                    team={agent.team}
+                    unitId={agent.unit_id}
+                  />
+                </div>
               </TabsContent>
 
               <TabsContent value="plantoes" className="space-y-4">
