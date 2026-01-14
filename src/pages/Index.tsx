@@ -703,64 +703,103 @@ export default function Index() {
       {/* Themed Animated Background */}
       <ThemedBackground />
 
-      {/* Top Security Bar - Compact */}
-      <div className="bg-slate-900/90 border-b border-slate-700/50 py-1.5 px-3 relative z-20">
+      {/* Security Status Bar - Professional */}
+      <div className="bg-slate-900/95 backdrop-blur-sm border-b border-primary/20 py-2 px-4 relative z-20">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-[9px] font-mono text-slate-400 tracking-wider">
-              ATIVO
-            </span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                <div className="absolute inset-0 w-2 h-2 rounded-full bg-green-500 animate-ping opacity-75" />
+              </div>
+              <span className="text-[10px] font-mono text-green-400 tracking-wider font-semibold">
+                SISTEMA OPERACIONAL
+              </span>
+            </div>
+            <div className="hidden sm:flex items-center gap-2 text-[9px] font-mono text-slate-500">
+              <span className="px-1.5 py-0.5 rounded bg-slate-800/80 border border-slate-700/50">
+                v2.0
+              </span>
+            </div>
           </div>
-          <div className="text-[9px] font-mono text-slate-500 hidden sm:block">
-            {new Date().toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric', month: 'short' })}
+          <div className="flex items-center gap-4">
+            <div className="text-[10px] font-mono text-slate-400 hidden sm:flex items-center gap-2">
+              <div className="w-1 h-1 rounded-full bg-primary/60" />
+              {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
+            </div>
+            <div className="text-xs font-mono text-primary font-bold tracking-widest">
+              {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Hero Section - Compact */}
-      <header className="py-4 md:py-6 px-3 relative z-10">
+      {/* Hero Section - Enhanced */}
+      <header className="py-6 md:py-10 px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
-          {/* Security Badge - Smaller on mobile */}
-          <div className="mb-3 flex flex-col items-center">
-            <div className="relative">
-              <div className="w-14 h-14 md:w-18 md:h-18 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 border-2 border-amber-500/30 flex items-center justify-center shadow-xl">
-                <Shield className="h-7 w-7 md:h-9 md:w-9 text-amber-500" />
+          {/* Animated Security Badge */}
+          <div className="mb-4 flex flex-col items-center">
+            <div className="relative group">
+              {/* Outer rotating ring */}
+              <div className="absolute -inset-3 rounded-full border border-primary/20 animate-[spin_20s_linear_infinite]">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-primary rounded-full" />
               </div>
-              <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-amber-500 rounded text-[6px] md:text-[7px] font-black text-slate-900 tracking-widest">
-                SEGURANÇA
+              {/* Second rotating ring */}
+              <div className="absolute -inset-6 rounded-full border border-primary/10 animate-[spin_30s_linear_infinite_reverse]">
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-1 h-1 bg-accent rounded-full" />
+              </div>
+              {/* Main badge */}
+              <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 border-2 border-primary/40 flex items-center justify-center shadow-2xl shadow-primary/20 group-hover:border-primary/60 transition-all duration-500">
+                <Shield className="h-10 w-10 md:h-12 md:w-12 text-primary drop-shadow-lg" />
+                {/* Pulse effect */}
+                <div className="absolute inset-0 rounded-full bg-primary/10 animate-ping opacity-30" style={{ animationDuration: '3s' }} />
+              </div>
+              {/* Badge label */}
+              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-primary to-accent rounded text-[7px] md:text-[8px] font-black text-primary-foreground tracking-[0.15em] shadow-lg">
+                SEGURANÇA PÚBLICA
               </div>
             </div>
           </div>
           
-          {/* Title - Responsive */}
-          <h1 className="text-xl md:text-3xl font-black text-white tracking-tight mb-1">
-            PLANTÃO <span className="text-amber-500">PRO</span>
-          </h1>
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <div className="w-8 h-[1px] bg-gradient-to-r from-transparent to-amber-500/50" />
-            <span className="text-[8px] md:text-[9px] font-bold text-slate-400 tracking-[0.2em]">
-              GESTÃO DE ESCALAS
-            </span>
-            <div className="w-8 h-[1px] bg-gradient-to-l from-transparent to-amber-500/50" />
+          {/* Title with animation */}
+          <div className="space-y-2 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+            <h1 className="text-3xl md:text-5xl font-black text-foreground tracking-tight">
+              PLANTÃO <span className="text-primary">PRO</span>
+            </h1>
+            <div className="flex items-center justify-center gap-3">
+              <div className="w-12 h-[2px] bg-gradient-to-r from-transparent via-primary/50 to-primary" />
+              <span className="text-[10px] md:text-xs font-bold text-muted-foreground tracking-[0.25em] uppercase">
+                Sistema de Gestão de Escalas
+              </span>
+              <div className="w-12 h-[2px] bg-gradient-to-l from-transparent via-primary/50 to-primary" />
+            </div>
           </div>
           
-          <p className="text-slate-400 text-[10px] md:text-xs">
-            Selecione sua equipe
+          {/* Subtitle */}
+          <p className="text-muted-foreground text-xs md:text-sm mt-4 animate-fade-in max-w-md mx-auto" style={{ animationDelay: '0.5s' }}>
+            Controle profissional de plantões para equipes de segurança pública
           </p>
+          
+          {/* Team selection prompt */}
+          <div className="mt-6 animate-fade-in" style={{ animationDelay: '0.7s' }}>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30">
+              <Users className="h-4 w-4 text-primary" />
+              <span className="text-sm font-medium text-foreground">Selecione sua equipe</span>
+            </div>
+          </div>
         </div>
       </header>
 
-      {/* Teams Grid Section - Compact */}
-      <section className="flex-1 py-2 px-3 relative z-10 flex items-center">
+      {/* Teams Grid Section - Enhanced */}
+      <section className="flex-1 py-4 px-4 relative z-10 flex items-center">
         <div className="w-full max-w-lg md:max-w-4xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
             {teams.map((team, index) => (
               <div
                 key={team}
                 className="animate-fade-in-scale"
                 style={{
-                  animationDelay: `${index * 120}ms`,
+                  animationDelay: `${800 + index * 150}ms`,
                 }}
               >
                 <ThemedTeamCard
@@ -773,28 +812,39 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Footer - Compact */}
-      <footer className="py-2 px-3 bg-slate-900/80 border-t border-slate-700/50 relative z-10">
+      {/* Footer - Professional */}
+      <footer className="py-3 px-4 bg-slate-900/90 backdrop-blur-sm border-t border-primary/20 relative z-10">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Shield className="h-3 w-3 text-amber-500/70" />
-            <span className="text-[9px] font-semibold text-slate-400 hidden sm:inline">
-              PLANTÃO PRO
-            </span>
-            <span className="text-[8px] text-slate-500 hidden md:inline">
-              © {new Date().getFullYear()} • Franc Denis
-            </span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <Shield className="h-4 w-4 text-primary" />
+              <span className="text-xs font-bold text-foreground hidden sm:inline">
+                PLANTÃO PRO
+              </span>
+            </div>
+            <div className="hidden md:flex items-center gap-2">
+              <span className="text-[10px] text-muted-foreground">|</span>
+              <span className="text-[10px] text-muted-foreground">
+                © {new Date().getFullYear()} Franc Denis
+              </span>
+            </div>
           </div>
           
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowMasterLogin(true)}
-            className="text-slate-500 hover:text-amber-500 hover:bg-amber-500/10 transition-colors gap-1 h-6 px-2"
-          >
-            <Lock className="h-2.5 w-2.5" />
-            <span className="text-[8px] font-semibold tracking-wider">ADMIN</span>
-          </Button>
+          <div className="flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-2 mr-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-[10px] font-mono text-green-400">ONLINE</span>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowMasterLogin(true)}
+              className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors gap-1.5 h-8 px-3"
+            >
+              <Lock className="h-3 w-3" />
+              <span className="text-[10px] font-bold tracking-wider">ADMINISTRAÇÃO</span>
+            </Button>
+          </div>
         </div>
       </footer>
 
