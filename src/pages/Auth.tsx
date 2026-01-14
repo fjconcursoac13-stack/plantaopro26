@@ -45,7 +45,8 @@ export default function Auth() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ cpf?: string; password?: string }>({});
-  const [saveCredentialsEnabled, setSaveCredentialsEnabled] = useState(false);
+  const [saveCpfEnabled, setSaveCpfEnabled] = useState(false);
+  const [savePasswordEnabled, setSavePasswordEnabled] = useState(false);
   const [foundAgent, setFoundAgent] = useState<{ name: string } | null>(null);
   const [isSearchingAgent, setIsSearchingAgent] = useState(false);
   
@@ -294,14 +295,14 @@ export default function Auth() {
         variant: 'destructive',
       });
     } else {
-      // Save credentials if enabled (including password)
-      if (saveCredentialsEnabled) {
+      // Save credentials if enabled
+      if (saveCpfEnabled) {
         const { data: agentData } = await supabase
           .from('agents')
           .select('name')
           .eq('cpf', cleanCpf)
           .maybeSingle();
-        saveCredential(cleanCpf, agentData?.name, password);
+        saveCredential(cleanCpf, agentData?.name, savePasswordEnabled ? password : undefined);
       }
       
       toast({
@@ -767,8 +768,12 @@ export default function Auth() {
                           setPassword(savedPassword);
                         }
                       }}
-                      onSaveChange={setSaveCredentialsEnabled}
-                      saveCredentials={saveCredentialsEnabled}
+                      onSaveChange={(cpf, pwd) => {
+                        setSaveCpfEnabled(cpf);
+                        setSavePasswordEnabled(pwd);
+                      }}
+                      saveCpf={saveCpfEnabled}
+                      savePassword={savePasswordEnabled}
                     />
                     <Button 
                       type="submit" 

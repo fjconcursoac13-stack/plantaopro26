@@ -85,7 +85,8 @@ export default function Index() {
   const [loginCpf, setLoginCpf] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loginErrors, setLoginErrors] = useState<Record<string, string>>({});
-  const [saveCredentialsEnabled, setSaveCredentialsEnabled] = useState(false);
+  const [saveCpfEnabled, setSaveCpfEnabled] = useState(false);
+  const [savePasswordEnabled, setSavePasswordEnabled] = useState(false);
   const [enableBiometric, setEnableBiometric] = useState(false);
 
   // Registration form
@@ -517,13 +518,13 @@ export default function Index() {
       });
     } else {
       // Save credentials if enabled
-      if (saveCredentialsEnabled) {
+      if (saveCpfEnabled) {
         const { data: agentData } = await supabase
           .from('agents')
           .select('name')
           .eq('cpf', cleanCpf)
           .single();
-        saveCredential(cleanCpf, agentData?.name);
+        saveCredential(cleanCpf, agentData?.name, savePasswordEnabled ? loginPassword : undefined);
       }
       
       // Enroll biometric if enabled and available
@@ -1094,9 +1095,18 @@ export default function Index() {
             </div>
             
             <SavedCredentials
-              onSelectCredential={(cpf) => setLoginCpf(formatCPF(cpf))}
-              onSaveChange={setSaveCredentialsEnabled}
-              saveCredentials={saveCredentialsEnabled}
+              onSelectCredential={(cpf, savedPassword) => {
+                setLoginCpf(formatCPF(cpf));
+                if (savedPassword) {
+                  setLoginPassword(savedPassword);
+                }
+              }}
+              onSaveChange={(cpf, pwd) => {
+                setSaveCpfEnabled(cpf);
+                setSavePasswordEnabled(pwd);
+              }}
+              saveCpf={saveCpfEnabled}
+              savePassword={savePasswordEnabled}
             />
             
             <div className="flex items-center justify-between">
