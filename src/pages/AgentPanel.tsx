@@ -33,7 +33,7 @@ import { TacticalRadar } from '@/components/dashboard/TacticalRadar';
 import { SessionMonitorBanner } from '@/components/SessionMonitorBanner';
 import { DiagnosticReportButton } from '@/components/DiagnosticReportButton';
 import { SafeModeToggle } from '@/components/SafeModeToggle';
-import { TeamPanelBackground } from '@/components/TeamPanelBackground';
+import { ThemedPanelBackground } from '@/components/ThemedPanelBackground';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2, Users, MessageCircle, Calendar, Clock, ArrowRightLeft, CalendarOff, Settings, User, CalendarDays, Calculator, LogOut, Home, WifiOff, RefreshCw, Droplet, Radar } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -205,7 +205,7 @@ export default function AgentPanel() {
   };
 
   return (
-    <TeamPanelBackground team={agent?.team || null} opacity={0.12}>
+    <ThemedPanelBackground team={agent?.team || null} showTeamImage={true}>
       {/* License Warning Banner */}
       {showLicenseWarning && (
         <LicenseWarningBanner
@@ -468,6 +468,6 @@ export default function AgentPanel() {
           </div>
         </main>
       </div>
-    </TeamPanelBackground>
+    </ThemedPanelBackground>
   );
 }
