@@ -93,10 +93,22 @@
 
 /* Light theme overrides */
 .light-theme {
-  --shadow-glow: 0 0 40px hsl(217 91% 50% / 0.15);
-  --shadow-card: 0 8px 32px hsl(0 0% 0% / 0.08);
-  --shadow-soft: 0 4px 16px hsl(0 0% 0% / 0.06);
-  --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(210 40% 98%) 100%);
+  --shadow-glow: 0 0 40px hsl(217 91% 45% / 0.12);
+  --shadow-card: 0 4px 20px hsl(220 20% 50% / 0.08), 0 1px 3px hsl(220 20% 50% / 0.06);
+  --shadow-soft: 0 2px 12px hsl(220 20% 50% / 0.06);
+  --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(210 40% 99%) 100%);
+  
+  /* Destructive - better visibility on light */
+  --destructive: 0 84% 40%;
+  --destructive-foreground: 0 0% 100%;
+  
+  /* Success - deeper green */
+  --success: 142 76% 32%;
+  --success-foreground: 0 0% 100%;
+  
+  /* Warning - darker amber */
+  --warning: 38 92% 45%;
+  --warning-foreground: 0 0% 100%;
 }
 
 .light-theme body,
@@ -109,11 +121,55 @@
 }
 
 .light-theme ::-webkit-scrollbar-thumb {
-  background: hsl(214 32% 85%);
+  background: hsl(214 32% 80%);
+  border: 2px solid hsl(210 40% 96%);
 }
 
 .light-theme ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--primary) / 0.5);
+  background: hsl(var(--primary) / 0.6);
+}
+
+/* Light theme component overrides */
+.light-theme .glass {
+  @apply bg-white/90 backdrop-blur-xl;
+}
+
+.light-theme .glass-border {
+  @apply border border-border;
+}
+
+/* Better text contrast for gradients in light mode */
+.light-theme .text-gradient {
+  background-image: linear-gradient(135deg, hsl(217 91% 40%) 0%, hsl(200 85% 45%) 100%);
+}
+
+/* Input fields with better visibility */
+.light-theme input,
+.light-theme textarea,
+.light-theme select {
+  background-color: hsl(0 0% 100%) !important;
+  border-color: hsl(214 32% 85%) !important;
+}
+
+.light-theme input:focus,
+.light-theme textarea:focus,
+.light-theme select:focus {
+  border-color: hsl(var(--primary)) !important;
+}
+
+/* Card hover states */
+.light-theme [class*="hover:bg-"] {
+  transition: background-color 0.15s ease;
+}
+
+/* Badge improvements */
+.light-theme [data-slot="badge"] {
+  font-weight: 500;
+}
+
+/* Table row hover */
+.light-theme tr:hover {
+  background-color: hsl(210 40% 97%);
 }
 
 @layer utilities {
