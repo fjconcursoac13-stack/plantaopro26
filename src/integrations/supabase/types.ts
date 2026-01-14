@@ -916,6 +916,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      cleanup_orphan_auth_user: { Args: { p_email: string }; Returns: boolean }
       create_shift_reminder: {
         Args: { p_agent_id: string; p_shift_date: string; p_shift_id?: string }
         Returns: undefined
