@@ -21,7 +21,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, AlertTriangle, Eye, EyeOff, UserCheck, Lock, Palette, Fingerprint, Shield, Users, KeyRound } from 'lucide-react';
+import { Loader2, AlertTriangle, Eye, EyeOff, UserCheck, Lock, Palette, Fingerprint, Shield, Users, KeyRound, Info } from 'lucide-react';
 import { 
   validateCPF, 
   formatCPF, 
@@ -966,6 +966,18 @@ export default function Index() {
               <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
               <span className="text-[9px] sm:text-[10px] font-mono text-green-400">ONLINE</span>
             </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                playSound('click');
+                navigate('/about');
+              }}
+              className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors gap-1 sm:gap-1.5 h-7 sm:h-8 px-2 sm:px-3"
+            >
+              <Info className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+              <span className="text-[9px] sm:text-[10px] font-bold tracking-wider">SOBRE</span>
+            </Button>
             {getSavedCredentials().length > 0 && (
               <Button
                 variant="ghost"
