@@ -44,7 +44,7 @@ export function useGlobalNavigation(options: UseGlobalNavigationOptions = {}) {
   const { enabled = true } = options;
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, masterSession } = useAuth();
+  const { user, masterSession, isLoading } = useAuth();
 
   const performNavigation = useCallback(() => {
     triggerNavigationFlash();
@@ -95,20 +95,25 @@ export function useGlobalNavigation(options: UseGlobalNavigationOptions = {}) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [enabled, location.pathname, performNavigation]);
 
-  // Redirect to home when user logs out
+  // Redirect to home when user logs out (but never during auth bootstrapping)
   useEffect(() => {
-    // If no user and no master session and not on auth/index page, redirect to home
+    // During initial auth hydration the user can be null briefly.
+    // Redirecting here causes an unwanted bounce back to '/'.
     const isAuthPage = location.pathname === '/auth' || location.pathname === '/';
-    
-    if (!user && !masterSession && !isAuthPage) {
+    if (isAuthPage) return;
+
+    // IMPORTANT: only redirect after auth finished loading
+    if (isLoading) return;
+
+    if (!user && !masterSession) {
       // Small delay to ensure the logout is complete
       const timer = setTimeout(() => {
         navigate('/', { replace: true });
       }, 100);
-      
+
       return () => clearTimeout(timer);
     }
-  }, [user, masterSession, location.pathname, navigate]);
+  }, [user, masterSession, isLoading, location.pathname, navigate]);
 
   return { navigate, performNavigation };
 }
