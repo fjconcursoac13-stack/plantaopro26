@@ -24,6 +24,7 @@ import Settings from "./pages/Settings";
 import Admin from "./pages/Admin";
 import Master from "./pages/Master";
 import Install from "./pages/Install";
+import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import DebugAuth from "./pages/DebugAuth";
 
@@ -67,6 +68,7 @@ const App = () => (
                   <Route path="/admin" element={<Admin />} />
                   <Route path="/master" element={<Master />} />
                   <Route path="/install" element={<Install />} />
+                  <Route path="/about" element={<About />} />
 
                   {/* Debug */}
                   <Route path="/debug/auth" element={<DebugAuth />} />
