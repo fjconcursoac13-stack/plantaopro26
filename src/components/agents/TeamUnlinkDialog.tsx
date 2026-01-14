@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { deleteAgentCompletely } from '@/lib/deleteAgent';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -43,39 +44,14 @@ export function TeamUnlinkDialog({
     setIsSubmitting(true);
     
     try {
-      // Delete all agent data (shifts, overtime, leaves, events, etc.)
-      const tables = [
-        'agent_shifts',
-        'overtime_bank',
-        'agent_leaves',
-        'agent_events',
-        'shift_alerts',
-        'shift_planner_configs',
-        'transfer_requests',
-        'chat_room_members',
-        'deleted_messages',
-        'shifts',
-        'access_logs',
-        'payments',
-      ];
-
-      for (const table of tables) {
-        const { error } = await supabase.from(table as any).delete().eq('agent_id', agentId);
-        if (error) console.warn(`Error deleting from ${table}:`, error);
-      }
-      
       // Sign out first to avoid RLS issues
       await supabase.auth.signOut();
       
-      // PERMANENTLY delete the agent record from database (trigger will delete auth user)
-      const { error } = await supabase
-        .from('agents')
-        .delete()
-        .eq('id', agentId);
+      // Use centralized deletion function
+      const result = await deleteAgentCompletely(agentId);
 
-      if (error) {
-        console.error('Error deleting agent:', error);
-        // Even if delete fails, user is already signed out
+      if (!result.success) {
+        console.error('Error deleting agent:', result.error);
       }
 
       toast({

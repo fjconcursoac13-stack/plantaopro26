@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { deleteAgentCompletely } from '@/lib/deleteAgent';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,42 +31,12 @@ export function DeleteAgentDialog({ agentId, agentName, onSuccess, trigger }: De
     setIsDeleting(true);
 
     try {
-      // Delete all related data first (in order of dependencies)
-      const tables = [
-        'agent_shifts',
-        'overtime_bank',
-        'agent_events',
-        'agent_leaves',
-        'shift_alerts',
-        'shift_planner_configs',
-        'transfer_requests',
-        'chat_room_members',
-        'deleted_messages',
-        'shifts',
-        'access_logs',
-        'payments',
-      ];
+      // Use centralized deletion function
+      const result = await deleteAgentCompletely(agentId);
 
-      for (const table of tables) {
-        const { error: tableError } = await supabase.from(table as any).delete().eq('agent_id', agentId);
-        if (tableError) {
-          console.warn(`Warning deleting from ${table}:`, tableError);
-        }
+      if (!result.success) {
+        throw new Error(result.error);
       }
-
-      // Delete user_roles if exists
-      await supabase.from('user_roles').delete().eq('user_id', agentId);
-      
-      // Delete profile if exists
-      await supabase.from('profiles').delete().eq('user_id', agentId);
-
-      // Now PERMANENTLY delete the agent record (trigger will delete auth user)
-      const { error } = await supabase
-        .from('agents')
-        .delete()
-        .eq('id', agentId);
-
-      if (error) throw error;
 
       toast({
         title: 'Agente excluído',
