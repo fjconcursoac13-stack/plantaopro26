@@ -30,6 +30,36 @@ export function DeleteUserDialog({ userId, userName, onSuccess }: DeleteUserDial
     setIsDeleting(true);
 
     try {
+      // Delete related agent data first (if agent exists with this user_id)
+      const tables = [
+        'agent_shifts',
+        'overtime_bank',
+        'agent_events',
+        'agent_leaves',
+        'shift_alerts',
+        'shift_planner_configs',
+        'transfer_requests',
+        'chat_room_members',
+        'deleted_messages',
+        'shifts',
+        'access_logs',
+        'payments',
+      ];
+
+      for (const table of tables) {
+        await supabase.from(table as any).delete().eq('agent_id', userId);
+      }
+
+      // Delete agent record (this will trigger auth user deletion via trigger)
+      const { error: agentError } = await supabase
+        .from('agents')
+        .delete()
+        .eq('id', userId);
+
+      if (agentError) {
+        console.error('Error deleting agent:', agentError);
+      }
+
       // Delete user_roles
       await supabase.from('user_roles').delete().eq('user_id', userId);
       
