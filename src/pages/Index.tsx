@@ -514,6 +514,10 @@ export default function Index() {
       setSelectedTeam(null);
       setShowRegistration(false);
       
+      // Small delay to ensure session is fully established before redirect
+      // This prevents issues where the auth state hasn't propagated yet
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       // Redirect to the agent panel
       navigate('/agent-panel', { replace: true });
       
