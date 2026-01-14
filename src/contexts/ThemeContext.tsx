@@ -1,6 +1,6 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 
-export type ThemeType = 'tactical' | 'military' | 'cyber' | 'classic' | 'light';
+export type ThemeType = 'tactical' | 'military' | 'cyber' | 'classic' | 'light' | 'system';
 
 interface ThemeConfig {
   id: ThemeType;
@@ -22,6 +22,14 @@ interface ThemeConfig {
     isLight: boolean;
   };
 }
+
+// Helper to detect system preference
+const getSystemTheme = (): 'light' | 'tactical' => {
+  if (typeof window !== 'undefined' && window.matchMedia) {
+    return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'tactical';
+  }
+  return 'tactical';
+};
 
 export const themes: Record<ThemeType, ThemeConfig> = {
   tactical: {
@@ -124,12 +132,34 @@ export const themes: Record<ThemeType, ThemeConfig> = {
       isLight: true,
     },
   },
+  system: {
+    id: 'system',
+    name: 'Automático',
+    description: 'Segue o tema do sistema',
+    icon: '🖥️',
+    colors: {
+      // These are placeholder values - actual values come from resolved theme
+      primary: '38 92% 50%',
+      primaryForeground: '222 47% 6%',
+      accent: '38 92% 50%',
+      background: '222 47% 6%',
+      card: '222 47% 8%',
+      border: '222 30% 18%',
+      gradientFrom: '38 92% 50%',
+      gradientTo: '25 95% 53%',
+      foreground: '210 40% 98%',
+      muted: '222 30% 12%',
+      mutedForeground: '215 20% 55%',
+      isLight: false,
+    },
+  },
 };
 
 interface ThemeContextType {
   theme: ThemeType;
   setTheme: (theme: ThemeType) => void;
   themeConfig: ThemeConfig;
+  resolvedTheme: Exclude<ThemeType, 'system'>;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -140,14 +170,34 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return (saved as ThemeType) || 'tactical';
   });
 
-  const setTheme = (newTheme: ThemeType) => {
+  const [systemTheme, setSystemTheme] = useState<'light' | 'tactical'>(getSystemTheme);
+
+  // Listen for system theme changes
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
+    
+    const handleChange = (e: MediaQueryListEvent) => {
+      setSystemTheme(e.matches ? 'light' : 'tactical');
+    };
+
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
+
+  const setTheme = useCallback((newTheme: ThemeType) => {
     setThemeState(newTheme);
     localStorage.setItem('plantaopro-theme', newTheme);
-  };
+  }, []);
+
+  // Resolve 'system' to actual theme
+  const resolvedTheme: Exclude<ThemeType, 'system'> = theme === 'system' ? systemTheme : theme;
+
+  // Get the actual config to apply
+  const activeConfig = themes[resolvedTheme];
 
   // Apply theme CSS variables
   useEffect(() => {
-    const config = themes[theme];
+    const config = activeConfig;
     const root = document.documentElement;
     
     // Core colors
@@ -205,10 +255,18 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       root.classList.remove('light-theme');
       root.classList.add('dark');
     }
-  }, [theme]);
+  }, [activeConfig]);
+
+  // For display purposes, use the stored theme but provide resolved config
+  const displayConfig = theme === 'system' ? themes.system : themes[theme];
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, themeConfig: themes[theme] }}>
+    <ThemeContext.Provider value={{ 
+      theme, 
+      setTheme, 
+      themeConfig: displayConfig,
+      resolvedTheme 
+    }}>
       {children}
     </ThemeContext.Provider>
   );
