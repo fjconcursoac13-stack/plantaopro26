@@ -473,11 +473,19 @@ export default function Index() {
       }
 
       const registeredUnitId = formData.unit_id;
+      const registeredName = formData.name.toUpperCase().trim();
+      
+      // Store registration timestamp and name for welcome dialog
+      localStorage.setItem('plantaopro_first_access', JSON.stringify({
+        timestamp: Date.now(),
+        name: registeredName,
+        shown: false
+      }));
       
       toast({
         title: 'Cadastro Realizado!',
-        description: `Bem-vindo à equipe ${selectedTeam}! Você será direcionado para sua unidade.`,
-        duration: 5000,
+        description: `Bem-vindo à equipe ${selectedTeam}!`,
+        duration: 3000,
       });
 
       setFormData({
