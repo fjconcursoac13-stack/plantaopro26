@@ -815,87 +815,88 @@ export default function Index() {
         </div>
       </div>
 
-      {/* Hero Section - Enhanced */}
-      <header className="py-6 md:py-10 px-4 relative z-10">
+      {/* Hero Section - Enhanced - Compact for mobile */}
+      <header className="py-3 sm:py-6 md:py-8 px-3 sm:px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
-          {/* Animated Security Badge */}
-          <div className="mb-4 flex flex-col items-center">
+          {/* Animated Security Badge - Smaller on mobile */}
+          <div className="mb-2 sm:mb-4 flex flex-col items-center">
             <div className="relative group">
-              {/* Outer rotating ring */}
-              <div className="absolute -inset-3 rounded-full border border-primary/20 animate-[spin_20s_linear_infinite]">
+              {/* Outer rotating ring - Hidden on small mobile */}
+              <div className="absolute -inset-3 rounded-full border border-primary/20 animate-[spin_20s_linear_infinite] hidden sm:block">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-primary rounded-full" />
               </div>
-              {/* Second rotating ring */}
-              <div className="absolute -inset-6 rounded-full border border-primary/10 animate-[spin_30s_linear_infinite_reverse]">
+              {/* Second rotating ring - Hidden on mobile */}
+              <div className="absolute -inset-6 rounded-full border border-primary/10 animate-[spin_30s_linear_infinite_reverse] hidden md:block">
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-1 h-1 bg-accent rounded-full" />
               </div>
-              {/* Main badge */}
-              <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 border-2 border-primary/40 flex items-center justify-center shadow-2xl shadow-primary/20 group-hover:border-primary/60 transition-all duration-500">
-                <Shield className="h-10 w-10 md:h-12 md:w-12 text-primary drop-shadow-lg" />
+              {/* Main badge - Smaller on mobile */}
+              <div className="relative w-14 h-14 sm:w-18 sm:h-18 md:w-24 md:h-24 rounded-full bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900 border-2 border-primary/40 flex items-center justify-center shadow-2xl shadow-primary/20 group-hover:border-primary/60 transition-all duration-500">
+                <Shield className="h-7 w-7 sm:h-9 sm:w-9 md:h-12 md:w-12 text-primary drop-shadow-lg" />
                 {/* Pulse effect */}
                 <div className="absolute inset-0 rounded-full bg-primary/10 animate-ping opacity-30" style={{ animationDuration: '3s' }} />
               </div>
               {/* Badge label */}
-              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-primary to-accent rounded text-[7px] md:text-[8px] font-black text-primary-foreground tracking-[0.15em] shadow-lg">
+              <div className="absolute -bottom-1.5 sm:-bottom-2 left-1/2 -translate-x-1/2 px-2 sm:px-3 py-0.5 sm:py-1 bg-gradient-to-r from-primary to-accent rounded text-[6px] sm:text-[7px] md:text-[8px] font-black text-primary-foreground tracking-[0.1em] sm:tracking-[0.15em] shadow-lg whitespace-nowrap">
                 SEGURANÇA PÚBLICA
               </div>
             </div>
           </div>
           
-          {/* Title with animation */}
-          <div className="space-y-2 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-            <h1 className="text-3xl md:text-5xl font-black text-foreground tracking-tight">
+          {/* Title with animation - Smaller on mobile */}
+          <div className="space-y-1 sm:space-y-2 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+            <h1 className="text-xl sm:text-3xl md:text-5xl font-black text-foreground tracking-tight">
               PLANTÃO <span className="text-primary">PRO</span>
             </h1>
-            <div className="flex items-center justify-center gap-3">
-              <div className="w-12 h-[2px] bg-gradient-to-r from-transparent via-primary/50 to-primary" />
-              <span className="text-[10px] md:text-xs font-bold text-muted-foreground tracking-[0.25em] uppercase">
+            <div className="flex items-center justify-center gap-2 sm:gap-3">
+              <div className="w-6 sm:w-12 h-[1px] sm:h-[2px] bg-gradient-to-r from-transparent via-primary/50 to-primary" />
+              <span className="text-[8px] sm:text-[10px] md:text-xs font-bold text-muted-foreground tracking-[0.15em] sm:tracking-[0.25em] uppercase">
                 Sistema de Gestão de Escalas
               </span>
-              <div className="w-12 h-[2px] bg-gradient-to-l from-transparent via-primary/50 to-primary" />
+              <div className="w-6 sm:w-12 h-[1px] sm:h-[2px] bg-gradient-to-l from-transparent via-primary/50 to-primary" />
             </div>
           </div>
           
-          {/* Subtitle */}
-          <p className="text-muted-foreground text-xs md:text-sm mt-4 animate-fade-in max-w-md mx-auto" style={{ animationDelay: '0.5s' }}>
+          {/* Subtitle - Hidden on very small screens */}
+          <p className="text-muted-foreground text-[10px] sm:text-xs md:text-sm mt-2 sm:mt-4 animate-fade-in max-w-md mx-auto hidden xs:block" style={{ animationDelay: '0.5s' }}>
             Controle profissional de plantões para equipes de segurança pública
           </p>
           
-          {/* Team selection prompt */}
-          <div className="mt-6 animate-fade-in" style={{ animationDelay: '0.7s' }}>
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/30">
-              <Users className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium text-foreground">Selecione sua equipe</span>
+          {/* Team selection prompt - More compact */}
+          <div className="mt-3 sm:mt-6 animate-fade-in" style={{ animationDelay: '0.7s' }}>
+            <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-primary/10 border border-primary/30">
+              <Users className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
+              <span className="text-xs sm:text-sm font-medium text-foreground">Selecione sua equipe</span>
             </div>
           </div>
           
-          {/* Quick Biometric Login Button */}
+          {/* Quick Biometric Login Button - More compact */}
           {isBiometricAvailable && isBiometricEnrolled && enrolledCpf && (
-            <div className="mt-4 animate-fade-in" style={{ animationDelay: '0.9s' }}>
+            <div className="mt-2 sm:mt-4 animate-fade-in" style={{ animationDelay: '0.9s' }}>
               <Button
                 onClick={handleBiometricLogin}
                 disabled={isBiometricLoading}
-                className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold px-6 py-3 h-auto shadow-lg shadow-emerald-500/20"
+                size="sm"
+                className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold px-4 sm:px-6 py-2 sm:py-3 h-auto shadow-lg shadow-emerald-500/20 text-xs sm:text-sm"
               >
                 {isBiometricLoading ? (
-                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                  <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2 animate-spin" />
                 ) : (
-                  <Fingerprint className="h-5 w-5 mr-2" />
+                  <Fingerprint className="h-4 w-4 sm:h-5 sm:w-5 mr-1.5 sm:mr-2" />
                 )}
-                Login Rápido com Biometria
+                Login com Biometria
               </Button>
-              <p className="text-xs text-muted-foreground mt-2">
-                CPF cadastrado: {enrolledCpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')}
+              <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 sm:mt-2">
+                CPF: {enrolledCpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')}
               </p>
             </div>
           )}
         </div>
       </header>
 
-      {/* Teams Grid Section - Enhanced */}
-      <section className="flex-1 py-4 px-4 relative z-10 flex items-center">
-        <div className="w-full max-w-lg md:max-w-4xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+      {/* Teams Grid Section - Enhanced - More compact on mobile */}
+      <section className="flex-1 py-2 sm:py-4 px-2 sm:px-4 relative z-10 flex items-center">
+        <div className="w-full max-w-sm sm:max-w-lg md:max-w-4xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
             {teams.map((team, index) => (
               <div
                 key={team}
@@ -914,13 +915,13 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Footer - Professional */}
-      <footer className="py-3 px-4 bg-slate-900/90 backdrop-blur-sm border-t border-primary/20 relative z-10">
+      {/* Footer - Professional - Compact for mobile */}
+      <footer className="py-2 sm:py-3 px-2 sm:px-4 bg-slate-900/90 backdrop-blur-sm border-t border-primary/20 relative z-10">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <Shield className="h-4 w-4 text-primary" />
-              <span className="text-xs font-bold text-foreground hidden sm:inline">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <Shield className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
+              <span className="text-[10px] sm:text-xs font-bold text-foreground">
                 PLANTÃO PRO
               </span>
             </div>
@@ -932,19 +933,19 @@ export default function Index() {
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
-            <div className="hidden sm:flex items-center gap-2 mr-2">
+          <div className="flex items-center gap-1 sm:gap-2">
+            <div className="hidden sm:flex items-center gap-1.5 sm:gap-2 mr-1 sm:mr-2">
               <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-[10px] font-mono text-green-400">ONLINE</span>
+              <span className="text-[9px] sm:text-[10px] font-mono text-green-400">ONLINE</span>
             </div>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setShowMasterLogin(true)}
-              className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors gap-1.5 h-8 px-3"
+              className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors gap-1 sm:gap-1.5 h-7 sm:h-8 px-2 sm:px-3"
             >
-              <Lock className="h-3 w-3" />
-              <span className="text-[10px] font-bold tracking-wider">ADMINISTRAÇÃO</span>
+              <Lock className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+              <span className="text-[9px] sm:text-[10px] font-bold tracking-wider">ADMIN</span>
             </Button>
           </div>
         </div>
