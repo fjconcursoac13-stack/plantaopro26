@@ -957,44 +957,62 @@ export default function Index() {
             
             {/* Show found agent info */}
             {foundAgent && (
-              <div className={`p-3 rounded-lg border animate-fade-in ${
+              <div className={`p-4 rounded-xl border-2 animate-fade-in shadow-lg ${
                 foundAgent.team && foundAgent.team !== selectedTeam 
-                  ? 'bg-amber-500/20 border-amber-500/40' 
-                  : 'bg-green-500/20 border-green-500/40'
+                  ? 'bg-gradient-to-br from-red-500/20 via-amber-500/20 to-red-500/10 border-red-500/60' 
+                  : 'bg-gradient-to-br from-green-500/20 via-emerald-500/20 to-green-500/10 border-green-500/60'
               }`}>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 mb-2">
                   {foundAgent.team && foundAgent.team !== selectedTeam ? (
-                    <AlertTriangle className="h-4 w-4 text-amber-400" />
+                    <>
+                      <div className="p-2 rounded-full bg-red-500/30 animate-pulse">
+                        <AlertTriangle className="h-5 w-5 text-red-400" />
+                      </div>
+                      <div>
+                        <span className="font-bold text-red-400 text-base block">
+                          ⚠️ EQUIPE INCORRETA!
+                        </span>
+                        <span className="text-red-300/80 text-xs">
+                          Este CPF não pertence à equipe {selectedTeam}
+                        </span>
+                      </div>
+                    </>
                   ) : (
-                    <UserCheck className="h-4 w-4 text-green-400" />
+                    <>
+                      <div className="p-2 rounded-full bg-green-500/30">
+                        <UserCheck className="h-5 w-5 text-green-400" />
+                      </div>
+                      <span className="font-bold text-green-400 text-base">
+                        ✓ Agente Encontrado!
+                      </span>
+                    </>
                   )}
-                  <span className={`font-medium text-sm ${
-                    foundAgent.team && foundAgent.team !== selectedTeam 
-                      ? 'text-amber-400' 
-                      : 'text-green-400'
-                  }`}>
-                    {foundAgent.team && foundAgent.team !== selectedTeam 
-                      ? 'Atenção: Equipe Diferente!' 
-                      : 'Agente Encontrado!'
-                    }
-                  </span>
                 </div>
-                <p className="text-white font-semibold mt-1">{foundAgent.name}</p>
-                {foundAgent.team && (
-                  <p className={`text-xs mt-1 ${
-                    foundAgent.team !== selectedTeam 
-                      ? 'text-amber-300 font-medium' 
-                      : 'text-slate-400'
-                  }`}>
-                    {foundAgent.team !== selectedTeam 
-                      ? `Você pertence à Equipe ${foundAgent.team}` 
-                      : `Equipe ${foundAgent.team}`
-                    }
-                  </p>
-                )}
-                {!foundAgent.team && (
-                  <p className="text-slate-400 text-xs mt-1">Sem equipe definida</p>
-                )}
+                <div className="pl-2 border-l-2 border-current/30 ml-2">
+                  <p className="text-white font-semibold text-lg">{foundAgent.name}</p>
+                  {foundAgent.team && (
+                    <div className={`flex items-center gap-2 mt-2 p-2 rounded-lg ${
+                      foundAgent.team !== selectedTeam 
+                        ? 'bg-red-500/20 border border-red-500/40' 
+                        : 'bg-green-500/10'
+                    }`}>
+                      <Users className="h-4 w-4" />
+                      <span className={`text-sm font-semibold ${
+                        foundAgent.team !== selectedTeam 
+                          ? 'text-red-300' 
+                          : 'text-green-300'
+                      }`}>
+                        {foundAgent.team !== selectedTeam 
+                          ? `Sua equipe é ${foundAgent.team} (clique para continuar lá)` 
+                          : `Equipe ${foundAgent.team}`
+                        }
+                      </span>
+                    </div>
+                  )}
+                  {!foundAgent.team && (
+                    <p className="text-slate-400 text-xs mt-2">Sem equipe definida</p>
+                  )}
+                </div>
               </div>
             )}
             

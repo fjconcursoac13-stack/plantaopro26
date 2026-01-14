@@ -250,8 +250,8 @@ export default function AgentPanel() {
       )}
 
       <div className="flex-1 flex flex-col">
-        <main className={`flex-1 p-3 md:p-6 overflow-auto ${showLicenseWarning ? 'pt-28' : ''}`}>
-          <div className="max-w-7xl mx-auto space-y-3 md:space-y-6 animate-fade-in">
+        <main className={`flex-1 p-4 md:p-6 lg:p-8 overflow-auto ${showLicenseWarning ? 'pt-28' : ''}`}>
+          <div className="max-w-7xl mx-auto space-y-4 md:space-y-6 animate-fade-in">
             {/* Header Actions */}
             <div className="flex items-center justify-between">
               <BackButton fallbackPath="/" />
@@ -335,8 +335,8 @@ export default function AgentPanel() {
               </div>
             </div>
 
-            {/* Quick Stats Row - Mais compacto */}
-            <div className="grid grid-cols-2 gap-2 md:gap-4">
+            {/* Quick Stats Row - Melhor proporção */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
               <ProfessionalShiftTimer agentId={agent.id} compact />
               <BHTracker agentId={agent.id} compact />
             </div>
@@ -381,9 +381,9 @@ export default function AgentPanel() {
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="equipe" className="space-y-3">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-                  <div className="lg:col-span-2 space-y-3">
+              <TabsContent value="equipe" className="space-y-4">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                  <div className="lg:col-span-2 space-y-4">
                     <TeamMembersCard 
                       unitId={agent.unit_id} 
                       team={agent.team} 
@@ -395,7 +395,7 @@ export default function AgentPanel() {
                       unitId={agent.unit_id}
                     />
                   </div>
-                  <div className="lg:col-span-1">
+                  <div className="lg:col-span-1 h-fit">
                     <TacticalRadar 
                       unitId={agent.unit_id || undefined}
                       compact={false}
@@ -404,8 +404,8 @@ export default function AgentPanel() {
                 </div>
               </TabsContent>
 
-              <TabsContent value="plantoes" className="space-y-3">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <TabsContent value="plantoes" className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <ProfessionalShiftTimer agentId={agent.id} />
                   <ShiftScheduleCard agentId={agent.id} />
                 </div>
@@ -451,7 +451,7 @@ export default function AgentPanel() {
               </TabsContent>
 
               <TabsContent value="config" className="space-y-4">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                   <AgentSettingsCard
                     agentId={agent.id}
                     agentName={agent.name}
@@ -462,9 +462,9 @@ export default function AgentPanel() {
                   <div className="space-y-4">
                     <NotificationSettings />
                     <BHReminderSettings agentId={agent.id} />
-                    <BHEvolutionChart agentId={agent.id} />
                   </div>
                 </div>
+                <BHEvolutionChart agentId={agent.id} />
               </TabsContent>
             </Tabs>
 
