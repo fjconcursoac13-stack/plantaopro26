@@ -92,7 +92,7 @@ export default function Settings() {
                 <div className="flex items-center gap-3 mb-4">
                   <Sparkles className="h-5 w-5 text-primary" />
                   <span className="text-sm text-muted-foreground">
-                    Tema atual: <span className="font-medium text-primary">{themeConfig.icon} {themeConfig.name}</span>
+                    Tema atual: <span className="font-medium text-primary">{themeConfig.emoji} {themeConfig.name}</span>
                   </span>
                 </div>
                 <ThemeSelector />
