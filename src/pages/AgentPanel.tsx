@@ -6,6 +6,7 @@ import { useBackNavigation } from '@/hooks/useBackNavigation';
 import { useSessionPersistence } from '@/hooks/useSessionPersistence';
 import { useLicenseCheck } from '@/hooks/useLicenseCheck';
 import { useShiftNotifications } from '@/hooks/useShiftNotifications';
+import { useBHReminder } from '@/hooks/useBHReminder';
 import { TeamMembersCard } from '@/components/agent-panel/TeamMembersCard';
 import { ProfessionalShiftTimer } from '@/components/agent-panel/ProfessionalShiftTimer';
 import { BHTracker } from '@/components/agent-panel/BHTracker';
@@ -93,6 +94,13 @@ export default function AgentPanel() {
     agentId: agent?.id || '',
     enabled: !!agent?.id,
     reminderHoursBefore: [24, 1], // 24h and 1h before
+  });
+
+  // BH daily reminder - reminds to register BH if not done today
+  useBHReminder({
+    agentId: agent?.id || '',
+    enabled: !!agent?.id,
+    reminderHour: 18, // Remind at 6 PM
   });
 
   useEffect(() => {
