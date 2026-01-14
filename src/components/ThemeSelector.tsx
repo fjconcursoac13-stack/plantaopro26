@@ -15,7 +15,10 @@ export function ThemeSelector({ onSelect, compact = false }: ThemeSelectorProps)
   const handleSelect = (themeId: ThemeType) => {
     playSound('theme-change');
     setTheme(themeId);
-    onSelect?.();
+    // Auto-close after theme selection
+    setTimeout(() => {
+      onSelect?.();
+    }, 150);
   };
 
   const handleToggleSound = () => {
