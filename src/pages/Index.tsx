@@ -320,10 +320,14 @@ export default function Index() {
           setShowLogin(true);
         }
       } else {
-        // New user - show registration
+        // Auto-cadastro desabilitado - mostrar mensagem de erro
+        toast({
+          title: 'CPF Não Cadastrado',
+          description: 'O cadastro está temporariamente desabilitado. Entre em contato com o administrador.',
+          variant: 'destructive',
+          duration: 5000,
+        });
         setShowCpfCheck(false);
-        setFormData(prev => ({ ...prev, cpf: checkCpf }));
-        setShowRegistration(true);
       }
     } catch (error) {
       console.error('Error checking CPF:', error);
