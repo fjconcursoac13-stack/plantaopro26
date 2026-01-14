@@ -103,8 +103,41 @@ export function usePushNotifications() {
   const registerServiceWorker = async () => {
     try {
       const registration = await navigator.serviceWorker.register('/sw.js', {
-        scope: '/'
+        scope: '/',
       });
+
+      // Force-check for updates (prevents old SW continuing to run)
+      try {
+        await registration.update();
+      } catch {
+        // ignore
+      }
+
+      // If there's a waiting SW, activate it immediately
+      if (registration.waiting) {
+        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+      }
+
+      // When a new SW is found, activate it immediately
+      registration.addEventListener('updatefound', () => {
+        const newWorker = registration.installing;
+        if (!newWorker) return;
+
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            newWorker.postMessage({ type: 'SKIP_WAITING' });
+          }
+        });
+      });
+
+      // Reload once the new SW takes control (to ensure auth-cache fix is active)
+      let reloaded = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (reloaded) return;
+        reloaded = true;
+        window.location.reload();
+      });
+
       setServiceWorker(registration);
       console.log('Service Worker registered successfully');
     } catch (error) {
