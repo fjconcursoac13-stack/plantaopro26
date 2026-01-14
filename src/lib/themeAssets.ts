@@ -13,38 +13,52 @@ import {
 import type { ThemeType } from '@/contexts/ThemeContext';
 import type { LucideIcon } from 'lucide-react';
 
+export interface BackgroundEffect {
+  type: 'particles' | 'grid' | 'radar' | 'matrix' | 'hexagons' | 'scanlines' | 'frost' | 'flames' | 'dots' | 'waves' | 'orbs';
+  intensity: 'low' | 'medium' | 'high';
+  primaryColor: string;
+  secondaryColor?: string;
+  animated: boolean;
+  particleCount?: number;
+  speed?: 'slow' | 'medium' | 'fast';
+}
+
 export interface ThemeAssets {
-  // Main icons
   mainIcon: LucideIcon;
   decorativeIcons: LucideIcon[];
-  // Team icons override
   teamIcons: {
     ALFA: LucideIcon;
     BRAVO: LucideIcon;
     CHARLIE: LucideIcon;
     DELTA: LucideIcon;
   };
-  // Color scheme for teams (overrides default)
   teamColors: {
     ALFA: { color: string; bgGradient: string; borderColor: string; glowColor: string };
     BRAVO: { color: string; bgGradient: string; borderColor: string; glowColor: string };
     CHARLIE: { color: string; bgGradient: string; borderColor: string; glowColor: string };
     DELTA: { color: string; bgGradient: string; borderColor: string; glowColor: string };
   };
-  // Descriptions per theme
   teamDescriptions: {
     ALFA: { description: string; slogan: string };
     BRAVO: { description: string; slogan: string };
     CHARLIE: { description: string; slogan: string };
     DELTA: { description: string; slogan: string };
   };
-  // Logo text style
   logoStyle: {
     gradient: string;
     textShadow: string;
   };
-  // Subtitle
   subtitle: string;
+  backgroundEffects: BackgroundEffect[];
+  ambientGlow: {
+    primary: string;
+    secondary: string;
+    tertiary?: string;
+  };
+  cornerAccents: {
+    style: 'tactical' | 'tech' | 'military' | 'minimal' | 'frost' | 'flame' | 'none';
+    color: string;
+  };
 }
 
 export const themeAssets: Record<ThemeType, ThemeAssets> = {
@@ -74,6 +88,13 @@ export const themeAssets: Record<ThemeType, ThemeAssets> = {
       textShadow: '0 0 30px rgba(251, 191, 36, 0.5)',
     },
     subtitle: 'Sistema Tático de Escalas',
+    backgroundEffects: [
+      { type: 'grid', intensity: 'medium', primaryColor: 'rgba(251, 191, 36, 0.15)', animated: true, speed: 'slow' },
+      { type: 'scanlines', intensity: 'low', primaryColor: 'rgba(251, 191, 36, 0.4)', animated: true, speed: 'medium' },
+      { type: 'particles', intensity: 'medium', primaryColor: 'rgba(251, 191, 36, 0.6)', animated: true, particleCount: 30, speed: 'slow' },
+    ],
+    ambientGlow: { primary: 'rgba(251, 191, 36, 0.15)', secondary: 'rgba(249, 115, 22, 0.1)', tertiary: 'rgba(234, 179, 8, 0.08)' },
+    cornerAccents: { style: 'tactical', color: 'border-amber-500/30' },
   },
   military: {
     mainIcon: Shield,
@@ -101,6 +122,13 @@ export const themeAssets: Record<ThemeType, ThemeAssets> = {
       textShadow: '0 0 30px rgba(34, 197, 94, 0.5)',
     },
     subtitle: 'Sistema Militar de Escalas',
+    backgroundEffects: [
+      { type: 'radar', intensity: 'high', primaryColor: 'rgba(34, 197, 94, 0.4)', animated: true, speed: 'slow' },
+      { type: 'dots', intensity: 'medium', primaryColor: 'rgba(34, 197, 94, 0.3)', animated: true, particleCount: 8, speed: 'medium' },
+      { type: 'grid', intensity: 'low', primaryColor: 'rgba(34, 197, 94, 0.1)', animated: false },
+    ],
+    ambientGlow: { primary: 'rgba(34, 197, 94, 0.12)', secondary: 'rgba(16, 185, 129, 0.1)', tertiary: 'rgba(20, 184, 166, 0.08)' },
+    cornerAccents: { style: 'military', color: 'border-green-500/30' },
   },
   cyber: {
     mainIcon: Cpu,
@@ -128,6 +156,13 @@ export const themeAssets: Record<ThemeType, ThemeAssets> = {
       textShadow: '0 0 30px rgba(6, 182, 212, 0.5)',
     },
     subtitle: 'Sistema Cyber de Operações',
+    backgroundEffects: [
+      { type: 'matrix', intensity: 'high', primaryColor: 'rgba(6, 182, 212, 0.5)', animated: true, speed: 'fast' },
+      { type: 'hexagons', intensity: 'medium', primaryColor: 'rgba(168, 85, 247, 0.2)', animated: false },
+      { type: 'particles', intensity: 'high', primaryColor: 'rgba(236, 72, 153, 0.5)', secondaryColor: 'rgba(6, 182, 212, 0.5)', animated: true, particleCount: 50, speed: 'fast' },
+    ],
+    ambientGlow: { primary: 'rgba(6, 182, 212, 0.15)', secondary: 'rgba(168, 85, 247, 0.12)', tertiary: 'rgba(236, 72, 153, 0.1)' },
+    cornerAccents: { style: 'tech', color: 'border-cyan-500/40' },
   },
   classic: {
     mainIcon: Award,
@@ -155,6 +190,13 @@ export const themeAssets: Record<ThemeType, ThemeAssets> = {
       textShadow: '0 0 30px rgba(59, 130, 246, 0.5)',
     },
     subtitle: 'Sistema Institucional de Escalas',
+    backgroundEffects: [
+      { type: 'dots', intensity: 'low', primaryColor: 'rgba(59, 130, 246, 0.2)', animated: false },
+      { type: 'waves', intensity: 'low', primaryColor: 'rgba(99, 102, 241, 0.15)', animated: true, speed: 'slow' },
+      { type: 'orbs', intensity: 'medium', primaryColor: 'rgba(59, 130, 246, 0.1)', animated: true, speed: 'slow' },
+    ],
+    ambientGlow: { primary: 'rgba(59, 130, 246, 0.12)', secondary: 'rgba(99, 102, 241, 0.1)' },
+    cornerAccents: { style: 'minimal', color: 'border-blue-500/20' },
   },
   crimson: {
     mainIcon: Flame,
@@ -182,6 +224,13 @@ export const themeAssets: Record<ThemeType, ThemeAssets> = {
       textShadow: '0 0 30px rgba(239, 68, 68, 0.5)',
     },
     subtitle: 'Sistema de Força Especial',
+    backgroundEffects: [
+      { type: 'flames', intensity: 'high', primaryColor: 'rgba(239, 68, 68, 0.4)', secondaryColor: 'rgba(249, 115, 22, 0.3)', animated: true, speed: 'fast' },
+      { type: 'particles', intensity: 'high', primaryColor: 'rgba(239, 68, 68, 0.6)', animated: true, particleCount: 40, speed: 'fast' },
+      { type: 'scanlines', intensity: 'medium', primaryColor: 'rgba(239, 68, 68, 0.5)', animated: true, speed: 'fast' },
+    ],
+    ambientGlow: { primary: 'rgba(239, 68, 68, 0.18)', secondary: 'rgba(249, 115, 22, 0.15)', tertiary: 'rgba(234, 179, 8, 0.1)' },
+    cornerAccents: { style: 'flame', color: 'border-red-500/40' },
   },
   arctic: {
     mainIcon: Snowflake,
@@ -209,6 +258,13 @@ export const themeAssets: Record<ThemeType, ThemeAssets> = {
       textShadow: '0 0 30px rgba(56, 189, 248, 0.5)',
     },
     subtitle: 'Sistema Ártico de Operações',
+    backgroundEffects: [
+      { type: 'frost', intensity: 'high', primaryColor: 'rgba(56, 189, 248, 0.3)', secondaryColor: 'rgba(6, 182, 212, 0.2)', animated: true, speed: 'slow' },
+      { type: 'particles', intensity: 'high', primaryColor: 'rgba(255, 255, 255, 0.8)', animated: true, particleCount: 60, speed: 'slow' },
+      { type: 'orbs', intensity: 'medium', primaryColor: 'rgba(56, 189, 248, 0.15)', animated: true, speed: 'slow' },
+    ],
+    ambientGlow: { primary: 'rgba(56, 189, 248, 0.15)', secondary: 'rgba(6, 182, 212, 0.12)', tertiary: 'rgba(255, 255, 255, 0.08)' },
+    cornerAccents: { style: 'frost', color: 'border-sky-400/30' },
   },
   stealth: {
     mainIcon: Eye,
@@ -236,6 +292,13 @@ export const themeAssets: Record<ThemeType, ThemeAssets> = {
       textShadow: '0 0 30px rgba(139, 92, 246, 0.4)',
     },
     subtitle: 'Sistema Furtivo de Operações',
+    backgroundEffects: [
+      { type: 'scanlines', intensity: 'low', primaryColor: 'rgba(139, 92, 246, 0.15)', animated: false },
+      { type: 'orbs', intensity: 'low', primaryColor: 'rgba(139, 92, 246, 0.08)', secondaryColor: 'rgba(192, 132, 252, 0.06)', animated: true, speed: 'slow' },
+      { type: 'particles', intensity: 'low', primaryColor: 'rgba(139, 92, 246, 0.3)', animated: true, particleCount: 15, speed: 'slow' },
+    ],
+    ambientGlow: { primary: 'rgba(139, 92, 246, 0.08)', secondary: 'rgba(192, 132, 252, 0.06)' },
+    cornerAccents: { style: 'minimal', color: 'border-purple-500/20' },
   },
   sentinel: {
     mainIcon: Radar,
@@ -263,6 +326,13 @@ export const themeAssets: Record<ThemeType, ThemeAssets> = {
       textShadow: '0 0 40px rgba(34, 197, 94, 0.7)',
     },
     subtitle: 'Sistema Sentinela de Vigilância',
+    backgroundEffects: [
+      { type: 'radar', intensity: 'high', primaryColor: 'rgba(34, 197, 94, 0.5)', animated: true, speed: 'medium' },
+      { type: 'grid', intensity: 'low', primaryColor: 'rgba(34, 197, 94, 0.15)', animated: false },
+      { type: 'dots', intensity: 'high', primaryColor: 'rgba(34, 197, 94, 0.8)', animated: true, particleCount: 8, speed: 'slow' },
+    ],
+    ambientGlow: { primary: 'rgba(34, 197, 94, 0.15)', secondary: 'rgba(132, 204, 22, 0.12)', tertiary: 'rgba(16, 185, 129, 0.1)' },
+    cornerAccents: { style: 'tech', color: 'border-green-500/40' },
   },
   nightops: {
     mainIcon: Moon,
@@ -290,6 +360,12 @@ export const themeAssets: Record<ThemeType, ThemeAssets> = {
       textShadow: '0 0 10px rgba(150, 150, 150, 0.3)',
     },
     subtitle: 'Sistema de Operações Noturnas',
+    backgroundEffects: [
+      { type: 'scanlines', intensity: 'low', primaryColor: 'rgba(100, 100, 100, 0.08)', animated: false },
+      { type: 'dots', intensity: 'low', primaryColor: 'rgba(150, 150, 150, 0.05)', animated: false },
+    ],
+    ambientGlow: { primary: 'rgba(100, 100, 100, 0.05)', secondary: 'rgba(80, 80, 80, 0.03)' },
+    cornerAccents: { style: 'none', color: 'border-gray-600/10' },
   },
   light: {
     mainIcon: Sun,
@@ -317,6 +393,12 @@ export const themeAssets: Record<ThemeType, ThemeAssets> = {
       textShadow: '0 0 20px rgba(59, 130, 246, 0.3)',
     },
     subtitle: 'Sistema Profissional de Escalas',
+    backgroundEffects: [
+      { type: 'dots', intensity: 'low', primaryColor: 'rgba(59, 130, 246, 0.1)', animated: false },
+      { type: 'orbs', intensity: 'low', primaryColor: 'rgba(59, 130, 246, 0.08)', secondaryColor: 'rgba(99, 102, 241, 0.06)', animated: true, speed: 'slow' },
+    ],
+    ambientGlow: { primary: 'rgba(59, 130, 246, 0.08)', secondary: 'rgba(99, 102, 241, 0.06)' },
+    cornerAccents: { style: 'none', color: 'border-blue-200/30' },
   },
   system: {
     mainIcon: Monitor,
@@ -344,11 +426,16 @@ export const themeAssets: Record<ThemeType, ThemeAssets> = {
       textShadow: '0 0 30px hsl(var(--primary) / 0.5)',
     },
     subtitle: 'Sistema Automático de Escalas',
+    backgroundEffects: [
+      { type: 'grid', intensity: 'low', primaryColor: 'rgba(100, 100, 100, 0.1)', animated: false },
+      { type: 'particles', intensity: 'medium', primaryColor: 'rgba(100, 100, 100, 0.3)', animated: true, particleCount: 25, speed: 'slow' },
+    ],
+    ambientGlow: { primary: 'rgba(100, 100, 100, 0.1)', secondary: 'rgba(80, 80, 80, 0.08)' },
+    cornerAccents: { style: 'minimal', color: 'border-gray-500/20' },
   },
 };
 
 export function getThemeAssets(theme: ThemeType, resolvedTheme: Exclude<ThemeType, 'system'>): ThemeAssets {
-  // For system theme, use the resolved theme's assets
   if (theme === 'system') {
     return themeAssets[resolvedTheme];
   }

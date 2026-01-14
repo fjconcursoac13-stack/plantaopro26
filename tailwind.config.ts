@@ -118,6 +118,10 @@ export default {
           "50%": { opacity: "1" },
           "100%": { transform: "translateY(100%)", opacity: "0.5" },
         },
+        "rise": {
+          "0%": { transform: "translateY(0) scale(1)", opacity: "1" },
+          "100%": { transform: "translateY(-100vh) scale(0.5)", opacity: "0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -130,6 +134,7 @@ export default {
         "tactical-reveal": "tactical-reveal 0.6s ease-out forwards",
         "tactical-pulse": "tactical-pulse 1.5s ease-out",
         "scan-line": "scan-line 2s ease-in-out infinite",
+        "rise": "rise 5s ease-out infinite",
       },
       boxShadow: {
         glow: "0 0 40px hsl(187 85% 53% / 0.15)",
