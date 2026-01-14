@@ -348,32 +348,33 @@ export default function Auth() {
     setIsSubmitting(true);
     
     try {
+      const cleanCpf = formData.cpf.replace(/\D/g, '');
+      const cleanMatricula = formData.matricula.replace(/\D/g, '');
+
       // First, check if CPF or matricula already exists
       const { data: existingAgent, error: checkError } = await supabase
         .from('agents')
         .select('id, cpf, matricula')
-        .or(`cpf.eq.${formData.cpf.replace(/\D/g, '')},matricula.eq.${formData.matricula}`)
+        .or(`cpf.eq.${cleanCpf},matricula.eq.${cleanMatricula}`)
         .maybeSingle();
 
       if (checkError) throw checkError;
 
       if (existingAgent) {
-        if (existingAgent.cpf === formData.cpf.replace(/\D/g, '')) {
+        if (existingAgent.cpf === cleanCpf) {
           toast({
             title: 'CPF já cadastrado!',
             description: 'Redirecionando para a tela de login...',
             variant: 'default',
           });
-          
-          // Set login CPF and switch to login tab after a short delay
+
           setTimeout(() => {
             setCpf(formData.cpf);
             setFormData(prev => ({ ...prev, cpf: '' }));
-            // Find and click the login tab
             const loginTab = document.querySelector('[value="login"]') as HTMLButtonElement;
             if (loginTab) loginTab.click();
           }, 1500);
-          
+
           setIsSubmitting(false);
           return;
         } else {
@@ -395,22 +396,38 @@ export default function Auth() {
       }
 
       // Generate email using CPF
-      const authEmail = `${formData.cpf.replace(/\D/g, '')}@agent.plantaopro.com`;
-      
+      const authEmail = `${cleanCpf}@agent.plantaopro.com`;
+
       // Create user account with user's chosen password
       const { error: signUpError } = await signUp(
-        authEmail, 
-        formData.registerPassword, 
+        authEmail,
+        formData.registerPassword,
         formData.name.toUpperCase()
       );
-      
+
       if (signUpError) throw signUpError;
 
-      // Create agent record
+      // Wait for session to be established after signup
+      let sessionUserId: string | null = null;
+      for (let i = 0; i < 10; i++) {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user?.id) {
+          sessionUserId = session.user.id;
+          break;
+        }
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
+
+      if (!sessionUserId) {
+        throw new Error('Não foi possível estabelecer a sessão. Tente novamente.');
+      }
+
+      // Create agent record (IMPORTANT: id must match auth user id)
       const { error: agentError } = await supabase.from('agents').insert({
+        id: sessionUserId,
         name: formData.name.toUpperCase().trim(),
-        cpf: formData.cpf.replace(/\D/g, ''),
-        matricula: formData.matricula,
+        cpf: cleanCpf,
+        matricula: cleanMatricula,
         unit_id: formData.unit_id,
         team: formData.team,
         birth_date: birthDate,

@@ -421,7 +421,8 @@ export default function Index() {
         }
       }
 
-      const authEmail = formData.email || `${formData.cpf.replace(/\D/g, '')}@agent.plantaopro.com`;
+      const cleanCpf = formData.cpf.replace(/\D/g, '');
+      const authEmail = formData.email || `${cleanCpf}@agent.plantaopro.com`;
       
       const { error: signUpError } = await signUp(
         authEmail, 
@@ -433,24 +434,25 @@ export default function Index() {
 
       // Wait for session to be established after signup (auto-confirm enabled)
       let retries = 0;
-      let sessionReady = false;
-      while (retries < 10 && !sessionReady) {
+      let sessionUserId: string | null = null;
+      while (retries < 10 && !sessionUserId) {
         const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-          sessionReady = true;
+        if (session?.user?.id) {
+          sessionUserId = session.user.id;
         } else {
           await new Promise(resolve => setTimeout(resolve, 300));
           retries++;
         }
       }
 
-      if (!sessionReady) {
+      if (!sessionUserId) {
         throw new Error('Não foi possível estabelecer a sessão. Tente novamente.');
       }
 
       const { error: agentError } = await supabase.from('agents').insert({
+        id: sessionUserId,
         name: formData.name.toUpperCase().trim(),
-        cpf: formData.cpf.replace(/\D/g, ''),
+        cpf: cleanCpf,
         matricula: getMatriculaNumbers(formData.matricula),
         unit_id: formData.unit_id,
         team: selectedTeam,
