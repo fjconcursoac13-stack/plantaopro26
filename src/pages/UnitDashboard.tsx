@@ -227,14 +227,16 @@ export default function UnitDashboard() {
               </Badge>
             </div>
 
-            {/* Stats Cards - Compact */}
+            {/* Stats Cards - Compact with tactical animations */}
             <div className="grid grid-cols-4 gap-2">
-              {teamStats.map((team) => (
+              {teamStats.map((team, index) => (
                 <Card 
                   key={team.name} 
-                  className={`${team.bgColor} border-slate-700/50 hover:border-slate-600 transition-colors`}
+                  className={`${team.bgColor} border-slate-700/50 hover:border-slate-600 transition-all tactical-card hover:scale-105`}
+                  style={{ animationDelay: `${index * 0.08}s` }}
                 >
-                  <CardContent className="p-2 md:p-3 text-center">
+                  <CardContent className="p-2 md:p-3 text-center relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none" />
                     <team.icon className={`h-4 w-4 ${team.color} mx-auto mb-1`} />
                     <div className="text-lg md:text-xl font-bold text-white">{team.agents.length}</div>
                     <p className="text-[9px] md:text-[10px] text-slate-400 truncate">{team.name}</p>
@@ -243,10 +245,15 @@ export default function UnitDashboard() {
               ))}
             </div>
 
-            {/* Teams Grid - Compact */}
+            {/* Teams Grid - Compact with tactical animations */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {teamStats.map((team) => (
-                <Card key={team.name} className="bg-slate-800/40 border-slate-700/50">
+              {teamStats.map((team, index) => (
+                <Card 
+                  key={team.name} 
+                  className="bg-slate-800/40 border-slate-700/50 tactical-card relative overflow-hidden"
+                  style={{ animationDelay: `${0.3 + index * 0.1}s` }}
+                >
+                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
                   <CardHeader className="p-3 pb-2">
                     <CardTitle className="flex items-center gap-2 text-sm">
                       <div className={`p-1.5 rounded ${team.bgColor}`}>
@@ -293,13 +300,15 @@ export default function UnitDashboard() {
               ))}
             </div>
 
-            {/* Quick Actions - Compact */}
+            {/* Quick Actions - Compact with tactical animations */}
             <div className="grid grid-cols-2 gap-2">
               <Card 
-                className="bg-slate-800/40 border-slate-700/50 hover:border-amber-500/40 cursor-pointer transition-colors group"
+                className="bg-slate-800/40 border-slate-700/50 hover:border-amber-500/40 cursor-pointer transition-all group tactical-card hover:scale-[1.02]"
                 onClick={() => navigate('/overtime')}
+                style={{ animationDelay: '0.7s' }}
               >
-                <CardContent className="p-3 flex items-center gap-2.5">
+                <CardContent className="p-3 flex items-center gap-2.5 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="p-1.5 rounded bg-amber-500/20 text-amber-400 group-hover:scale-110 transition-transform">
                     <Clock className="h-4 w-4" />
                   </div>
@@ -311,10 +320,12 @@ export default function UnitDashboard() {
               </Card>
               
               <Card 
-                className="bg-slate-800/40 border-slate-700/50 hover:border-amber-500/40 cursor-pointer transition-colors group"
+                className="bg-slate-800/40 border-slate-700/50 hover:border-amber-500/40 cursor-pointer transition-all group tactical-card hover:scale-[1.02]"
                 onClick={() => navigate('/agents')}
+                style={{ animationDelay: '0.8s' }}
               >
-                <CardContent className="p-3 flex items-center gap-2.5">
+                <CardContent className="p-3 flex items-center gap-2.5 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   <div className="p-1.5 rounded bg-emerald-500/20 text-emerald-400 group-hover:scale-110 transition-transform">
                     <Users className="h-4 w-4" />
                   </div>
