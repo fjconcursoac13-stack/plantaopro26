@@ -14,6 +14,8 @@ import { ShiftCalendar } from '@/components/dashboard/ShiftCalendar';
 import { RecentActivity } from '@/components/dashboard/RecentActivity';
 import { OvertimeChart } from '@/components/dashboard/OvertimeChart';
 import { TeamShiftsPanel } from '@/components/dashboard/TeamShiftsPanel';
+import { ShiftConflictsBanner } from '@/components/dashboard/ShiftConflictsBanner';
+import { useShiftConflictDetection } from '@/hooks/useShiftConflictDetection';
 import { ContributionMessage } from '@/components/ContributionMessage';
 import { UnitInfoCard } from '@/components/dashboard/UnitInfoCard';
 import { TeamUnlinkDialog } from '@/components/agents/TeamUnlinkDialog';
@@ -51,6 +53,18 @@ export default function Dashboard() {
   const [showContribution, setShowContribution] = useState(false);
   const [showTeamManagement, setShowTeamManagement] = useState(false);
   const [showTransferRequest, setShowTransferRequest] = useState(false);
+
+  // Shift conflict detection for admins
+  const {
+    conflicts,
+    isChecking: isCheckingConflicts,
+    checkForConflicts,
+    dismissConflict,
+  } = useShiftConflictDetection({
+    enabled: true,
+    isAdmin: isAdmin || !!masterSession,
+    unitId: agent?.unit_id || null,
+  });
 
   // ESC key navigation - goes back to previous page or home
   useBackNavigation({ enabled: true, fallbackPath: '/' });
@@ -319,6 +333,16 @@ export default function Dashboard() {
               )}
               
             </div>
+
+            {/* Shift Conflicts Banner - Admin only */}
+            {(isAdmin || masterSession) && conflicts.length > 0 && (
+              <ShiftConflictsBanner
+                conflicts={conflicts}
+                isChecking={isCheckingConflicts}
+                onRefresh={checkForConflicts}
+                onDismiss={dismissConflict}
+              />
+            )}
 
             {/* Agent Shift Timer and Upcoming Events - Only visible for logged agents */}
             {agent && (
