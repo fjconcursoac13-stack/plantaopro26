@@ -10,7 +10,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { Clock, TrendingUp, TrendingDown, DollarSign, Loader2, History, AlertTriangle, Trash2, CalendarPlus, Edit2, Sun, Moon, Bell, BellOff, HelpCircle, BarChart3, Timer } from 'lucide-react';
+import { Clock, TrendingUp, TrendingDown, DollarSign, Loader2, History, AlertTriangle, Trash2, CalendarPlus, Edit2, Sun, Moon, Bell, BellOff, HelpCircle, BarChart3, Timer, Lock, Shield, Unlock } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { NumberStepper } from '@/components/ui/number-stepper';
 import { format, endOfDay, isAfter, addDays, isBefore, startOfDay, startOfMonth, endOfMonth, getDate, subMonths, addMonths } from 'date-fns';
@@ -271,6 +272,11 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [editHours, setEditHours] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+
+  // Delete confirmation state
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [entryToDelete, setEntryToDelete] = useState<OvertimeEntry | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Alert state
   const [alertsEnabled, setAlertsEnabled] = useState(false);
@@ -688,20 +694,32 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
     }
   };
 
-  const handleRemoveBH = async (entry: OvertimeEntry) => {
+  const handleRequestDelete = (entry: OvertimeEntry) => {
+    setEntryToDelete(entry);
+    setShowDeleteConfirm(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!entryToDelete) return;
+
     try {
+      setIsDeleting(true);
       const { error } = await supabase
         .from('overtime_bank')
         .delete()
-        .eq('id', entry.id);
+        .eq('id', entryToDelete.id);
 
       if (error) throw error;
 
-      toast.success('Registro removido');
+      toast.success('Registro removido com sucesso');
+      setShowDeleteConfirm(false);
+      setEntryToDelete(null);
       fetchBHData();
     } catch (error) {
       console.error('Error removing BH entry:', error);
       toast.error('Erro ao remover registro');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -855,7 +873,146 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
           <span className="font-medium text-white">R$ {hourlyRate.toFixed(2)}</span>
         </div>
 
-        {/* Active Fortnight Indicator */}
+        {/* Fortnight Scale Visual */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 mb-2">
+            <Shield className="h-4 w-4 text-amber-500" />
+            <span className="text-sm font-medium text-slate-300">Escala de Quinzenas</span>
+          </div>
+          
+          {/* Visual Scale */}
+          <div className="grid grid-cols-2 gap-2">
+            {/* First Fortnight */}
+            <div className={`p-3 rounded-lg border-2 transition-all ${
+              fortnightInfo.label === '1ª Quinzena' 
+                ? 'bg-blue-500/20 border-blue-500/50 ring-2 ring-blue-500/30' 
+                : 'bg-slate-700/30 border-slate-600/50 opacity-60'
+            }`}>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-1.5">
+                  {fortnightInfo.label === '1ª Quinzena' ? (
+                    <Unlock className="h-3.5 w-3.5 text-blue-400" />
+                  ) : (
+                    <Lock className="h-3.5 w-3.5 text-slate-500" />
+                  )}
+                  <span className={`text-xs font-semibold ${
+                    fortnightInfo.label === '1ª Quinzena' ? 'text-blue-400' : 'text-slate-500'
+                  }`}>
+                    1ª Quinzena
+                  </span>
+                </div>
+                {fortnightInfo.label === '1ª Quinzena' && (
+                  <Badge className="text-[10px] bg-blue-500/30 text-blue-300 border-blue-500/50">
+                    Ativa
+                  </Badge>
+                )}
+              </div>
+              <div className="flex justify-center gap-0.5">
+                {Array.from({ length: 15 }, (_, i) => {
+                  const day = i + 1;
+                  const today = new Date();
+                  const isToday = today.getDate() === day && fortnightInfo.label === '1ª Quinzena';
+                  const hasBH = bhDates.some(d => 
+                    d.getDate() === day && 
+                    d.getMonth() === today.getMonth() && 
+                    d.getFullYear() === today.getFullYear() &&
+                    day <= 15
+                  );
+                  return (
+                    <div
+                      key={day}
+                      className={`w-3 h-3 rounded-sm text-[8px] flex items-center justify-center font-bold transition-colors ${
+                        isToday 
+                          ? 'bg-blue-500 text-white ring-1 ring-blue-300'
+                          : hasBH 
+                            ? 'bg-green-500/50 text-green-200'
+                            : fortnightInfo.label === '1ª Quinzena' && day <= today.getDate()
+                              ? 'bg-amber-500/30 text-amber-300'
+                              : 'bg-slate-600/30 text-slate-500'
+                      }`}
+                      title={`Dia ${day}${isToday ? ' (Hoje)' : ''}${hasBH ? ' - BH registrado' : ''}`}
+                    />
+                  );
+                })}
+              </div>
+              <p className="text-[10px] text-center mt-1.5 text-slate-500">Dias 1 a 15</p>
+            </div>
+
+            {/* Second Fortnight */}
+            <div className={`p-3 rounded-lg border-2 transition-all ${
+              fortnightInfo.label === '2ª Quinzena' 
+                ? 'bg-purple-500/20 border-purple-500/50 ring-2 ring-purple-500/30' 
+                : 'bg-slate-700/30 border-slate-600/50 opacity-60'
+            }`}>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-1.5">
+                  {fortnightInfo.label === '2ª Quinzena' ? (
+                    <Unlock className="h-3.5 w-3.5 text-purple-400" />
+                  ) : (
+                    <Lock className="h-3.5 w-3.5 text-slate-500" />
+                  )}
+                  <span className={`text-xs font-semibold ${
+                    fortnightInfo.label === '2ª Quinzena' ? 'text-purple-400' : 'text-slate-500'
+                  }`}>
+                    2ª Quinzena
+                  </span>
+                </div>
+                {fortnightInfo.label === '2ª Quinzena' && (
+                  <Badge className="text-[10px] bg-purple-500/30 text-purple-300 border-purple-500/50">
+                    Ativa
+                  </Badge>
+                )}
+              </div>
+              <div className="flex justify-center gap-0.5 flex-wrap">
+                {Array.from({ length: fortnightInfo.endDay - 15 }, (_, i) => {
+                  const day = i + 16;
+                  const today = new Date();
+                  const isToday = today.getDate() === day && fortnightInfo.label === '2ª Quinzena';
+                  const hasBH = bhDates.some(d => 
+                    d.getDate() === day && 
+                    d.getMonth() === today.getMonth() && 
+                    d.getFullYear() === today.getFullYear() &&
+                    day >= 16
+                  );
+                  return (
+                    <div
+                      key={day}
+                      className={`w-3 h-3 rounded-sm text-[8px] flex items-center justify-center font-bold transition-colors ${
+                        isToday 
+                          ? 'bg-purple-500 text-white ring-1 ring-purple-300'
+                          : hasBH 
+                            ? 'bg-green-500/50 text-green-200'
+                            : fortnightInfo.label === '2ª Quinzena' && day <= today.getDate()
+                              ? 'bg-amber-500/30 text-amber-300'
+                              : 'bg-slate-600/30 text-slate-500'
+                      }`}
+                      title={`Dia ${day}${isToday ? ' (Hoje)' : ''}${hasBH ? ' - BH registrado' : ''}`}
+                    />
+                  );
+                })}
+              </div>
+              <p className="text-[10px] text-center mt-1.5 text-slate-500">Dias 16 a {fortnightInfo.endDay}</p>
+            </div>
+          </div>
+
+          {/* Scale Legend */}
+          <div className="flex items-center justify-center gap-4 text-[10px] pt-1">
+            <div className="flex items-center gap-1">
+              <div className="w-2.5 h-2.5 rounded-sm bg-green-500/50" />
+              <span className="text-slate-400">Com BH</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-2.5 h-2.5 rounded-sm bg-amber-500/30" />
+              <span className="text-slate-400">Sem BH</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-2.5 h-2.5 rounded-sm bg-blue-500" />
+              <span className="text-slate-400">Hoje</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Active Fortnight Alert */}
         <div className="p-3 bg-gradient-to-r from-amber-500/20 to-amber-600/10 border border-amber-500/30 rounded-lg">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -870,6 +1027,12 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
             <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">
               Em aberto
             </Badge>
+          </div>
+          <div className="mt-2 pt-2 border-t border-amber-500/20">
+            <p className="text-[10px] text-slate-400 flex items-center gap-1">
+              <Lock className="h-3 w-3" />
+              Quinzenas anteriores estão bloqueadas para edição
+            </p>
           </div>
         </div>
 
@@ -1236,7 +1399,7 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
                             variant="ghost"
                             size="icon"
                             className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-red-400 hover:text-red-300 hover:bg-red-500/10"
-                            onClick={() => handleRemoveBH(entry)}
+                            onClick={() => handleRequestDelete(entry)}
                           >
                             <Trash2 className="h-3 w-3" />
                           </Button>
@@ -1485,6 +1648,61 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent className="bg-slate-800 border-slate-700">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-red-400" />
+              Confirmar Exclusão
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-400">
+              {entryToDelete && (
+                <div className="space-y-3 mt-2">
+                  <p>Tem certeza que deseja excluir este registro de BH?</p>
+                  <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                    <p className="text-slate-300 font-medium">{entryToDelete.description}</p>
+                    <p className="text-xs text-slate-500 mt-1">
+                      {format(new Date(entryToDelete.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                    </p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Badge variant="outline" className="text-red-400 border-red-500/50">
+                        {entryToDelete.operation_type === 'credit' ? '+' : '-'}{entryToDelete.hours}h
+                      </Badge>
+                      <span className="text-xs text-amber-400">
+                        (R$ {(entryToDelete.hours * hourlyRate).toFixed(2)})
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-red-400">
+                    ⚠️ Esta ação não pode ser desfeita!
+                  </p>
+                </div>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="border-slate-600 text-slate-300 hover:bg-slate-700">
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              disabled={isDeleting}
+              className="bg-red-500 hover:bg-red-600 text-white"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Excluindo...
+                </>
+              ) : (
+                'Sim, Excluir'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }
