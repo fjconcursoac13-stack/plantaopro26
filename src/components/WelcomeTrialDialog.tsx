@@ -5,14 +5,50 @@ import { cn } from '@/lib/utils';
 interface WelcomeTrialDialogProps {
   agentName: string;
   onClose: () => void;
+  trialDays?: number;
 }
 
-export function WelcomeTrialDialog({ agentName, onClose }: WelcomeTrialDialogProps) {
+// Check if dialog should be shown today (only once per day)
+export function shouldShowWelcomeToday(): boolean {
+  const lastShown = localStorage.getItem('plantaopro_welcome_last_shown');
+  if (!lastShown) return true;
+  
+  const lastDate = new Date(parseInt(lastShown));
+  const today = new Date();
+  
+  // Compare dates (ignore time)
+  return lastDate.toDateString() !== today.toDateString();
+}
+
+// Mark dialog as shown today
+export function markWelcomeShownToday(): void {
+  localStorage.setItem('plantaopro_welcome_last_shown', Date.now().toString());
+}
+
+// Get remaining trial days
+export function getRemainingTrialDays(): number {
+  const firstAccessData = localStorage.getItem('plantaopro_first_access');
+  if (!firstAccessData) return 30;
+  
+  try {
+    const data = JSON.parse(firstAccessData);
+    const registrationDate = new Date(data.timestamp);
+    const today = new Date();
+    const diffTime = today.getTime() - registrationDate.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    return Math.max(0, 30 - diffDays);
+  } catch {
+    return 30;
+  }
+}
+
+export function WelcomeTrialDialog({ agentName, onClose, trialDays }: WelcomeTrialDialogProps) {
   const [progress, setProgress] = useState(100);
   const [isVisible, setIsVisible] = useState(false);
   const [currentFeature, setCurrentFeature] = useState(0);
   
   const AUTO_CLOSE_SECONDS = 20;
+  const remainingDays = trialDays ?? getRemainingTrialDays();
 
   const features = [
     { icon: Calendar, label: 'Escala Automática', desc: 'Geração e gestão de plantões 24x72' },
@@ -26,6 +62,9 @@ export function WelcomeTrialDialog({ agentName, onClose }: WelcomeTrialDialogPro
   ];
 
   useEffect(() => {
+    // Mark as shown today
+    markWelcomeShownToday();
+    
     // Fade in animation
     const fadeInTimer = setTimeout(() => setIsVisible(true), 50);
     
@@ -137,10 +176,14 @@ export function WelcomeTrialDialog({ agentName, onClose }: WelcomeTrialDialogPro
               <div className="bg-gradient-to-br from-green-500/15 to-emerald-500/5 rounded-lg p-2.5 border border-green-500/40">
                 <div className="flex items-center gap-2 mb-1">
                   <CheckCircle className="h-4 w-4 text-green-400 shrink-0" />
-                  <span className="font-bold text-green-400 text-xs">1º Mês GRÁTIS!</span>
+                  <span className="font-bold text-green-400 text-xs">
+                    {remainingDays > 0 ? `${remainingDays} dias GRÁTIS!` : 'Período expirado'}
+                  </span>
                 </div>
                 <p className="text-slate-300 text-[10px] leading-snug">
-                  Todos os recursos sem custo por 30 dias
+                  {remainingDays > 0 
+                    ? 'Todos os recursos sem custo' 
+                    : 'Renove sua assinatura'}
                 </p>
               </div>
 
