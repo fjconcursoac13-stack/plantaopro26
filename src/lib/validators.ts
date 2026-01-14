@@ -100,6 +100,34 @@ export const formatPhone = (value: string): string => {
     .replace(/(\d{5})(\d)/, '$1-$2');
 };
 
+// Validate Brazilian phone number (must have 11 digits: DDD + 9 + 8 digits)
+export const validatePhone = (phone: string): { valid: boolean; message?: string } => {
+  const numbers = phone.replace(/\D/g, '');
+  
+  if (!numbers) return { valid: true }; // Empty is valid (optional field)
+  
+  if (numbers.length < 10) {
+    return { valid: false, message: 'Telefone incompleto' };
+  }
+  
+  if (numbers.length > 11) {
+    return { valid: false, message: 'Telefone com muitos dígitos' };
+  }
+  
+  // DDD must be valid (11-99)
+  const ddd = parseInt(numbers.substring(0, 2));
+  if (ddd < 11 || ddd > 99) {
+    return { valid: false, message: 'DDD inválido' };
+  }
+  
+  // Cell phones must start with 9
+  if (numbers.length === 11 && numbers[2] !== '9') {
+    return { valid: false, message: 'Celular deve começar com 9' };
+  }
+  
+  return { valid: true };
+};
+
 // Agent registration schema
 export const agentRegistrationSchema = z.object({
   name: z.string()

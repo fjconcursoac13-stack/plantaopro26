@@ -22,7 +22,7 @@ import { AgentEventsCard } from '@/components/agent-panel/AgentEventsCard';
 import ShiftPlannerCard from '@/components/agent-panel/ShiftPlannerCard';
 import { LicenseWarningBanner } from '@/components/LicenseWarningBanner';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, Users, MessageCircle, Calendar, Clock, ArrowRightLeft, CalendarOff, Settings, User, CalendarDays, Calculator, LogOut, Home, WifiOff, RefreshCw } from 'lucide-react';
+import { Loader2, Users, MessageCircle, Calendar, Clock, ArrowRightLeft, CalendarOff, Settings, User, CalendarDays, Calculator, LogOut, Home, WifiOff, RefreshCw, Droplet } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -267,42 +267,47 @@ export default function AgentPanel() {
             />
 
             {/* Agent Header - Nome em Evidência */}
-            <div className="bg-gradient-to-r from-slate-800 via-slate-800/95 to-amber-900/20 rounded-2xl p-6 border border-amber-500/30 shadow-lg">
+            <div className="bg-gradient-to-r from-slate-800 via-slate-800/95 to-amber-900/20 rounded-2xl p-6 border border-amber-500/30 shadow-lg shadow-amber-500/10">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div 
                   className="flex items-center gap-4 cursor-pointer hover:opacity-80 transition-opacity"
                   onClick={() => navigate('/agent-profile')}
                   title="Editar meu perfil"
                 >
-                  <Avatar className="w-16 h-16 border-2 border-amber-500/50 shadow-lg shadow-amber-500/30">
+                  <Avatar className="w-20 h-20 border-4 border-amber-500/50 shadow-xl shadow-amber-500/30 ring-2 ring-amber-400/20">
                     {(agent as any).avatar_url && <AvatarImage src={(agent as any).avatar_url} alt={agent.name} />}
-                    <AvatarFallback className="bg-gradient-to-br from-amber-500 to-amber-600 text-2xl font-bold text-black">
+                    <AvatarFallback className="bg-gradient-to-br from-amber-500 to-amber-600 text-3xl font-bold text-black">
                       {agent.name.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <h1 className="text-2xl md:text-3xl font-bold text-white tracking-wide flex items-center gap-2">
+                    {/* Nome destacado */}
+                    <h1 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 tracking-wide drop-shadow-lg">
                       {agent.name}
-                      <User className="h-5 w-5 text-amber-500/60" />
                     </h1>
-                    <div className="flex items-center gap-2 mt-1">
+                    
+                    {/* Role and blood type row */}
+                    <div className="flex items-center gap-3 mt-2 flex-wrap">
                       {getRoleBadge((agent as any).role)}
-                      {(agent as any).role && (
-                        <span className="text-xs text-slate-400">
-                          {(agent as any).role === 'team_leader' ? '(Chefe de Equipe)' : 
-                           (agent as any).role === 'support' ? '(Agente de Apoio)' : 
-                           '(Agente de Segurança)'}
-                        </span>
+                      
+                      {/* Blood type badge - prominent display */}
+                      {(agent as any).blood_type && (
+                        <Badge className="bg-red-500/20 text-red-400 border-red-500/40 flex items-center gap-1 font-bold">
+                          <Droplet className="h-3 w-3" />
+                          {(agent as any).blood_type}
+                        </Badge>
                       )}
                     </div>
-                    <div className="flex items-center gap-2 mt-1">
+                    
+                    {/* Team and unit */}
+                    <div className="flex items-center gap-2 mt-2 flex-wrap">
                       {agent.team && (
-                        <Badge className="bg-slate-700 text-amber-400 border-amber-500/50">
+                        <Badge className="bg-gradient-to-r from-slate-700 to-slate-600 text-amber-400 border-amber-500/50 font-semibold">
                           Equipe {agent.team}
                         </Badge>
                       )}
                       {agent.unit && (
-                        <Badge variant="outline" className="text-slate-400">
+                        <Badge variant="outline" className="text-slate-400 border-slate-600">
                           {agent.unit.name}
                         </Badge>
                       )}
