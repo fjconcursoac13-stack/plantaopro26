@@ -10,8 +10,9 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { ArrowLeft, Save, User, Phone, Mail, MapPin, Loader2, Droplet } from 'lucide-react';
+import { ArrowLeft, Save, User, Phone, Mail, MapPin, Loader2, Droplet, Camera } from 'lucide-react';
 import { formatPhone } from '@/lib/validators';
+import { AvatarUpload } from '@/components/agent-panel/AvatarUpload';
 
 const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
@@ -21,6 +22,7 @@ export default function AgentProfileEdit() {
   const navigate = useNavigate();
   
   const [isSaving, setIsSaving] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     phone: '',
     email: '',
@@ -51,6 +53,7 @@ export default function AgentProfileEdit() {
         address: agent.address || '',
         blood_type: agent.blood_type || ''
       });
+      setAvatarUrl(agent.avatar_url || null);
     }
   }, [agent]);
 
@@ -135,6 +138,27 @@ export default function AgentProfileEdit() {
             <p className="text-slate-400">Edite seus dados pessoais</p>
           </div>
         </div>
+
+        {/* Avatar Upload Card */}
+        <Card className="bg-slate-800/50 border-slate-700">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <Camera className="h-5 w-5 text-amber-500" />
+              Foto de Perfil
+            </CardTitle>
+            <CardDescription>
+              Adicione ou altere sua foto de perfil
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <AvatarUpload
+              agentId={agent.id}
+              agentName={agent.name}
+              currentAvatarUrl={avatarUrl}
+              onAvatarUpdated={setAvatarUrl}
+            />
+          </CardContent>
+        </Card>
 
         {/* Profile Card - Read Only Info */}
         <Card className="bg-slate-800/50 border-slate-700">
