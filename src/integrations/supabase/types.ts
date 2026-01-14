@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      access_logs: {
+        Row: {
+          action: string
+          agent_id: string
+          created_at: string
+          id: string
+          ip_address: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action?: string
+          agent_id: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          agent_id?: string
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "access_logs_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agent_events: {
         Row: {
           agent_id: string
@@ -190,8 +225,11 @@ export type Database = {
           department: string | null
           email: string | null
           first_shift_date: string | null
+          frozen_at: string | null
+          frozen_by: string | null
           id: string
           is_active: boolean | null
+          is_frozen: boolean | null
           license_expires_at: string | null
           license_notes: string | null
           license_status: string | null
@@ -201,6 +239,8 @@ export type Database = {
           position: string | null
           role: string | null
           team: string | null
+          unblocked_at: string | null
+          unblocked_by: string | null
           unit_id: string | null
           updated_at: string
         }
@@ -217,8 +257,11 @@ export type Database = {
           department?: string | null
           email?: string | null
           first_shift_date?: string | null
+          frozen_at?: string | null
+          frozen_by?: string | null
           id?: string
           is_active?: boolean | null
+          is_frozen?: boolean | null
           license_expires_at?: string | null
           license_notes?: string | null
           license_status?: string | null
@@ -228,6 +271,8 @@ export type Database = {
           position?: string | null
           role?: string | null
           team?: string | null
+          unblocked_at?: string | null
+          unblocked_by?: string | null
           unit_id?: string | null
           updated_at?: string
         }
@@ -244,8 +289,11 @@ export type Database = {
           department?: string | null
           email?: string | null
           first_shift_date?: string | null
+          frozen_at?: string | null
+          frozen_by?: string | null
           id?: string
           is_active?: boolean | null
+          is_frozen?: boolean | null
           license_expires_at?: string | null
           license_notes?: string | null
           license_status?: string | null
@@ -255,6 +303,8 @@ export type Database = {
           position?: string | null
           role?: string | null
           team?: string | null
+          unblocked_at?: string | null
+          unblocked_by?: string | null
           unit_id?: string | null
           updated_at?: string
         }
@@ -514,6 +564,50 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "overtime_bank_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          agent_id: string
+          amount: number
+          created_at: string
+          id: string
+          months_paid: number
+          notes: string | null
+          payment_date: string
+          payment_method: string | null
+          registered_by: string | null
+        }
+        Insert: {
+          agent_id: string
+          amount?: number
+          created_at?: string
+          id?: string
+          months_paid?: number
+          notes?: string | null
+          payment_date?: string
+          payment_method?: string | null
+          registered_by?: string | null
+        }
+        Update: {
+          agent_id?: string
+          amount?: number
+          created_at?: string
+          id?: string
+          months_paid?: number
+          notes?: string | null
+          payment_date?: string
+          payment_method?: string | null
+          registered_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_agent_id_fkey"
             columns: ["agent_id"]
             isOneToOne: false
             referencedRelation: "agents"
@@ -826,6 +920,10 @@ export type Database = {
         Args: { p_agent_id: string; p_shift_date: string; p_shift_id?: string }
         Returns: undefined
       }
+      extend_license: {
+        Args: { p_admin_id: string; p_agent_id: string; p_months: number }
+        Returns: string
+      }
       generate_agent_shifts: {
         Args: {
           p_agent_id: string
@@ -842,9 +940,14 @@ export type Database = {
         Returns: boolean
       }
       is_admin_or_master: { Args: { _user_id: string }; Returns: boolean }
+      is_license_expired: { Args: { p_agent_id: string }; Returns: boolean }
       record_login_attempt: {
         Args: { p_identifier: string; p_ip?: string; p_success: boolean }
         Returns: undefined
+      }
+      toggle_agent_freeze: {
+        Args: { p_admin_id: string; p_agent_id: string; p_freeze: boolean }
+        Returns: boolean
       }
       verify_master_admin: {
         Args: { p_password: string; p_username: string }
