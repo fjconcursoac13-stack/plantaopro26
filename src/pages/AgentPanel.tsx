@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAgentProfile } from '@/hooks/useAgentProfile';
@@ -30,6 +30,9 @@ import { BirthdayCard } from '@/components/agent-panel/BirthdayCard';
 import { ProfileCompletionAlert } from '@/components/agent-panel/ProfileCompletionAlert';
 import { LicenseWarningBanner } from '@/components/LicenseWarningBanner';
 import { TacticalRadar } from '@/components/dashboard/TacticalRadar';
+import { SessionMonitorBanner } from '@/components/SessionMonitorBanner';
+import { DiagnosticReportButton } from '@/components/DiagnosticReportButton';
+import { SafeModeToggle } from '@/components/SafeModeToggle';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2, Users, MessageCircle, Calendar, Clock, ArrowRightLeft, CalendarOff, Settings, User, CalendarDays, Calculator, LogOut, Home, WifiOff, RefreshCw, Droplet, Radar } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -225,30 +228,8 @@ export default function AgentPanel() {
         />
       )}
 
-      {/* Connection Status Banner */}
-      {!isOnline && (
-        <div className="bg-yellow-600 text-white px-4 py-2 flex items-center justify-center gap-2">
-          <WifiOff className="h-4 w-4" />
-          <span className="text-sm font-medium">Sem conexão com a internet</span>
-        </div>
-      )}
-
-      {isRetrying && (
-        <div className="bg-blue-600 text-white px-4 py-2 flex items-center justify-center gap-2">
-          <RefreshCw className="h-4 w-4 animate-spin" />
-          <span className="text-sm font-medium">
-            Reconectando... (tentativa {retryCount}/{maxRetries})
-          </span>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-white hover:bg-white/20 ml-2"
-            onClick={manualRetry}
-          >
-            Tentar agora
-          </Button>
-        </div>
-      )}
+      {/* Session Monitor Banner - Visual session status */}
+      <SessionMonitorBanner />
 
       <div className="flex-1 flex flex-col">
         <main className={`flex-1 p-4 md:p-6 lg:p-8 overflow-auto ${showLicenseWarning ? 'pt-28' : ''}`}>
@@ -466,6 +447,21 @@ export default function AgentPanel() {
                   <div className="space-y-4">
                     <NotificationSettings />
                     <BHReminderSettings agentId={agent.id} />
+                    
+                    {/* Diagnostic Tools Section */}
+                    <div className="bg-card border rounded-lg p-4 space-y-3">
+                      <h3 className="font-medium text-sm flex items-center gap-2">
+                        <Settings className="h-4 w-4" />
+                        Ferramentas de Diagnóstico
+                      </h3>
+                      <p className="text-xs text-muted-foreground">
+                        Use estas ferramentas para resolver problemas de conexão ou sessão.
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        <DiagnosticReportButton />
+                        <SafeModeToggle variant="compact" />
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <BHEvolutionChart agentId={agent.id} />
