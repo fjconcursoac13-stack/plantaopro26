@@ -2,6 +2,7 @@ import React, { useState, forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAgentProfile } from '@/hooks/useAgentProfile';
+import { useSoundEffects } from '@/hooks/useSoundEffects';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -12,21 +13,32 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Bell, LogOut, Menu, Settings, User, Building2 } from 'lucide-react';
+import { Bell, LogOut, Menu, Settings, User, Volume2, VolumeX } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { MobileSidebar } from './MobileSidebar';
-import { Badge } from '@/components/ui/badge';
+import { OperationalStatus } from './OperationalStatus';
 import { cn } from '@/lib/utils';
 
 export const Header = forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>((props, ref) => {
   const { user, signOut, userRole, masterSession } = useAuth();
   const { agent } = useAgentProfile();
+  const { playSound, isSoundEnabled, toggleSound } = useSoundEffects();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
 
+  const handleNavigate = (path: string) => {
+    playSound('tactical-click');
+    navigate(path);
+  };
+
   const handleSignOut = async () => {
+    playSound('radio-static');
     await signOut();
     navigate('/auth');
+  };
+
+  const handleNotificationClick = () => {
+    playSound('tactical-click');
   };
 
   const getInitials = () => {
@@ -92,7 +104,7 @@ export const Header = forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>
       </Sheet>
 
       {/* Search / Title - placeholder for now */}
-      <div className="hidden lg:block">
+      <div className="hidden lg:flex items-center gap-4">
         <h2 className="text-sm font-medium text-muted-foreground">
           {new Date().toLocaleDateString('pt-BR', {
             weekday: 'long',
@@ -103,37 +115,69 @@ export const Header = forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>
         </h2>
       </div>
 
+      {/* Operational Status - Center */}
+      <div className="absolute left-1/2 -translate-x-1/2 hidden md:block">
+        <OperationalStatus />
+      </div>
+
       {/* Right Side */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2">
+        {/* Sound Toggle */}
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="h-8 w-8"
+          onClick={() => {
+            toggleSound();
+            playSound('tactical-click');
+          }}
+          title={isSoundEnabled ? 'Desativar sons' : 'Ativar sons'}
+        >
+          {isSoundEnabled ? (
+            <Volume2 className="h-4 w-4 text-primary" />
+          ) : (
+            <VolumeX className="h-4 w-4 text-muted-foreground" />
+          )}
+        </Button>
+
         {/* Notifications */}
-        <Button variant="ghost" size="icon" className="relative">
-          <Bell className="h-5 w-5" />
-          <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full" />
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="relative h-8 w-8"
+          onClick={handleNotificationClick}
+        >
+          <Bell className="h-4 w-4" />
+          <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full animate-pulse" />
         </Button>
 
         {/* User Menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex items-center gap-3 pl-2 pr-4">
-              <Avatar className="h-8 w-8">
-                <AvatarFallback className="bg-primary text-primary-foreground text-sm font-medium">
+            <Button 
+              variant="ghost" 
+              className="flex items-center gap-2 pl-2 pr-3 h-9"
+              onClick={() => playSound('tactical-hover')}
+            >
+              <Avatar className="h-7 w-7">
+                <AvatarFallback className="bg-primary text-primary-foreground text-xs font-medium">
                   {getInitials()}
                 </AvatarFallback>
               </Avatar>
               <div className="hidden md:block text-left">
-                <p className="text-sm font-medium truncate max-w-[150px]">{getDisplayName()}</p>
-                <p className="text-xs text-muted-foreground">{getRoleBadge()}</p>
+                <p className="text-xs font-medium truncate max-w-[120px]">{getDisplayName()}</p>
+                <p className="text-[10px] text-muted-foreground">{getRoleBadge()}</p>
               </div>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56 bg-popover border-border">
             <DropdownMenuLabel>Minha Conta</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => navigate('/settings')}>
+            <DropdownMenuItem onClick={() => handleNavigate('/settings')}>
               <User className="mr-2 h-4 w-4" />
               Perfil
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate('/settings')}>
+            <DropdownMenuItem onClick={() => handleNavigate('/settings')}>
               <Settings className="mr-2 h-4 w-4" />
               Configurações
             </DropdownMenuItem>

@@ -1,6 +1,22 @@
 import { useState, useCallback, useEffect } from 'react';
 
-type SoundType = 'theme-change' | 'notification' | 'click' | 'success' | 'error' | 'shift-start' | 'shift-end' | 'hover' | 'card-select' | 'button-press' | 'nav-click';
+type SoundType = 
+  | 'theme-change' 
+  | 'notification' 
+  | 'click' 
+  | 'success' 
+  | 'error' 
+  | 'shift-start' 
+  | 'shift-end' 
+  | 'hover' 
+  | 'card-select' 
+  | 'button-press' 
+  | 'nav-click'
+  | 'tactical-click'
+  | 'tactical-hover'
+  | 'tactical-confirm'
+  | 'status-change'
+  | 'radio-static';
 
 export function useSoundEffects() {
   const [isSoundEnabled, setIsSoundEnabled] = useState(() => {
@@ -190,6 +206,87 @@ export function useSoundEffects() {
         oscillator.start(now);
         oscillator.stop(now + 0.1);
         break;
+
+      case 'tactical-click':
+        // Military-style tactical click - sharp and precise
+        oscillator.type = 'square';
+        oscillator.frequency.setValueAtTime(1200, now);
+        oscillator.frequency.exponentialRampToValueAtTime(800, now + 0.02);
+        oscillator.frequency.exponentialRampToValueAtTime(400, now + 0.05);
+        gainNode.gain.setValueAtTime(0.08, now);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+        oscillator.start(now);
+        oscillator.stop(now + 0.08);
+        break;
+
+      case 'tactical-hover':
+        // Subtle radar blip for hover
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(1400, now);
+        oscillator.frequency.exponentialRampToValueAtTime(1000, now + 0.02);
+        gainNode.gain.setValueAtTime(0.03, now);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.04);
+        oscillator.start(now);
+        oscillator.stop(now + 0.04);
+        break;
+
+      case 'tactical-confirm':
+        // Confirmation beep sequence
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(880, now);
+        gainNode.gain.setValueAtTime(0.1, now);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.06);
+        oscillator.start(now);
+        oscillator.stop(now + 0.08);
+
+        setTimeout(() => {
+          const osc2 = audioContext.createOscillator();
+          const gain2 = audioContext.createGain();
+          osc2.connect(gain2);
+          gain2.connect(audioContext.destination);
+          osc2.type = 'sine';
+          osc2.frequency.setValueAtTime(1100, audioContext.currentTime);
+          gain2.gain.setValueAtTime(0.12, audioContext.currentTime);
+          gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+          osc2.start(audioContext.currentTime);
+          osc2.stop(audioContext.currentTime + 0.12);
+        }, 60);
+        break;
+
+      case 'status-change':
+        // Status update notification - two-tone alert
+        oscillator.type = 'triangle';
+        oscillator.frequency.setValueAtTime(600, now);
+        oscillator.frequency.setValueAtTime(900, now + 0.1);
+        gainNode.gain.setValueAtTime(0.1, now);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+        oscillator.start(now);
+        oscillator.stop(now + 0.2);
+        break;
+
+      case 'radio-static':
+        // Short radio static/click effect using noise
+        const bufferSize = audioContext.sampleRate * 0.05;
+        const noiseBuffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          output[i] = Math.random() * 2 - 1;
+        }
+        const noiseNode = audioContext.createBufferSource();
+        noiseNode.buffer = noiseBuffer;
+        const noiseGain = audioContext.createGain();
+        const filter = audioContext.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.value = 2000;
+        filter.Q.value = 0.5;
+        noiseNode.connect(filter);
+        filter.connect(noiseGain);
+        noiseGain.connect(audioContext.destination);
+        noiseGain.gain.setValueAtTime(0.06, now);
+        noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+        noiseNode.start(now);
+        noiseNode.stop(now + 0.05);
+        return; // Early return since we don't use the oscillator
     }
   }, [isSoundEnabled]);
 
