@@ -20,7 +20,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Shield, Loader2, AlertTriangle, Eye, EyeOff, UserCheck, Lock, Sword, Target, Users } from 'lucide-react';
+import { Shield, Loader2, AlertTriangle, Eye, EyeOff, UserCheck, Lock, Sword, Target, Users, Palette } from 'lucide-react';
 import { 
   validateCPF, 
   formatCPF, 
@@ -38,6 +38,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { ThemedBackground } from '@/components/ThemedBackground';
 import { ThemedTeamCard } from '@/components/ThemedTeamCard';
 import { useSoundEffects } from '@/hooks/useSoundEffects';
+import { ThemeSelector } from '@/components/ThemeSelector';
 
 interface Unit {
   id: string;
@@ -101,12 +102,14 @@ export default function Index() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { playSound } = useSoundEffects();
+  const { themeConfig } = useTheme();
 
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
   const [showCpfCheck, setShowCpfCheck] = useState(false);
   const [showRegistration, setShowRegistration] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [showMasterLogin, setShowMasterLogin] = useState(false);
+  const [showThemeSelector, setShowThemeSelector] = useState(false);
   const [units, setUnits] = useState<Unit[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCheckingCpf, setIsCheckingCpf] = useState(false);
@@ -722,8 +725,21 @@ export default function Index() {
               </span>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="text-[10px] font-mono text-slate-400 hidden sm:flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => {
+                playSound('click');
+                setShowThemeSelector(true);
+              }}
+              className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-primary/10 border border-primary/30 hover:bg-primary/20 transition-all"
+              title="Alterar tema"
+            >
+              <Palette className="h-3.5 w-3.5 text-primary" />
+              <span className="text-[9px] font-bold text-primary tracking-wide hidden sm:inline">
+                {themeConfig.emoji} {themeConfig.name}
+              </span>
+            </button>
+            <div className="text-[10px] font-mono text-muted-foreground hidden sm:flex items-center gap-2">
               <div className="w-1 h-1 rounded-full bg-primary/60" />
               {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
             </div>
@@ -1340,6 +1356,24 @@ export default function Index() {
               )}
             </Button>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Theme Selector Dialog */}
+      <Dialog open={showThemeSelector} onOpenChange={setShowThemeSelector}>
+        <DialogContent className="bg-card border-border max-w-lg max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-foreground">
+              <Palette className="h-5 w-5 text-primary" />
+              Personalizar Tema
+            </DialogTitle>
+            <DialogDescription className="text-muted-foreground">
+              Escolha o tema visual do sistema
+            </DialogDescription>
+          </DialogHeader>
+          <div className="pt-2">
+            <ThemeSelector onSelect={() => setShowThemeSelector(false)} />
+          </div>
         </DialogContent>
       </Dialog>
     </div>
