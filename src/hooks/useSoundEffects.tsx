@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 
-type SoundType = 'theme-change' | 'notification' | 'click' | 'success' | 'error' | 'shift-start' | 'shift-end';
+type SoundType = 'theme-change' | 'notification' | 'click' | 'success' | 'error' | 'shift-start' | 'shift-end' | 'hover' | 'card-select' | 'button-press' | 'nav-click';
 
 export function useSoundEffects() {
   const [isSoundEnabled, setIsSoundEnabled] = useState(() => {
@@ -131,6 +131,64 @@ export function useSoundEffects() {
         gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
         oscillator.start(now);
         oscillator.stop(now + 0.5);
+        break;
+
+      case 'hover':
+        // Subtle hover tick - very short and light
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(800, now);
+        oscillator.frequency.exponentialRampToValueAtTime(600, now + 0.03);
+        gainNode.gain.setValueAtTime(0.05, now);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+        oscillator.start(now);
+        oscillator.stop(now + 0.05);
+        break;
+
+      case 'card-select':
+        // Tactical selection sound - two quick beeps
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(440, now); // A4
+        gainNode.gain.setValueAtTime(0.15, now);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+        oscillator.start(now);
+        oscillator.stop(now + 0.1);
+        
+        // Second beep (higher pitch)
+        setTimeout(() => {
+          const osc2 = audioContext.createOscillator();
+          const gain2 = audioContext.createGain();
+          osc2.connect(gain2);
+          gain2.connect(audioContext.destination);
+          osc2.type = 'sine';
+          osc2.frequency.setValueAtTime(587, audioContext.currentTime); // D5
+          gain2.gain.setValueAtTime(0.18, audioContext.currentTime);
+          gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.12);
+          osc2.start(audioContext.currentTime);
+          osc2.stop(audioContext.currentTime + 0.15);
+        }, 80);
+        break;
+
+      case 'button-press':
+        // Satisfying button press with slight bounce
+        oscillator.type = 'triangle';
+        oscillator.frequency.setValueAtTime(500, now);
+        oscillator.frequency.exponentialRampToValueAtTime(350, now + 0.05);
+        oscillator.frequency.exponentialRampToValueAtTime(420, now + 0.1);
+        gainNode.gain.setValueAtTime(0.12, now);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+        oscillator.start(now);
+        oscillator.stop(now + 0.15);
+        break;
+
+      case 'nav-click':
+        // Navigation/menu click - crisp and professional
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(700, now);
+        oscillator.frequency.exponentialRampToValueAtTime(500, now + 0.06);
+        gainNode.gain.setValueAtTime(0.08, now);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+        oscillator.start(now);
+        oscillator.stop(now + 0.1);
         break;
     }
   }, [isSoundEnabled]);
