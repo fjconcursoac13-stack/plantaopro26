@@ -320,6 +320,7 @@ export default function Index() {
           // User belongs to selected team or has no team - show login
           setShowCpfCheck(false);
           setLoginCpf(checkCpf);
+          setFoundAgent({ name: foundAgent?.name || '', team: existingAgent.team });
           setShowLogin(true);
         }
       } else {
