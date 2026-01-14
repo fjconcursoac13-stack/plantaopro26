@@ -862,10 +862,10 @@ export default function Index() {
         </div>
       </header>
 
-      {/* Teams Grid Section - Fills remaining space */}
-      <section className="flex-1 py-2 sm:py-4 px-3 sm:px-4 relative z-10 flex items-center justify-center min-h-0">
-        <div className="w-full max-w-xs sm:max-w-md md:max-w-3xl lg:max-w-4xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-5">
+      {/* Teams Grid Section - Fills remaining space, landscape optimized */}
+      <section className="flex-1 py-1 landscape:py-0.5 sm:py-4 px-2 landscape:px-4 sm:px-4 relative z-10 flex items-center justify-center min-h-0">
+        <div className="w-full max-w-xs landscape:max-w-2xl sm:max-w-md md:max-w-3xl lg:max-w-4xl mx-auto">
+          <div className="grid grid-cols-2 landscape:grid-cols-4 md:grid-cols-4 gap-2 landscape:gap-2 sm:gap-4 md:gap-5">
             {teams.map((team, index) => (
               <div
                 key={team}
