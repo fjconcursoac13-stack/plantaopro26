@@ -249,8 +249,8 @@ export default function AgentPanel() {
       )}
 
       <div className="flex-1 flex flex-col">
-        <main className={`flex-1 p-4 md:p-6 overflow-auto ${showLicenseWarning ? 'pt-32' : ''}`}>
-          <div className="max-w-7xl mx-auto space-y-6 animate-fade-in">
+        <main className={`flex-1 p-3 md:p-6 overflow-auto ${showLicenseWarning ? 'pt-28' : ''}`}>
+          <div className="max-w-7xl mx-auto space-y-3 md:space-y-6 animate-fade-in">
             {/* Header Actions */}
             <div className="flex items-center justify-between">
               <BackButton fallbackPath="/" />
@@ -290,117 +290,98 @@ export default function AgentPanel() {
               onComplete={checkAgentShifts}
             />
 
-            {/* Agent Header - Nome em Evidência */}
-            <div className="bg-gradient-to-r from-slate-800 via-slate-800/95 to-amber-900/20 rounded-2xl p-6 border border-amber-500/30 shadow-lg shadow-amber-500/10">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            {/* Agent Header - Compacto para mobile */}
+            <div className="bg-gradient-to-r from-slate-800 via-slate-800/95 to-amber-900/20 rounded-xl md:rounded-2xl p-3 md:p-5 border border-amber-500/30 shadow-lg shadow-amber-500/10">
+              <div className="flex items-center justify-between gap-3">
                 <div 
-                  className="flex items-center gap-4 cursor-pointer hover:opacity-80 transition-opacity"
+                  className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity flex-1 min-w-0"
                   onClick={() => navigate('/agent-profile')}
                   title="Editar meu perfil"
                 >
-                  <Avatar className="w-20 h-20 border-4 border-amber-500/50 shadow-xl shadow-amber-500/30 ring-2 ring-amber-400/20">
+                  <Avatar className="w-12 h-12 md:w-16 md:h-16 border-2 md:border-4 border-amber-500/50 shadow-lg shadow-amber-500/20 flex-shrink-0">
                     {(agent as any).avatar_url && <AvatarImage src={(agent as any).avatar_url} alt={agent.name} />}
-                    <AvatarFallback className="bg-gradient-to-br from-amber-500 to-amber-600 text-3xl font-bold text-black">
+                    <AvatarFallback className="bg-gradient-to-br from-amber-500 to-amber-600 text-lg md:text-2xl font-bold text-black">
                       {agent.name.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <div>
+                  <div className="min-w-0 flex-1">
                     {/* Nome destacado */}
-                    <h1 className="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 tracking-wide drop-shadow-lg">
+                    <h1 className="text-lg md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 tracking-wide truncate">
                       {agent.name}
                     </h1>
                     
-                    {/* Role and blood type row */}
-                    <div className="flex items-center gap-3 mt-2 flex-wrap">
+                    {/* Badges em linha compacta */}
+                    <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                       {getRoleBadge((agent as any).role)}
-                      
-                      {/* Blood type badge - prominent display */}
                       {(agent as any).blood_type && (
-                        <Badge className="bg-red-500/20 text-red-400 border-red-500/40 flex items-center gap-1 font-bold">
-                          <Droplet className="h-3 w-3" />
+                        <Badge className="bg-red-500/20 text-red-400 border-red-500/40 flex items-center gap-0.5 text-[10px] px-1.5 py-0">
+                          <Droplet className="h-2.5 w-2.5" />
                           {(agent as any).blood_type}
                         </Badge>
                       )}
-                    </div>
-                    
-                    {/* Team and unit */}
-                    <div className="flex items-center gap-2 mt-2 flex-wrap">
                       {agent.team && (
-                        <Badge className="bg-gradient-to-r from-slate-700 to-slate-600 text-amber-400 border-amber-500/50 font-semibold">
-                          Equipe {agent.team}
-                        </Badge>
-                      )}
-                      {agent.unit && (
-                        <Badge variant="outline" className="text-slate-400 border-slate-600">
-                          {agent.unit.name}
+                        <Badge className="bg-slate-700/80 text-amber-400 border-amber-500/30 text-[10px] px-1.5 py-0 hidden sm:flex">
+                          {agent.team}
                         </Badge>
                       )}
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1.5 flex-shrink-0">
                   <AgentRoleSelector agentId={agent.id} currentRole={(agent as any).role || 'agent'} />
                   <NotificationsPanel agentId={agent.id} />
                 </div>
               </div>
             </div>
 
-            {/* Quick Stats Row */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {/* Quick Stats Row - Mais compacto */}
+            <div className="grid grid-cols-2 gap-2 md:gap-4">
               <ProfessionalShiftTimer agentId={agent.id} compact />
               <BHTracker agentId={agent.id} compact />
             </div>
 
-            {/* Main Tabs */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-              <TabsList className="bg-slate-800/50 border border-slate-700 p-1 h-auto flex-wrap">
-                <TabsTrigger value="equipe" className="flex items-center gap-2 data-[state=active]:bg-amber-500 data-[state=active]:text-black">
-                  <Users className="h-4 w-4" />
-                  <span className="hidden sm:inline">Minha Equipe</span>
-                  <span className="sm:hidden">Equipe</span>
+            {/* Main Tabs - Compacto para mobile */}
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-3">
+              <TabsList className="bg-slate-800/60 border border-slate-700/50 p-0.5 h-auto flex flex-wrap gap-0.5 rounded-lg">
+                <TabsTrigger value="equipe" className="flex items-center gap-1 text-xs px-2 py-1.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-md">
+                  <Users className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Equipe</span>
                 </TabsTrigger>
-                <TabsTrigger value="plantoes" className="flex items-center gap-2 data-[state=active]:bg-amber-500 data-[state=active]:text-black">
-                  <Calendar className="h-4 w-4" />
+                <TabsTrigger value="plantoes" className="flex items-center gap-1 text-xs px-2 py-1.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-md">
+                  <Calendar className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">Plantões</span>
-                  <span className="sm:hidden">Escalas</span>
                 </TabsTrigger>
-                <TabsTrigger value="bh" className="flex items-center gap-2 data-[state=active]:bg-amber-500 data-[state=active]:text-black">
-                  <Clock className="h-4 w-4" />
+                <TabsTrigger value="bh" className="flex items-center gap-1 text-xs px-2 py-1.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-md">
+                  <Clock className="h-3.5 w-3.5" />
                   <span>BH</span>
                 </TabsTrigger>
-                <TabsTrigger value="folgas" className="flex items-center gap-2 data-[state=active]:bg-amber-500 data-[state=active]:text-black">
-                  <CalendarOff className="h-4 w-4" />
+                <TabsTrigger value="folgas" className="flex items-center gap-1 text-xs px-2 py-1.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-md">
+                  <CalendarOff className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">Folgas</span>
-                  <span className="sm:hidden">Folga</span>
                 </TabsTrigger>
-                <TabsTrigger value="agenda" className="flex items-center gap-2 data-[state=active]:bg-amber-500 data-[state=active]:text-black">
-                  <CalendarDays className="h-4 w-4" />
+                <TabsTrigger value="agenda" className="flex items-center gap-1 text-xs px-2 py-1.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-md">
+                  <CalendarDays className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">Agenda</span>
-                  <span className="sm:hidden">Agenda</span>
                 </TabsTrigger>
-                <TabsTrigger value="planejador" className="flex items-center gap-2 data-[state=active]:bg-amber-500 data-[state=active]:text-black">
-                  <Calculator className="h-4 w-4" />
-                  <span className="hidden sm:inline">Planejador</span>
-                  <span className="sm:hidden">Plan</span>
+                <TabsTrigger value="planejador" className="flex items-center gap-1 text-xs px-2 py-1.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-md">
+                  <Calculator className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Plan</span>
                 </TabsTrigger>
-                <TabsTrigger value="permutas" className="flex items-center gap-2 data-[state=active]:bg-amber-500 data-[state=active]:text-black">
-                  <ArrowRightLeft className="h-4 w-4" />
-                  <span className="hidden sm:inline">Permutas</span>
-                  <span className="sm:hidden">Troca</span>
+                <TabsTrigger value="permutas" className="flex items-center gap-1 text-xs px-2 py-1.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-md">
+                  <ArrowRightLeft className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Troca</span>
                 </TabsTrigger>
-                <TabsTrigger value="chat" className="flex items-center gap-2 data-[state=active]:bg-amber-500 data-[state=active]:text-black">
-                  <MessageCircle className="h-4 w-4" />
-                  <span>Chat</span>
+                <TabsTrigger value="chat" className="flex items-center gap-1 text-xs px-2 py-1.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-md">
+                  <MessageCircle className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Chat</span>
                 </TabsTrigger>
-                <TabsTrigger value="config" className="flex items-center gap-2 data-[state=active]:bg-amber-500 data-[state=active]:text-black">
-                  <Settings className="h-4 w-4" />
-                  <span className="hidden sm:inline">Configurações</span>
-                  <span className="sm:hidden">Config</span>
+                <TabsTrigger value="config" className="flex items-center gap-1 text-xs px-2 py-1.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-md">
+                  <Settings className="h-3.5 w-3.5" />
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="equipe" className="space-y-4">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <TabsContent value="equipe" className="space-y-3">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
                   <TeamMembersCard 
                     unitId={agent.unit_id} 
                     team={agent.team} 
@@ -414,8 +395,8 @@ export default function AgentPanel() {
                 </div>
               </TabsContent>
 
-              <TabsContent value="plantoes" className="space-y-4">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <TabsContent value="plantoes" className="space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <ProfessionalShiftTimer agentId={agent.id} />
                   <ShiftScheduleCard agentId={agent.id} />
                 </div>
