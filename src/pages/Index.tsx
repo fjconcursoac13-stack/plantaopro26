@@ -21,7 +21,10 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, AlertTriangle, Eye, EyeOff, UserCheck, Lock, Palette, Fingerprint, Shield, Users, KeyRound, Info } from 'lucide-react';
+import { Loader2, AlertTriangle, Eye, EyeOff, UserCheck, Lock, Palette, Fingerprint, Shield, Users, KeyRound, Info, Mail, Calendar, Clock, BarChart3, RefreshCw, Target, Building2, Award, CheckCircle2 } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   validateCPF, 
   formatCPF, 
@@ -68,6 +71,7 @@ export default function Index() {
   const [showMasterLogin, setShowMasterLogin] = useState(false);
   const [showThemeSelector, setShowThemeSelector] = useState(false);
   const [showCredentialsManager, setShowCredentialsManager] = useState(false);
+  const [showAboutDialog, setShowAboutDialog] = useState(false);
   const [units, setUnits] = useState<Unit[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCheckingCpf, setIsCheckingCpf] = useState(false);
@@ -940,65 +944,45 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Footer - Clean & Professional */}
-      <footer className="py-2.5 px-3 sm:px-4 bg-background/80 backdrop-blur-md border-t border-border/30 relative z-20 shrink-0">
+      {/* Footer - Clean & Minimal */}
+      <footer className="py-2 px-4 bg-background/60 backdrop-blur-sm border-t border-border/20 relative z-20 shrink-0">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          {/* Left: Branding */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              {(() => {
-                const FooterIcon = themeAssets.mainIcon;
-                return <FooterIcon className="h-4 w-4 text-primary/80" />;
-              })()}
-              <span className="text-xs font-semibold text-foreground/80">
-                PlantãoPro
-              </span>
-            </div>
-            <span className="hidden sm:inline text-xs text-muted-foreground/60">
-              © {new Date().getFullYear()}
+          {/* Left: Branding + Copyright */}
+          <div className="flex items-center gap-2 text-muted-foreground/60">
+            <span className="text-[10px] sm:text-xs">
+              © {new Date().getFullYear()} PlantãoPro
             </span>
           </div>
           
-          {/* Right: Actions */}
-          <div className="flex items-center gap-1">
-            {/* Status indicator - subtle */}
-            <div className="hidden sm:flex items-center gap-1.5 mr-2 px-2 py-1 rounded-full bg-green-500/10">
-              <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
-              <span className="text-[10px] font-medium text-green-500/80">Online</span>
-            </div>
-            
-            {/* About link - text style */}
+          {/* Right: Actions - minimal icons */}
+          <div className="flex items-center gap-0.5">
+            {/* About */}
             <button
-              onClick={() => {
-                playSound('click');
-                navigate('/about');
-              }}
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1.5 rounded hover:bg-muted/50"
+              onClick={() => setShowAboutDialog(true)}
+              className="p-2 text-muted-foreground/60 hover:text-foreground hover:bg-muted/30 rounded-lg transition-colors"
+              title="Sobre o PlantãoPro"
             >
-              Sobre
+              <Info className="h-4 w-4" />
             </button>
             
-            {/* Saved credentials - only icon on mobile */}
+            {/* Saved credentials */}
             {getSavedCredentials().length > 0 && (
               <button
-                onClick={() => {
-                  playSound('click');
-                  setShowCredentialsManager(true);
-                }}
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1.5 rounded hover:bg-muted/50 flex items-center gap-1"
+                onClick={() => setShowCredentialsManager(true)}
+                className="p-2 text-muted-foreground/60 hover:text-foreground hover:bg-muted/30 rounded-lg transition-colors"
+                title="Credenciais salvas"
               >
-                <KeyRound className="h-3 w-3" />
-                <span className="hidden sm:inline">CPFs</span>
+                <KeyRound className="h-4 w-4" />
               </button>
             )}
             
-            {/* Admin - subtle button */}
+            {/* Admin */}
             <button
               onClick={() => setShowMasterLogin(true)}
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1.5 rounded hover:bg-muted/50 flex items-center gap-1"
+              className="p-2 text-muted-foreground/60 hover:text-foreground hover:bg-muted/30 rounded-lg transition-colors"
+              title="Acesso administrativo"
             >
-              <Lock className="h-3 w-3" />
-              <span className="hidden sm:inline">Admin</span>
+              <Lock className="h-4 w-4" />
             </button>
           </div>
         </div>
@@ -1552,6 +1536,113 @@ export default function Index() {
         open={showCredentialsManager} 
         onOpenChange={setShowCredentialsManager} 
       />
+
+      {/* About Dialog */}
+      <Dialog open={showAboutDialog} onOpenChange={setShowAboutDialog}>
+        <DialogContent className="bg-card border-border max-w-2xl max-h-[85vh] p-0 overflow-hidden">
+          <ScrollArea className="max-h-[85vh]">
+            <div className="p-6">
+              <DialogHeader className="mb-6">
+                <div className="flex items-center justify-center mb-4">
+                  <div className="p-3 rounded-xl bg-primary/10">
+                    <Shield className="h-8 w-8 text-primary" />
+                  </div>
+                </div>
+                <DialogTitle className="text-center text-2xl font-bold text-foreground">
+                  PlantãoPro
+                </DialogTitle>
+                <DialogDescription className="text-center text-muted-foreground max-w-md mx-auto">
+                  Solução para profissionais da Segurança Pública organizarem sua vida funcional de forma prática e eficiente.
+                </DialogDescription>
+              </DialogHeader>
+
+              <Separator className="my-4" />
+
+              {/* Features Grid */}
+              <div className="mb-6">
+                <h3 className="text-sm font-semibold text-foreground mb-3 text-center">
+                  Funcionalidades
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {[
+                    { icon: Calendar, title: 'Plantões', desc: 'Organize visualmente' },
+                    { icon: BarChart3, title: 'Escalas', desc: 'Acompanhe equipe' },
+                    { icon: Clock, title: 'Banco de Horas', desc: 'Controle completo' },
+                    { icon: RefreshCw, title: 'Permutas', desc: 'Trocas simples' },
+                    { icon: Users, title: 'Equipes', desc: 'Chat integrado' },
+                    { icon: Target, title: 'Planejamento', desc: 'Rotina organizada' },
+                  ].map((feature) => (
+                    <div 
+                      key={feature.title}
+                      className="p-3 rounded-lg bg-muted/30 border border-border/50 text-center"
+                    >
+                      <feature.icon className="h-5 w-5 text-primary mx-auto mb-1.5" />
+                      <p className="text-xs font-medium text-foreground">{feature.title}</p>
+                      <p className="text-[10px] text-muted-foreground">{feature.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <Separator className="my-4" />
+
+              {/* Origin */}
+              <Card className="border-border/50 bg-muted/20 mb-6">
+                <CardContent className="p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10 shrink-0">
+                      <Building2 className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-semibold text-foreground mb-1">Origem</h4>
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        Desenvolvido por um <strong className="text-foreground">Agente Socioeducativo</strong> de{' '}
+                        <strong className="text-foreground">Feijó, Acre</strong>, para resolver problemas reais do dia a dia da categoria.
+                      </p>
+                      <div className="flex flex-wrap gap-1.5 mt-2">
+                        <span className="inline-flex items-center gap-1 text-[10px] font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                          <Award className="h-3 w-3" /> Feito por quem entende
+                        </span>
+                        <span className="inline-flex items-center gap-1 text-[10px] font-medium text-green-600 bg-green-500/10 px-2 py-0.5 rounded-full">
+                          <CheckCircle2 className="h-3 w-3" /> Problemas reais
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Contact */}
+              <div className="text-center">
+                <h4 className="text-sm font-semibold text-foreground mb-2">Contato</h4>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
+                  <a 
+                    href="mailto:francdenisbr@gmail.com"
+                    className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-lg bg-muted/30 hover:bg-muted/50"
+                  >
+                    <Mail className="h-3.5 w-3.5" />
+                    francdenisbr@gmail.com
+                  </a>
+                  <a 
+                    href="mailto:plantaopro@proton.me"
+                    className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-lg bg-muted/30 hover:bg-muted/50"
+                  >
+                    <Mail className="h-3.5 w-3.5" />
+                    plantaopro@proton.me
+                  </a>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="mt-6 pt-4 border-t border-border/30 text-center">
+                <p className="text-[10px] text-muted-foreground/60">
+                  © {new Date().getFullYear()} PlantãoPro • Desenvolvido para a Segurança Pública brasileira
+                </p>
+              </div>
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
