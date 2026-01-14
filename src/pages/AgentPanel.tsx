@@ -146,10 +146,10 @@ export default function AgentPanel() {
     // Don't redirect if we have user session
     if (user) return;
 
-    // Small delay to ensure state is settled
+    // Small delay to ensure state is settled before redirecting to login
     const timer = setTimeout(() => {
-      navigate('/auth', { replace: true });
-    }, 200);
+      navigate('/', { replace: true });
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [user, masterSession, isLoading, isLoadingAgent, navigate]);

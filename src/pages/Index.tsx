@@ -128,8 +128,9 @@ export default function Index() {
 
   useEffect(() => {
     if (!isLoading && user) {
+      // Agents go to agent-panel, admins go to dashboard
       // Use replace to prevent back navigation to login page
-      navigate('/dashboard', { replace: true });
+      navigate('/agent-panel', { replace: true });
     }
   }, [user, isLoading, navigate]);
 
@@ -500,8 +501,8 @@ export default function Index() {
       setSelectedTeam(null);
       setShowRegistration(false);
       
-      // Redirect to the agent's unit dashboard
-      navigate(`/unit/${registeredUnitId}`, { replace: true });
+      // Redirect to the agent panel
+      navigate('/agent-panel', { replace: true });
       
     } catch (error: any) {
       console.error('Registration error:', error);
@@ -578,7 +579,7 @@ export default function Index() {
         title: 'Bem-vindo!',
         description: 'Login realizado com sucesso.',
       });
-      navigate('/dashboard', { replace: true });
+      navigate('/agent-panel', { replace: true });
     }
     
     setIsSubmitting(false);

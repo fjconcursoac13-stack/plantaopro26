@@ -36,6 +36,10 @@ export function useAgentProfile() {
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
+    // Create abort controller for cleanup
+    const abortController = new AbortController();
+    let isMounted = true;
+
     if (!user?.email) {
       setAgent(null);
       setIsLoading(false);
@@ -83,12 +87,17 @@ export function useAgentProfile() {
               )
             `)
             .eq('cpf', cpfDigits)
-            .maybeSingle();
+            .maybeSingle()
+            .abortSignal(abortController.signal);
 
-          if (fetchError) throw fetchError;
+          if (fetchError) {
+            // Don't throw on abort
+            if (fetchError.message?.includes('abort')) return;
+            throw fetchError;
+          }
 
           // If not found, try formatted CPF (some older rows were saved as 000.000.000-00)
-          if (!data) {
+          if (!data && isMounted) {
             const cpfFormatted = formatCPF(cpfDigits);
             const { data: formattedData, error: formattedError } = await (supabase as any)
               .from('agents')
@@ -118,11 +127,15 @@ export function useAgentProfile() {
                 )
               `)
               .eq('cpf', cpfFormatted)
-              .maybeSingle();
+              .maybeSingle()
+              .abortSignal(abortController.signal);
 
-            if (formattedError) throw formattedError;
+            if (formattedError) {
+              if (formattedError.message?.includes('abort')) return;
+              throw formattedError;
+            }
 
-            if (formattedData) {
+            if (formattedData && isMounted) {
               setAgent({
                 ...formattedData,
                 unit: formattedData.units as AgentProfile['unit'],
@@ -131,7 +144,7 @@ export function useAgentProfile() {
             }
           }
 
-          if (data) {
+          if (data && isMounted) {
             setAgent({
               ...data,
               unit: data.units as AgentProfile['unit'],
@@ -141,6 +154,8 @@ export function useAgentProfile() {
         }
 
         // If not found by CPF (or not CPF format), try by email
+        if (!isMounted) return;
+        
         const { data: emailData, error: emailError } = await (supabase as any)
           .from('agents')
           .select(`
@@ -169,27 +184,46 @@ export function useAgentProfile() {
             )
           `)
           .eq('email', user.email)
-          .maybeSingle();
+          .maybeSingle()
+          .abortSignal(abortController.signal);
 
-        if (emailError) throw emailError;
+        if (emailError) {
+          if (emailError.message?.includes('abort')) return;
+          throw emailError;
+        }
 
-        if (emailData) {
-          setAgent({
-            ...emailData,
-            unit: emailData.units as AgentProfile['unit'],
-          });
-        } else {
-          setAgent(null);
+        if (isMounted) {
+          if (emailData) {
+            setAgent({
+              ...emailData,
+              unit: emailData.units as AgentProfile['unit'],
+            });
+          } else {
+            setAgent(null);
+          }
         }
       } catch (err) {
+        // Ignore abort errors silently
+        if (err instanceof Error && err.message?.includes('abort')) {
+          return;
+        }
         console.error('Error fetching agent profile:', err);
-        setError(err as Error);
+        if (isMounted) {
+          setError(err as Error);
+        }
       } finally {
-        setIsLoading(false);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     fetchAgentProfile();
+
+    return () => {
+      isMounted = false;
+      abortController.abort();
+    };
   }, [user?.email]);
 
   return { agent, isLoading, error };
