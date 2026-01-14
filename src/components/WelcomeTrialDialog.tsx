@@ -11,7 +11,7 @@ export function WelcomeTrialDialog({ agentName, onClose }: WelcomeTrialDialogPro
   const [progress, setProgress] = useState(100);
   const [isVisible, setIsVisible] = useState(false);
   
-  const AUTO_CLOSE_SECONDS = 10;
+  const AUTO_CLOSE_SECONDS = 15;
 
   useEffect(() => {
     // Fade in animation
