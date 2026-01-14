@@ -139,7 +139,7 @@ export const agentRegistrationSchema = z.object({
     .min(14, 'CPF inválido')
     .refine((val) => validateCPF(val), 'CPF inválido'),
   matricula: z.string()
-    .length(9, 'Matrícula deve ter 9 dígitos'),
+    .refine((val) => val.replace(/\D/g, '').length === 9, 'Matrícula deve ter 9 dígitos'),
   unit_id: z.string()
     .min(1, 'Selecione uma unidade'),
   team: z.string()
