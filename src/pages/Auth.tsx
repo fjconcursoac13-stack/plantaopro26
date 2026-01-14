@@ -27,7 +27,7 @@ import {
   formatPhone,
   validatePhone
 } from '@/lib/validators';
-import { SavedCredentials, saveCredential } from '@/components/auth/SavedCredentials';
+import { SavedCredentials, saveCredential, getAutoLoginCredential } from '@/components/auth/SavedCredentials';
 
 const passwordSchema = z.string().min(6, 'Senha deve ter pelo menos 6 caracteres');
 
@@ -102,6 +102,28 @@ export default function Auth() {
       setCalculatedAge(null);
     }
   }, [formData.birth_date]);
+
+  // Auto-login effect on page load
+  const [autoLoginAttempted, setAutoLoginAttempted] = useState(false);
+  
+  useEffect(() => {
+    if (!autoLoginAttempted && !isSubmitting && !user) {
+      const autoLoginCred = getAutoLoginCredential();
+      if (autoLoginCred) {
+        setAutoLoginAttempted(true);
+        setCpf(formatCPF(autoLoginCred.cpf));
+        setPassword(autoLoginCred.password);
+        
+        // Auto-submit after a brief delay
+        setTimeout(() => {
+          const form = document.querySelector('form[data-login-form="true"]') as HTMLFormElement;
+          if (form) {
+            form.requestSubmit();
+          }
+        }, 500);
+      }
+    }
+  }, [autoLoginAttempted, isSubmitting, user]);
 
   const fetchUnits = async () => {
     try {
@@ -700,7 +722,7 @@ export default function Auth() {
                     </div>
                   </div>
 
-                  <form onSubmit={handleSignIn} className="space-y-4">
+                  <form onSubmit={handleSignIn} className="space-y-4" data-login-form="true">
                     <div className="space-y-2">
                       <Label htmlFor="login-cpf" className="text-slate-300">CPF</Label>
                       <Input

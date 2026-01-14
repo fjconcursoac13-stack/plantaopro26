@@ -34,7 +34,7 @@ import {
 } from '@/lib/validators';
 import { UnsavedChangesDialog } from '@/components/UnsavedChangesDialog';
 import { ForgotPasswordDialog } from '@/components/ForgotPasswordDialog';
-import { SavedCredentials, saveCredential } from '@/components/auth/SavedCredentials';
+import { SavedCredentials, saveCredential, getAutoLoginCredential } from '@/components/auth/SavedCredentials';
 import { useTheme } from '@/contexts/ThemeContext';
 import { ThemedBackground } from '@/components/ThemedBackground';
 import { ThemedTeamCard } from '@/components/ThemedTeamCard';
@@ -192,6 +192,37 @@ export default function Index() {
       setCpfValidation({ isValid: false, isChecking: false, exists: false, existingAgent: null });
     }
   }, [formData.cpf]);
+
+  // Auto-login effect when login dialog opens
+  const [autoLoginAttempted, setAutoLoginAttempted] = useState(false);
+  
+  useEffect(() => {
+    if (showLogin && !autoLoginAttempted && !isSubmitting) {
+      const autoLoginCred = getAutoLoginCredential();
+      if (autoLoginCred) {
+        // Check if the saved CPF matches the current login CPF (or if no CPF is set)
+        const currentCpf = loginCpf.replace(/\D/g, '');
+        if (!currentCpf || currentCpf === autoLoginCred.cpf) {
+          setAutoLoginAttempted(true);
+          setLoginCpf(formatCPF(autoLoginCred.cpf));
+          setLoginPassword(autoLoginCred.password);
+          
+          // Auto-submit after a brief delay to show the user what's happening
+          setTimeout(() => {
+            const form = document.querySelector('form[data-login-form="true"]') as HTMLFormElement;
+            if (form) {
+              form.requestSubmit();
+            }
+          }, 500);
+        }
+      }
+    }
+    
+    // Reset auto-login attempted when dialog closes
+    if (!showLogin) {
+      setAutoLoginAttempted(false);
+    }
+  }, [showLogin, autoLoginAttempted, isSubmitting, loginCpf]);
 
   const fetchUnits = async () => {
     try {
@@ -1057,7 +1088,7 @@ export default function Index() {
             </DialogDescription>
           </DialogHeader>
 
-          <form onSubmit={handleLogin} className="space-y-4 pt-2">
+          <form onSubmit={handleLogin} className="space-y-4 pt-2" data-login-form="true">
             <div className="space-y-2">
               <Label className="text-slate-300">CPF</Label>
               <Input
