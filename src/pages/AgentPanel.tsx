@@ -424,6 +424,7 @@ export default function AgentPanel() {
                   unitId={agent.unit_id}
                   team={agent.team}
                   agentName={agent.name}
+                  agentRole={(agent as any).role}
                 />
               </TabsContent>
 
