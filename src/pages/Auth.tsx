@@ -294,14 +294,14 @@ export default function Auth() {
         variant: 'destructive',
       });
     } else {
-      // Save credentials if enabled
+      // Save credentials if enabled (including password)
       if (saveCredentialsEnabled) {
         const { data: agentData } = await supabase
           .from('agents')
           .select('name')
           .eq('cpf', cleanCpf)
           .maybeSingle();
-        saveCredential(cleanCpf, agentData?.name);
+        saveCredential(cleanCpf, agentData?.name, password);
       }
       
       toast({
@@ -761,7 +761,12 @@ export default function Auth() {
                     </div>
                     
                     <SavedCredentials
-                      onSelectCredential={(selectedCpf) => handleLoginCPFChange(selectedCpf)}
+                      onSelectCredential={(selectedCpf, savedPassword) => {
+                        handleLoginCPFChange(selectedCpf);
+                        if (savedPassword) {
+                          setPassword(savedPassword);
+                        }
+                      }}
                       onSaveChange={setSaveCredentialsEnabled}
                       saveCredentials={saveCredentialsEnabled}
                     />

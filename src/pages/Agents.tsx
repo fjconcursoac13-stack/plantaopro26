@@ -63,7 +63,7 @@ interface Agent {
 const teams = ['ALFA', 'BRAVO', 'CHARLIE', 'DELTA'];
 
 export default function Agents() {
-  const { user, isLoading, isAdmin, masterSession } = useAuth();
+  const { user, isLoading, isAdmin, isMaster, masterSession } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -400,7 +400,7 @@ export default function Agents() {
                 </p>
               </div>
 
-              {isAdmin && (
+              {(isAdmin || isMaster) && (
                 <Dialog open={isDialogOpen} onOpenChange={(open) => {
                   setIsDialogOpen(open);
                   if (!open) {
@@ -606,7 +606,7 @@ export default function Agents() {
                         <TableHead>Telefone</TableHead>
                         <TableHead>Cargo</TableHead>
                         <TableHead>Status</TableHead>
-                        {isAdmin && <TableHead className="w-24">Ações</TableHead>}
+                        {(isAdmin || isMaster) && <TableHead className="w-24">Ações</TableHead>}
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -633,7 +633,7 @@ export default function Agents() {
                               {agent.is_active ? 'Ativo' : 'Inativo'}
                             </Badge>
                           </TableCell>
-                          {isAdmin && (
+                          {(isAdmin || isMaster) && (
                             <TableCell>
                               <div className="flex items-center gap-1">
                                 <Button variant="ghost" size="icon" onClick={() => handleTransferRequest(agent)} title="Solicitar Transferência">
