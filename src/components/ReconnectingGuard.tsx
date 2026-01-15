@@ -15,7 +15,7 @@ interface ReconnectingGuardProps {
 
 export function ReconnectingGuard({
   children,
-  publicRoutes = ['/', '/auth', '/install', '/debug/auth', '/master'],
+  publicRoutes = ['/', '/auth', '/install', '/debug/auth', '/master', '/agent-panel', '/dashboard', '/agents', '/admin', '/units', '/overtime', '/settings', '/about', '/agent-profile'],
   maxWaitTime = 10000,
 }: ReconnectingGuardProps) {
   const { user, session, isLoading, masterSession } = useAuth();
