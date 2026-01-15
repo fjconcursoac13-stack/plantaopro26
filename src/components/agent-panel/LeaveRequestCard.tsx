@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -396,6 +396,9 @@ export function LeaveRequestCard({ agentId, agentTeam, agentUnitId }: LeaveReque
         <DialogContent className="bg-slate-800 border-slate-700">
           <DialogHeader>
             <DialogTitle className="text-white">Registrar Folga</DialogTitle>
+            <DialogDescription className="text-slate-400">
+              Selecione o tipo de folga para o dia escolhido.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 pt-4">
             {selectedDate && (

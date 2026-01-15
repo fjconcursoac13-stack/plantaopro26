@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Progress } from '@/components/ui/progress';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -1569,6 +1569,9 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
         <DialogContent className="bg-slate-800 border-slate-700 max-w-md">
           <DialogHeader>
             <DialogTitle className="text-white">Registrar Banco de Horas</DialogTitle>
+            <DialogDescription className="text-slate-400">
+              Selecione o período e as horas trabalhadas para registrar no banco de horas.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 pt-4">
             {selectedDate && (
@@ -1739,6 +1742,9 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
         <DialogContent className="bg-slate-800 border-slate-700">
           <DialogHeader>
             <DialogTitle className="text-white">Editar Registro de BH</DialogTitle>
+            <DialogDescription className="text-slate-400">
+              Altere a quantidade de horas deste registro.
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 pt-4">
             {editingEntry && (
