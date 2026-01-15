@@ -844,10 +844,10 @@ export default function Auth() {
                   </TabsContent>
                 </Tabs>
 
-                {/* Notice about disabled registration */}
-                <div className="p-3 bg-slate-800/50 rounded-lg border border-slate-600 mt-4">
-                  <p className="text-xs text-slate-400 text-center">
-                    O cadastro está temporariamente desabilitado. Entre em contato com o administrador.
+                {/* Info for admins */}
+                <div className="p-3 bg-amber-500/10 rounded-lg border border-amber-500/30 mt-4">
+                  <p className="text-xs text-amber-400 text-center">
+                    <strong>Administradores:</strong> Use a aba "Email" para login com francdenisbr@gmail.com
                   </p>
                 </div>
               </div>
@@ -869,9 +869,12 @@ export default function Auth() {
         </Card>
 
         {/* Developer Credit */}
-        <p className="text-center text-xs text-slate-500 mt-6">
-          Desenvolvido por <span className="text-amber-500 font-medium">Franc Denis</span>
-        </p>
+        <div className="text-center mt-6">
+          <p className="text-xs text-slate-400">
+            Desenvolvido por <span className="text-amber-500 font-semibold">Franc Denis de Souza e Silva</span>
+          </p>
+          <p className="text-[10px] text-slate-500 mt-0.5">Feijó, Acre • © {new Date().getFullYear()} PlantãoPro</p>
+        </div>
       </div>
     </div>
   );

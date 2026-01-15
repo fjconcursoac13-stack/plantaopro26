@@ -127,12 +127,12 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
           }}
         />
         
-        {/* Main Card - LARGER aspect ratio for better visibility */}
+        {/* Main Card - MUCH LARGER aspect ratio for better visibility */}
         <div 
           className={cn(
             "relative overflow-hidden rounded-xl md:rounded-2xl",
             "border-2 md:border-3 transition-all duration-300 group-hover:shadow-2xl",
-            "min-h-[180px] landscape:min-h-[120px] sm:min-h-[240px] md:min-h-[300px] lg:min-h-[340px]",
+            "min-h-[220px] landscape:min-h-[140px] sm:min-h-[300px] md:min-h-[380px] lg:min-h-[420px] xl:min-h-[480px]",
           )}
           style={{ 
             borderColor: teamColors[team as keyof typeof teamColors]?.primary || '#fff',
