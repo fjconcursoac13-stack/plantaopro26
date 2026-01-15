@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatCPF } from '@/lib/validators';
@@ -29,202 +29,172 @@ interface AgentProfile {
   } | null;
 }
 
+const AGENT_SELECT_QUERY = `
+  id,
+  name,
+  cpf,
+  matricula,
+  email,
+  phone,
+  address,
+  team,
+  birth_date,
+  age,
+  is_active,
+  unit_id,
+  role,
+  blood_type,
+  avatar_url,
+  license_status,
+  license_expires_at,
+  license_notes,
+  units:unit_id (
+    id,
+    name,
+    municipality
+  )
+`;
+
 export function useAgentProfile() {
   const { user } = useAuth();
   const [agent, setAgent] = useState<AgentProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  
+  // Prevent duplicate fetches
+  const fetchingRef = useRef(false);
+  const lastEmailRef = useRef<string | null>(null);
+  const mountedRef = useRef(true);
 
   useEffect(() => {
-    // Create abort controller for cleanup
-    const abortController = new AbortController();
-    let isMounted = true;
+    mountedRef.current = true;
 
     if (!user?.email) {
       setAgent(null);
       setIsLoading(false);
+      lastEmailRef.current = null;
+      return;
+    }
+
+    // Skip if already fetching or email hasn't changed
+    if (fetchingRef.current || lastEmailRef.current === user.email) {
+      if (lastEmailRef.current === user.email && agent) {
+        setIsLoading(false);
+      }
       return;
     }
 
     const fetchAgentProfile = async () => {
+      // Prevent concurrent fetches
+      if (fetchingRef.current || !mountedRef.current) return;
+      fetchingRef.current = true;
+
       try {
         setIsLoading(true);
+        setError(null);
         
         // Extract CPF from email (format: cpf@agent.plantaopro.com)
-        const emailParts = user.email.split('@');
+        const emailParts = user.email!.split('@');
         const localPart = emailParts[0] || '';
         const cpfDigits = localPart.replace(/\D/g, '');
         const looksLikeCpf = cpfDigits.length === 11;
         
-        // If the auth email isn't in CPF format, skip CPF lookup and fallback to email lookup
-        if (looksLikeCpf) {
-          // First try to find by CPF (digits)
+        let foundAgent = null;
+        
+        // Try CPF lookup first (most common case)
+        if (looksLikeCpf && mountedRef.current) {
           const { data, error: fetchError } = await (supabase as any)
             .from('agents')
-            .select(`
-              id,
-              name,
-              cpf,
-              matricula,
-              email,
-              phone,
-              address,
-              team,
-              birth_date,
-              age,
-              is_active,
-              unit_id,
-              role,
-              blood_type,
-              avatar_url,
-              license_status,
-              license_expires_at,
-              license_notes,
-              units:unit_id (
-                id,
-                name,
-                municipality
-              )
-            `)
+            .select(AGENT_SELECT_QUERY)
             .eq('cpf', cpfDigits)
-            .maybeSingle()
-            .abortSignal(abortController.signal);
+            .maybeSingle();
 
           if (fetchError) {
-            // Don't throw on abort
-            if (fetchError.message?.includes('abort')) return;
             throw fetchError;
           }
 
-          // If not found, try formatted CPF (some older rows were saved as 000.000.000-00)
-          if (!data && isMounted) {
+          if (data) {
+            foundAgent = data;
+          } else if (mountedRef.current) {
+            // Try formatted CPF (legacy format: 000.000.000-00)
             const cpfFormatted = formatCPF(cpfDigits);
             const { data: formattedData, error: formattedError } = await (supabase as any)
               .from('agents')
-              .select(`
-                id,
-                name,
-                cpf,
-                matricula,
-                email,
-                phone,
-                address,
-                team,
-                birth_date,
-                age,
-                is_active,
-                unit_id,
-                role,
-                blood_type,
-                avatar_url,
-                license_status,
-                license_expires_at,
-                license_notes,
-                units:unit_id (
-                  id,
-                  name,
-                  municipality
-                )
-              `)
+              .select(AGENT_SELECT_QUERY)
               .eq('cpf', cpfFormatted)
-              .maybeSingle()
-              .abortSignal(abortController.signal);
+              .maybeSingle();
 
             if (formattedError) {
-              if (formattedError.message?.includes('abort')) return;
               throw formattedError;
             }
 
-            if (formattedData && isMounted) {
-              setAgent({
-                ...formattedData,
-                unit: formattedData.units as AgentProfile['unit'],
-              });
-              return;
+            if (formattedData) {
+              foundAgent = formattedData;
             }
           }
+        }
 
-          if (data && isMounted) {
-            setAgent({
-              ...data,
-              unit: data.units as AgentProfile['unit'],
-            });
-            return;
+        // Fallback: try email lookup (for non-CPF logins)
+        if (!foundAgent && mountedRef.current) {
+          const { data: emailData, error: emailError } = await (supabase as any)
+            .from('agents')
+            .select(AGENT_SELECT_QUERY)
+            .eq('email', user.email)
+            .maybeSingle();
+
+          if (emailError) {
+            throw emailError;
+          }
+
+          if (emailData) {
+            foundAgent = emailData;
           }
         }
 
-        // If not found by CPF (or not CPF format), try by email
-        if (!isMounted) return;
-        
-        const { data: emailData, error: emailError } = await (supabase as any)
-          .from('agents')
-          .select(`
-            id,
-            name,
-            cpf,
-            matricula,
-            email,
-            phone,
-            address,
-            team,
-            birth_date,
-            age,
-            is_active,
-            unit_id,
-            role,
-            blood_type,
-            avatar_url,
-            license_status,
-            license_expires_at,
-            license_notes,
-            units:unit_id (
-              id,
-              name,
-              municipality
-            )
-          `)
-          .eq('email', user.email)
-          .maybeSingle()
-          .abortSignal(abortController.signal);
-
-        if (emailError) {
-          if (emailError.message?.includes('abort')) return;
-          throw emailError;
-        }
-
-        if (isMounted) {
-          if (emailData) {
+        if (mountedRef.current) {
+          if (foundAgent) {
             setAgent({
-              ...emailData,
-              unit: emailData.units as AgentProfile['unit'],
+              ...foundAgent,
+              unit: foundAgent.units as AgentProfile['unit'],
             });
           } else {
             setAgent(null);
           }
+          lastEmailRef.current = user.email!;
         }
       } catch (err) {
-        // Ignore abort errors silently
-        if (err instanceof Error && err.message?.includes('abort')) {
-          return;
-        }
         console.error('Error fetching agent profile:', err);
-        if (isMounted) {
+        if (mountedRef.current) {
           setError(err as Error);
         }
       } finally {
-        if (isMounted) {
+        if (mountedRef.current) {
           setIsLoading(false);
         }
+        fetchingRef.current = false;
       }
     };
 
-    fetchAgentProfile();
+    // Small delay to debounce rapid auth state changes
+    const timer = setTimeout(fetchAgentProfile, 100);
 
     return () => {
-      isMounted = false;
-      abortController.abort();
+      clearTimeout(timer);
+      mountedRef.current = false;
+      fetchingRef.current = false;
     };
   }, [user?.email]);
 
-  return { agent, isLoading, error };
+  // Function to manually refetch profile
+  const refetch = async () => {
+    if (!user?.email || fetchingRef.current) return;
+    
+    lastEmailRef.current = null; // Force refetch
+    fetchingRef.current = false;
+    
+    // Trigger useEffect by forcing a state update
+    setIsLoading(true);
+  };
+
+  return { agent, isLoading, error, refetch };
 }
