@@ -127,24 +127,24 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
           }}
         />
         
-        {/* Main Card - Balanced Size for optimal visibility */}
+        {/* Main Card - Definitive proportional sizing without cutting */}
         <div 
           className={cn(
             "relative overflow-hidden rounded-xl md:rounded-2xl",
             "border-2 md:border-3 transition-all duration-300 group-hover:shadow-2xl",
-            "min-h-[200px] landscape:min-h-[160px] sm:min-h-[280px] md:min-h-[340px] lg:min-h-[400px] xl:min-h-[450px] 2xl:min-h-[500px]",
-            "aspect-[3/4]",
+            // Use flexible height based on available space, not fixed min-heights
+            "h-full w-full",
           )}
           style={{ 
             borderColor: teamColors[team as keyof typeof teamColors]?.primary || '#fff',
+            // Aspect ratio maintained via parent container
           }}
         >
-          {/* Team Poster Background - Full coverage with better positioning */}
+          {/* Team Poster Background - Centered to show face/main content */}
           <div 
-            className="absolute inset-0 bg-cover bg-top bg-no-repeat transition-transform duration-500 group-hover:scale-105"
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-105"
             style={{ 
               backgroundImage: `url(${teamPosters[team as keyof typeof teamPosters]})`,
-              backgroundPosition: 'center 15%',
             }}
           />
           {/* Dark overlay for readability - subtle gradient */}
@@ -152,7 +152,7 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
           
           {/* Top gradient stripe with team color */}
           <div 
-            className="absolute top-0 left-0 right-0 h-1.5 md:h-2 transition-all duration-300 group-hover:h-2 md:group-hover:h-2.5" 
+            className="absolute top-0 left-0 right-0 h-1 md:h-1.5 transition-all duration-300 group-hover:h-1.5 md:group-hover:h-2" 
             style={{ backgroundColor: teamColors[team as keyof typeof teamColors]?.primary }}
           />
           
@@ -169,48 +169,48 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
             <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-green-500 animate-pulse" />
           </div>
           
-          {/* Content - Bottom aligned with more space */}
-          <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 md:p-8 z-10">
+          {/* Content - Bottom aligned, compact for mobile */}
+          <div className="absolute inset-x-0 bottom-0 p-2 sm:p-3 md:p-5 lg:p-6 z-10">
             <div className="flex flex-col items-center">
-              {/* Icon with team color - EXTRA LARGE */}
+              {/* Icon with team color - responsive sizing */}
               <div 
-                className="w-14 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 rounded-full flex items-center justify-center mb-3 md:mb-4 shadow-2xl group-hover:scale-110 transition-transform duration-300 border-3 md:border-4 border-white/40"
+                className="w-10 h-10 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 xl:w-24 xl:h-24 rounded-full flex items-center justify-center mb-2 md:mb-3 shadow-xl group-hover:scale-110 transition-transform duration-300 border-2 md:border-3 border-white/40"
                 style={{ 
                   backgroundColor: teamColors[team as keyof typeof teamColors]?.primary,
-                  boxShadow: `0 0 50px ${teamColors[team as keyof typeof teamColors]?.glow}, 0 0 100px ${teamColors[team as keyof typeof teamColors]?.glow}40`,
+                  boxShadow: `0 0 30px ${teamColors[team as keyof typeof teamColors]?.glow}, 0 0 60px ${teamColors[team as keyof typeof teamColors]?.glow}40`,
                 }}
               >
-                <Icon className="h-7 w-7 sm:h-10 sm:w-10 md:h-12 md:w-12 lg:h-14 lg:w-14 xl:h-16 xl:w-16 text-white drop-shadow-lg" />
+                <Icon className="h-5 w-5 sm:h-7 sm:w-7 md:h-8 md:w-8 lg:h-10 lg:w-10 xl:h-12 xl:w-12 text-white drop-shadow-lg" />
               </div>
               
-              {/* Team name - Always visible - EXTRA LARGE */}
-              <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
-                <Star className="h-3.5 w-3.5 md:h-5 md:w-5 text-white/80 group-hover:animate-pulse shrink-0" />
+              {/* Team name - Always visible */}
+              <div className="flex items-center gap-1.5 md:gap-2 mb-1.5 md:mb-2">
+                <Star className="h-2.5 w-2.5 md:h-4 md:w-4 text-white/80 group-hover:animate-pulse shrink-0" />
                 <h3 
-                  className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-black tracking-[0.15em] text-white drop-shadow-lg"
+                  className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-black tracking-[0.1em] sm:tracking-[0.15em] text-white drop-shadow-lg"
                   style={{ 
-                    textShadow: `0 2px 15px ${teamColors[team as keyof typeof teamColors]?.glow}, 0 0 40px ${teamColors[team as keyof typeof teamColors]?.glow}`,
+                    textShadow: `0 2px 10px ${teamColors[team as keyof typeof teamColors]?.glow}, 0 0 30px ${teamColors[team as keyof typeof teamColors]?.glow}`,
                   }}
                 >
                   {team}
                 </h3>
-                <Star className="h-3.5 w-3.5 md:h-5 md:w-5 text-white/80 group-hover:animate-pulse shrink-0" />
+                <Star className="h-2.5 w-2.5 md:h-4 md:w-4 text-white/80 group-hover:animate-pulse shrink-0" />
               </div>
               
-              {/* Description - Visible on larger screens - LARGER */}
-              <p className="hidden sm:block text-white/90 text-sm md:text-base lg:text-lg text-center font-medium mb-3 md:mb-4 max-w-full line-clamp-2">
+              {/* Description - Hidden on mobile, visible on larger screens */}
+              <p className="hidden md:block text-white/90 text-xs lg:text-sm text-center font-medium mb-2 md:mb-3 max-w-full line-clamp-2">
                 {descriptions.description}
               </p>
               
-              {/* Access button - EXTRA LARGE */}
+              {/* Access button - Compact */}
               <div 
-                className="flex items-center justify-center gap-2 md:gap-3 px-5 py-2.5 sm:px-6 sm:py-3 md:px-8 md:py-4 rounded-xl md:rounded-2xl bg-black/70 backdrop-blur-sm border-2 md:border-3 transition-all duration-300 group-hover:bg-black/90 group-hover:scale-105"
+                className="flex items-center justify-center gap-1.5 md:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 md:px-5 md:py-2.5 rounded-lg md:rounded-xl bg-black/70 backdrop-blur-sm border md:border-2 transition-all duration-300 group-hover:bg-black/90 group-hover:scale-105"
                 style={{ 
                   borderColor: teamColors[team as keyof typeof teamColors]?.primary,
                 }}
               >
-                <Radio className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-green-400 animate-pulse shrink-0" />
-                <span className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-white tracking-widest uppercase">
+                <Radio className="w-2.5 h-2.5 sm:w-3 sm:h-3 md:w-4 md:h-4 text-green-400 animate-pulse shrink-0" />
+                <span className="text-[10px] sm:text-xs md:text-sm font-bold text-white tracking-wider uppercase">
                   ACESSAR
                 </span>
               </div>
