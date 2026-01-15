@@ -324,14 +324,19 @@ export default function Index() {
           setShowLogin(true);
         }
       } else {
-        // Auto-cadastro desabilitado - mostrar mensagem de erro
+        // CPF não cadastrado - redirecionar para registro
+        setShowCpfCheck(false);
+        setFormData(prev => ({ 
+          ...prev, 
+          cpf: checkCpf,
+          unit_id: '',
+        }));
+        setShowRegistration(true);
         toast({
           title: 'CPF Não Cadastrado',
-          description: 'O cadastro está temporariamente desabilitado. Entre em contato com o administrador.',
-          variant: 'destructive',
+          description: 'Preencha seus dados para se cadastrar no sistema.',
           duration: 5000,
         });
-        setShowCpfCheck(false);
       }
     } catch (error) {
       console.error('Error checking CPF:', error);
@@ -922,10 +927,10 @@ export default function Index() {
         </div>
       </header>
 
-      {/* Teams Grid Section - Fills remaining space, LARGER cards, landscape optimized */}
-      <section className="flex-1 py-2 landscape:py-1 sm:py-6 px-3 landscape:px-6 sm:px-6 relative z-10 flex items-center justify-center min-h-0">
-        <div className="w-full max-w-sm landscape:max-w-3xl sm:max-w-xl md:max-w-4xl lg:max-w-5xl xl:max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 landscape:grid-cols-4 md:grid-cols-4 gap-3 landscape:gap-3 sm:gap-5 md:gap-6 lg:gap-8">
+      {/* Teams Grid Section - Fills remaining space, MUCH LARGER cards, landscape optimized */}
+      <section className="flex-1 py-3 landscape:py-1 sm:py-8 px-4 landscape:px-8 sm:px-8 relative z-10 flex items-center justify-center min-h-0 overflow-auto">
+        <div className="w-full max-w-md landscape:max-w-4xl sm:max-w-2xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl mx-auto">
+          <div className="grid grid-cols-2 landscape:grid-cols-4 md:grid-cols-4 gap-4 landscape:gap-4 sm:gap-6 md:gap-8 lg:gap-10">
             {teams.map((team, index) => (
               <div
                 key={team}
@@ -944,46 +949,67 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Footer - Clean & Minimal */}
+      {/* Footer - Clean & Minimal with Developer Credit */}
       <footer className="py-2 px-4 bg-background/60 backdrop-blur-sm border-t border-border/20 relative z-20 shrink-0">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          {/* Left: Branding + Copyright */}
-          <div className="flex items-center gap-2 text-muted-foreground/60">
-            <span className="text-[10px] sm:text-xs">
-              © {new Date().getFullYear()} PlantãoPro
-            </span>
+        <div className="max-w-6xl mx-auto flex flex-col gap-1">
+          {/* Developer Credit */}
+          <div className="text-center">
+            <p className="text-[9px] sm:text-[10px] text-muted-foreground/60 flex items-center justify-center gap-1">
+              <span>Desenvolvido por</span>
+              <strong className="text-foreground/70 font-semibold">Franc Denis de Souza e Silva</strong>
+              <span className="hidden sm:inline">• Feijó/AC</span>
+            </p>
           </div>
           
-          {/* Right: Actions - minimal icons */}
-          <div className="flex items-center gap-0.5">
-            {/* About */}
-            <button
-              onClick={() => setShowAboutDialog(true)}
-              className="p-2 text-muted-foreground/60 hover:text-foreground hover:bg-muted/30 rounded-lg transition-colors"
-              title="Sobre o PlantãoPro"
-            >
-              <Info className="h-4 w-4" />
-            </button>
+          {/* Bottom row: Branding + Actions */}
+          <div className="flex items-center justify-between">
+            {/* Left: Branding + Copyright */}
+            <div className="flex items-center gap-2 text-muted-foreground/60">
+              <span className="text-[10px] sm:text-xs">
+                © {new Date().getFullYear()} PlantãoPro
+              </span>
+            </div>
             
-            {/* Saved credentials */}
-            {getSavedCredentials().length > 0 && (
+            {/* Right: Actions - minimal icons */}
+            <div className="flex items-center gap-0.5">
+              {/* About */}
               <button
-                onClick={() => setShowCredentialsManager(true)}
+                onClick={() => setShowAboutDialog(true)}
                 className="p-2 text-muted-foreground/60 hover:text-foreground hover:bg-muted/30 rounded-lg transition-colors"
-                title="Credenciais salvas"
+                title="Sobre o PlantãoPro"
               >
-                <KeyRound className="h-4 w-4" />
+                <Info className="h-4 w-4" />
               </button>
-            )}
-            
-            {/* Admin */}
-            <button
-              onClick={() => setShowMasterLogin(true)}
-              className="p-2 text-muted-foreground/60 hover:text-foreground hover:bg-muted/30 rounded-lg transition-colors"
-              title="Acesso administrativo"
-            >
-              <Lock className="h-4 w-4" />
-            </button>
+              
+              {/* Saved credentials */}
+              {getSavedCredentials().length > 0 && (
+                <button
+                  onClick={() => setShowCredentialsManager(true)}
+                  className="p-2 text-muted-foreground/60 hover:text-foreground hover:bg-muted/30 rounded-lg transition-colors"
+                  title="Credenciais salvas"
+                >
+                  <KeyRound className="h-4 w-4" />
+                </button>
+              )}
+              
+              {/* Admin - Email Login */}
+              <button
+                onClick={() => navigate('/auth')}
+                className="p-2 text-muted-foreground/60 hover:text-foreground hover:bg-muted/30 rounded-lg transition-colors"
+                title="Login Admin (Email)"
+              >
+                <Mail className="h-4 w-4" />
+              </button>
+              
+              {/* Master Admin */}
+              <button
+                onClick={() => setShowMasterLogin(true)}
+                className="p-2 text-muted-foreground/60 hover:text-foreground hover:bg-muted/30 rounded-lg transition-colors"
+                title="Acesso Master"
+              >
+                <Lock className="h-4 w-4" />
+              </button>
+            </div>
           </div>
         </div>
       </footer>
@@ -1594,10 +1620,14 @@ export default function Index() {
                       <Building2 className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <h4 className="text-sm font-semibold text-foreground mb-1">Origem</h4>
+                      <h4 className="text-sm font-semibold text-foreground mb-1">Desenvolvedor</h4>
                       <p className="text-xs text-muted-foreground leading-relaxed">
-                        Desenvolvido por um <strong className="text-foreground">Agente Socioeducativo</strong> de{' '}
-                        <strong className="text-foreground">Feijó, Acre</strong>, para resolver problemas reais do dia a dia da categoria.
+                        <strong className="text-foreground text-sm">Franc Denis de Souza e Silva</strong>
+                        <br />
+                        <span className="text-primary">Agente Socioeducativo</span> • <strong className="text-foreground">Feijó, Acre</strong>
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Desenvolvido para resolver problemas reais do dia a dia da categoria.
                       </p>
                       <div className="flex flex-wrap gap-1.5 mt-2">
                         <span className="inline-flex items-center gap-1 text-[10px] font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">

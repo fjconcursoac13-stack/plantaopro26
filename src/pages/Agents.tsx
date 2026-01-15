@@ -657,9 +657,12 @@ export default function Agents() {
             </Card>
             
             {/* Developer Credit */}
-            <p className="text-center text-xs text-muted-foreground">
-              Desenvolvido por <span className="text-primary font-medium">Franc Denis</span>
-            </p>
+            <div className="text-center pt-4 border-t border-border/30">
+              <p className="text-xs text-muted-foreground">
+                Desenvolvido por <span className="text-primary font-semibold">Franc Denis de Souza e Silva</span>
+              </p>
+              <p className="text-[10px] text-muted-foreground/60 mt-0.5">Feijó, Acre • © {new Date().getFullYear()} PlantãoPro</p>
+            </div>
           </div>
         </main>
       </div>
