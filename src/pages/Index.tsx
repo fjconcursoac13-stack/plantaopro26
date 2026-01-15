@@ -21,7 +21,9 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, AlertTriangle, Eye, EyeOff, UserCheck, Lock, Palette, Fingerprint, Shield, Users, KeyRound, Info, Mail, Calendar, Clock, BarChart3, RefreshCw, Target, Building2, Award, CheckCircle2 } from 'lucide-react';
+import { Loader2, AlertTriangle, Eye, EyeOff, UserCheck, Lock, Palette, Fingerprint, Shield, Users, KeyRound, Info, Mail, Calendar, Clock, BarChart3, RefreshCw, Target, Building2, Award, CheckCircle2, Zap, Radio } from 'lucide-react';
+import { HomeAudioPlayer } from '@/components/HomeAudioPlayer';
+import { DeveloperFooter } from '@/components/DeveloperFooter';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -825,35 +827,59 @@ export default function Index() {
         </div>
       </div>
 
-      {/* Hero Section - Minimal to maximize card space */}
-      <header className="py-0.5 sm:py-1 px-2 relative z-10 shrink-0">
-        <div className="max-w-4xl mx-auto text-center flex items-center justify-center gap-2 sm:gap-4">
-          {/* Badge inline */}
+      {/* Hero Section - Enhanced title with effects */}
+      <header className="py-3 sm:py-4 md:py-6 px-4 relative z-10 shrink-0">
+        <div className="max-w-4xl mx-auto text-center flex flex-col items-center gap-3 sm:gap-4">
+          {/* Badge with glow */}
           <div className={cn(
-            "relative w-6 h-6 sm:w-10 sm:h-10 rounded-full border border-primary/40 flex items-center justify-center shrink-0",
+            "relative w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full border-2 border-primary/50 flex items-center justify-center",
             themeConfig.colors.isLight 
               ? "bg-gradient-to-br from-white via-gray-50 to-gray-100"
               : "bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900"
           )}>
             {(() => {
               const MainIcon = themeAssets.mainIcon;
-              return <MainIcon className="h-3 w-3 sm:h-5 sm:w-5 text-primary" />;
+              return <MainIcon className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 text-primary" />;
             })()}
+            {/* Animated ring */}
+            <div className="absolute inset-0 rounded-full border-2 border-primary/30 animate-ping" style={{ animationDuration: '2s' }} />
+            <div className="absolute -inset-2 rounded-full bg-primary/10 blur-xl animate-pulse" />
           </div>
           
-          {/* Title inline */}
-          <div className="flex items-center gap-1 sm:gap-2">
-            <h1 className="text-sm sm:text-xl md:text-2xl font-black text-foreground tracking-tight">
-              PLANTÃO <span className="text-primary">PRO</span>
+          {/* Title with effects */}
+          <div className="relative">
+            {/* Glow behind title */}
+            <div className="absolute inset-0 blur-2xl bg-primary/20 rounded-full" />
+            
+            <h1 className="relative text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight">
+              <span 
+                className="bg-gradient-to-r from-foreground via-foreground to-foreground/80 bg-clip-text text-transparent"
+                style={{ textShadow: '0 0 40px hsl(var(--primary) / 0.3)' }}
+              >
+                PLANTÃO{' '}
+              </span>
+              <span 
+                className="bg-gradient-to-r from-primary via-amber-400 to-primary bg-clip-text text-transparent animate-pulse"
+                style={{ 
+                  textShadow: '0 0 30px hsl(var(--primary) / 0.5), 0 0 60px hsl(var(--primary) / 0.3)',
+                  animationDuration: '3s',
+                }}
+              >
+                PRO
+              </span>
             </h1>
-            <span className="text-[6px] sm:text-[8px] font-bold text-muted-foreground tracking-wide uppercase hidden sm:inline">
-              {themeAssets.subtitle}
-            </span>
+            
+            {/* Subtitle with tactical feel */}
+            <p className="mt-1 sm:mt-2 text-[10px] sm:text-xs md:text-sm font-bold text-muted-foreground tracking-[0.3em] uppercase flex items-center justify-center gap-2">
+              <Zap className="h-3 w-3 text-primary" />
+              <span>{themeAssets.subtitle}</span>
+              <Radio className="h-2.5 w-2.5 text-green-500 animate-pulse" />
+            </p>
           </div>
         </div>
       </header>
 
-      {/* Teams Grid Section - Maximum space for EXTRA LARGE cards */}
+      {/* Teams Grid Section - Optimized card space */}
       <section className="flex-1 py-1 landscape:py-1 sm:py-3 px-3 landscape:px-6 sm:px-6 relative z-10 flex items-start justify-center min-h-0 overflow-auto">
         <div className="w-full max-w-lg landscape:max-w-5xl sm:max-w-3xl md:max-w-6xl lg:max-w-7xl xl:max-w-[1600px] mx-auto">
           <div className="grid grid-cols-2 landscape:grid-cols-4 md:grid-cols-4 gap-3 landscape:gap-3 sm:gap-5 md:gap-6 lg:gap-8">
@@ -876,25 +902,20 @@ export default function Index() {
       </section>
 
 
-      {/* Footer - Clean & Minimal with Developer Credit */}
+      {/* Footer - Clean & Minimal with Developer Credit and Audio Player */}
       <footer className="py-2 px-4 bg-background/60 backdrop-blur-sm border-t border-border/20 relative z-20 shrink-0">
         <div className="max-w-6xl mx-auto flex flex-col gap-1">
-          {/* Developer Credit */}
-          <div className="text-center">
-            <p className="text-[9px] sm:text-[10px] text-muted-foreground/60 flex items-center justify-center gap-1">
-              <span>Desenvolvido por</span>
-              <strong className="text-foreground/70 font-semibold">Franc Denis de Souza e Silva</strong>
-              <span className="hidden sm:inline">• Feijó/AC</span>
-            </p>
-          </div>
+          {/* Developer Credit - Tactical Style */}
+          <DeveloperFooter variant="transparent" />
           
-          {/* Bottom row: Branding + Actions */}
+          {/* Bottom row: Branding + Audio + Actions */}
           <div className="flex items-center justify-between">
-            {/* Left: Branding + Copyright */}
-            <div className="flex items-center gap-2 text-muted-foreground/60">
+            {/* Left: Branding + Copyright + Audio Player */}
+            <div className="flex items-center gap-3 text-muted-foreground/60">
               <span className="text-[10px] sm:text-xs">
                 © {new Date().getFullYear()} PlantãoPro
               </span>
+              <HomeAudioPlayer />
             </div>
             
             {/* Right: Actions - minimal icons */}
