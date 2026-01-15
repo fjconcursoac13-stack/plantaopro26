@@ -7,16 +7,13 @@ import { Progress } from '@/components/ui/progress';
 
 interface ReconnectingGuardProps {
   children: React.ReactNode;
-  /** Routes that don't require authentication */
-  publicRoutes?: string[];
   /** Maximum time to wait for session recovery (ms) */
   maxWaitTime?: number;
 }
 
 export function ReconnectingGuard({
   children,
-  publicRoutes = ['/', '/auth', '/install', '/debug/auth', '/master', '/agent-panel', '/dashboard', '/agents', '/admin', '/units', '/overtime', '/settings', '/about', '/agent-profile'],
-  maxWaitTime = 10000,
+  maxWaitTime = 15000,
 }: ReconnectingGuardProps) {
   const { user, session, isLoading, masterSession } = useAuth();
   const navigate = useNavigate();
@@ -26,62 +23,47 @@ export function ReconnectingGuard({
   const [waitProgress, setWaitProgress] = useState(0);
   const [timedOut, setTimedOut] = useState(false);
   
-  const previousAuthState = useRef<{ hadUser: boolean; hadSession: boolean } | null>(null);
+  // Track if user was ever authenticated in this component lifecycle
+  const wasAuthenticatedRef = useRef(false);
   const waitStartTime = useRef<number | null>(null);
 
-  // Master session bypasses auth requirements
-  const hasMasterAccess = !!masterSession;
-
-  const isPublicRoute = publicRoutes.some(route => 
-    location.pathname === route || location.pathname.startsWith(route + '/')
-  );
-
+  // Update wasAuthenticated when we have a valid session
   useEffect(() => {
-    // Skip for public routes or if master session is active
-    if (isPublicRoute || hasMasterAccess) {
-      setShowReconnecting(false);
-      return;
-    }
-
-    // Initial load - just wait
-    if (isLoading) {
-      return;
-    }
-
-    // Track auth state changes
-    const currentState = { hadUser: !!user, hadSession: !!session };
-    
-    if (previousAuthState.current === null) {
-      // First render after loading
-      previousAuthState.current = currentState;
-      
-      // If no session on first render of protected route and no master session, redirect
-      if (!user && !session && !hasMasterAccess) {
-        navigate('/', { replace: true });
+    if (user || session || masterSession) {
+      wasAuthenticatedRef.current = true;
+      // If we were showing reconnecting and now have session, hide it
+      if (showReconnecting) {
+        setShowReconnecting(false);
+        setTimedOut(false);
+        setWaitProgress(0);
+        waitStartTime.current = null;
       }
-      return;
     }
+  }, [user, session, masterSession, showReconnecting]);
 
-    // Check if we lost the session
-    const lostSession = previousAuthState.current.hadSession && !session;
-    const lostUser = previousAuthState.current.hadUser && !user;
+  // CRITICAL: Never redirect during loading or if master session is active
+  // This guard only shows a reconnecting screen, it does NOT redirect
+  useEffect(() => {
+    // Still loading - do nothing
+    if (isLoading) return;
 
-    if (lostSession || lostUser) {
-      // Session was lost - show reconnecting screen
-      setShowReconnecting(true);
-      setTimedOut(false);
-      setWaitProgress(0);
-      waitStartTime.current = Date.now();
-    } else if (session && user) {
-      // Session recovered
-      setShowReconnecting(false);
-      setTimedOut(false);
-      setWaitProgress(0);
-      waitStartTime.current = null;
+    // Master session bypasses everything
+    if (masterSession) return;
+
+    // Has valid session - all good
+    if (user && session) return;
+
+    // User was authenticated before but now lost session - show reconnecting
+    if (wasAuthenticatedRef.current && !user && !session) {
+      // Only show if we're not already showing
+      if (!showReconnecting) {
+        setShowReconnecting(true);
+        setTimedOut(false);
+        setWaitProgress(0);
+        waitStartTime.current = Date.now();
+      }
     }
-
-    previousAuthState.current = currentState;
-  }, [user, session, isLoading, isPublicRoute, navigate]);
+  }, [user, session, isLoading, masterSession, showReconnecting]);
 
   // Progress timer while reconnecting
   useEffect(() => {
@@ -103,16 +85,10 @@ export function ReconnectingGuard({
     return () => clearInterval(interval);
   }, [showReconnecting, timedOut, maxWaitTime]);
 
-  // Check if session recovered
-  useEffect(() => {
-    if (showReconnecting && session && user) {
-      setShowReconnecting(false);
-    }
-  }, [showReconnecting, session, user]);
-
   const handleGoHome = () => {
     setShowReconnecting(false);
-    previousAuthState.current = null;
+    wasAuthenticatedRef.current = false;
+    waitStartTime.current = null;
     navigate('/', { replace: true });
   };
 
@@ -123,7 +99,7 @@ export function ReconnectingGuard({
     window.location.reload();
   };
 
-  // Show reconnecting screen
+  // Show reconnecting screen only if we lost session after being authenticated
   if (showReconnecting) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-900 p-6">

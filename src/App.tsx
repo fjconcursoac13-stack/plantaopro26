@@ -48,10 +48,7 @@ const App = () => (
               {/* Global Offline Banner */}
               <GlobalOfflineBanner />
               {/* Reconnecting Guard - Shows recovery screen instead of redirecting */}
-              <ReconnectingGuard
-                publicRoutes={['/', '/auth', '/install', '/debug/auth', '/master']}
-                maxWaitTime={10000}
-              >
+              <ReconnectingGuard maxWaitTime={15000}>
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<Auth />} />
