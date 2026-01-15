@@ -246,9 +246,9 @@ export default function AgentPanel() {
       {/* Session Monitor Banner - Visual session status */}
       <SessionMonitorBanner />
 
-      <div className="flex-1 flex flex-col">
-        <main className={`flex-1 p-4 md:p-6 lg:p-8 overflow-auto ${showLicenseWarning ? 'pt-28' : ''}`}>
-          <div className="max-w-7xl mx-auto space-y-4 md:space-y-6 animate-fade-in">
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+        <main className={`flex-1 p-3 md:p-6 lg:p-8 overflow-y-auto overflow-x-hidden pb-safe ${showLicenseWarning ? 'pt-28' : ''}`}>
+          <div className="max-w-7xl mx-auto space-y-3 md:space-y-6 animate-fade-in">
             {/* Header Actions */}
             <div className="flex items-center justify-between">
               <BackButton fallbackPath="/" />
