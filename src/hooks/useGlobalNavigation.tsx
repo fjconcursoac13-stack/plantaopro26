@@ -95,32 +95,9 @@ export function useGlobalNavigation(options: UseGlobalNavigationOptions = {}) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [enabled, location.pathname, performNavigation]);
 
-  // Redirect to home when user logs out (but never during auth bootstrapping)
-  useEffect(() => {
-    // During initial auth hydration the user can be null briefly.
-    // Redirecting here causes an unwanted bounce back to '/'.
-    const isAuthPage = location.pathname === '/auth' || location.pathname === '/';
-    const isMasterPage = location.pathname === '/master';
-    if (isAuthPage) return;
-
-    // IMPORTANT: only redirect after auth finished loading
-    if (isLoading) return;
-
-    // Never redirect if master session is active
-    if (masterSession) return;
-
-    // Never redirect from master page (handled by Master component itself)
-    if (isMasterPage) return;
-
-    if (!user && !masterSession) {
-      // Longer delay to ensure the session state is settled
-      const timer = setTimeout(() => {
-        navigate('/', { replace: true });
-      }, 300);
-
-      return () => clearTimeout(timer);
-    }
-  }, [user, masterSession, isLoading, location.pathname, navigate]);
+  // REMOVED: Aggressive redirect logic that was causing users to be kicked out
+  // Route protection is now handled by ReconnectingGuard and individual page components
+  // This hook should ONLY handle keyboard navigation (ESC key), not auth redirects
 
   return { navigate, performNavigation };
 }

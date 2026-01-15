@@ -162,10 +162,8 @@ export default function AgentPanel() {
     }
   };
 
-  // Redirect only after loading is complete
-  // IMPORTANT:
-  // Do not force redirects here; route protection/recovery is centralized in ReconnectingGuard.
-  // This prevents premature bounce to the home screen while auth is hydrating.
+  // Redirect only if master session is accessing agent panel (not allowed)
+  // IMPORTANT: Do NOT redirect to home when user is temporarily null - this causes session loops
   useEffect(() => {
     if (isLoading || isLoadingAgent) return;
 
@@ -175,6 +173,7 @@ export default function AgentPanel() {
     }
   }, [user, masterSession, isLoading, isLoadingAgent, navigate]);
 
+  // Show loading while auth is hydrating
   if (isLoading || isLoadingAgent) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-900">
@@ -183,9 +182,8 @@ export default function AgentPanel() {
     );
   }
 
-  if (!user) {
-    return null;
-  }
+  // CRITICAL: Do NOT redirect or return null when user is temporarily null during token refresh
+  // Just show the loading state and wait for the session to recover
 
   if (!agent) {
     return (

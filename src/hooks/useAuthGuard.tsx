@@ -21,7 +21,8 @@ export function useAuthGuard(options: UseAuthGuardOptions = {}) {
       return;
     }
 
-    // Give some time for the session to be fully established
+    // Give more time for the session to be fully established
+    // This prevents premature redirects during token refresh
     const timer = setTimeout(() => {
       let isAuthenticated = false;
 
@@ -36,12 +37,22 @@ export function useAuthGuard(options: UseAuthGuardOptions = {}) {
         isAuthenticated = !!user || !!masterSession;
       }
 
-      if (!isAuthenticated) {
-        navigate('/auth', { replace: true });
+      // CRITICAL: Only redirect if we're SURE there's no session
+      // and enough time has passed for token refresh to complete
+      if (!isAuthenticated && !isLoading) {
+        // Double-check before redirecting
+        setTimeout(() => {
+          // Re-check auth state before actually redirecting
+          if (!user && !masterSession) {
+            navigate('/auth', { replace: true });
+          } else {
+            setIsReady(true);
+          }
+        }, 500);
       } else {
         setIsReady(true);
       }
-    }, 100);
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [isLoading, user, masterSession, navigate, requireMasterSession, requireUserSession, allowBoth]);
