@@ -67,7 +67,10 @@ export default function Index() {
   const themeAssets = getThemeAssets(theme, resolvedTheme);
   const { isAvailable: isBiometricAvailable, isEnrolled: isBiometricEnrolled, enrolledCpf, enrollBiometric, authenticateBiometric } = useBiometricAuth();
 
-  const [showIntro, setShowIntro] = useState(true);
+  // Only show intro if not shown this session
+  const [showIntro, setShowIntro] = useState(() => {
+    return !sessionStorage.getItem('plantaopro_intro_session');
+  });
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
   const [showCpfCheck, setShowCpfCheck] = useState(false);
   const [showRegistration, setShowRegistration] = useState(false);
