@@ -173,7 +173,18 @@ export default function AgentPanel() {
     }
   }, [user, masterSession, isLoading, isLoadingAgent, navigate]);
 
-  // Show loading while auth is hydrating
+  const getRoleBadge = (role: string | null) => {
+    switch (role) {
+      case 'team_leader':
+        return <Badge className="bg-amber-500 text-black">Chefe de Equipe</Badge>;
+      case 'support':
+        return <Badge variant="secondary">Apoio</Badge>;
+      default:
+        return <Badge variant="outline">Agente</Badge>;
+    }
+  };
+
+  // Show loading while auth is hydrating - AFTER all hooks
   if (isLoading || isLoadingAgent) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-900">
@@ -182,9 +193,7 @@ export default function AgentPanel() {
     );
   }
 
-  // CRITICAL: Do NOT redirect or return null when user is temporarily null during token refresh
-  // Just show the loading state and wait for the session to recover
-
+  // Show error state if no agent - AFTER all hooks
   if (!agent) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-900 p-6">
@@ -215,17 +224,6 @@ export default function AgentPanel() {
       </div>
     );
   }
-
-  const getRoleBadge = (role: string | null) => {
-    switch (role) {
-      case 'team_leader':
-        return <Badge className="bg-amber-500 text-black">Chefe de Equipe</Badge>;
-      case 'support':
-        return <Badge variant="secondary">Apoio</Badge>;
-      default:
-        return <Badge variant="outline">Agente</Badge>;
-    }
-  };
 
   return (
     <>
