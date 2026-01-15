@@ -3,6 +3,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -92,6 +93,7 @@ export function TeamMemberDialog({ member, open, onOpenChange, isCurrentUser }: 
       <DialogContent className="bg-card border-border max-w-md">
         <DialogHeader className="sr-only">
           <DialogTitle>Perfil de {member.name}</DialogTitle>
+          <DialogDescription>Informações de contato e perfil do membro da equipe.</DialogDescription>
         </DialogHeader>
         
         {/* Profile Card */}

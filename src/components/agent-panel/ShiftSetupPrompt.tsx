@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Label } from '@/components/ui/label';
@@ -73,6 +73,9 @@ export function ShiftSetupPrompt({ agentId, agentName, hasShifts, onComplete }: 
             <CalendarClock className="h-5 w-5" />
             Configure Sua Escala
           </DialogTitle>
+          <DialogDescription className="text-slate-400">
+            Informe a data do seu primeiro plantão para gerar sua escala automaticamente.
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 pt-2">
           <div className="flex items-start gap-3 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
