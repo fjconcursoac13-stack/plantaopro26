@@ -69,18 +69,25 @@ export function useAgentProfile() {
   useEffect(() => {
     mountedRef.current = true;
 
-    if (!user?.email) {
+    // Reset state if no user
+    if (!user?.id && !user?.email) {
       setAgent(null);
       setIsLoading(false);
       lastEmailRef.current = null;
+      fetchingRef.current = false;
       return;
     }
 
-    // Skip if already fetching or email hasn't changed
-    if (fetchingRef.current || lastEmailRef.current === user.email) {
-      if (lastEmailRef.current === user.email && agent) {
-        setIsLoading(false);
-      }
+    // Build a cache key from both id and email
+    const cacheKey = `${user.id || ''}-${user.email || ''}`;
+    
+    // Skip if already fetching or cache key hasn't changed and we have an agent
+    if (fetchingRef.current) {
+      return;
+    }
+    
+    if (lastEmailRef.current === cacheKey && agent) {
+      setIsLoading(false);
       return;
     }
 
@@ -160,8 +167,8 @@ export function useAgentProfile() {
               ...foundAgent,
               unit: foundAgent.units as AgentProfile['unit'],
             });
-            // Cache only when we actually found a profile
-            lastEmailRef.current = user.email!;
+            // Cache key based on user id + email
+            lastEmailRef.current = `${user.id || ''}-${user.email || ''}`;
           } else {
             setAgent(null);
             // Do NOT cache "not found" to allow retry after auth hydration / transient failures
@@ -189,7 +196,7 @@ export function useAgentProfile() {
       mountedRef.current = false;
       fetchingRef.current = false;
     };
-  }, [user?.email]);
+  }, [user?.id, user?.email]);
 
   // Function to manually refetch profile
   const refetch = async () => {
