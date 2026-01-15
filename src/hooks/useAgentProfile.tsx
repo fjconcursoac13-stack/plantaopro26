@@ -160,10 +160,13 @@ export function useAgentProfile() {
               ...foundAgent,
               unit: foundAgent.units as AgentProfile['unit'],
             });
+            // Cache only when we actually found a profile
+            lastEmailRef.current = user.email!;
           } else {
             setAgent(null);
+            // Do NOT cache "not found" to allow retry after auth hydration / transient failures
+            lastEmailRef.current = null;
           }
-          lastEmailRef.current = user.email!;
         }
       } catch (err) {
         console.error('Error fetching agent profile:', err);
