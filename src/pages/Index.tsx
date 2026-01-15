@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -48,6 +48,7 @@ import { useSoundEffects } from '@/hooks/useSoundEffects';
 import { ThemeSelector } from '@/components/ThemeSelector';
 import { useBiometricAuth } from '@/hooks/useBiometricAuth';
 import { getThemeAssets } from '@/lib/themeAssets';
+import { IntroVideoOverlay } from '@/components/IntroVideoOverlay';
 
 interface Unit {
   id: string;
@@ -66,6 +67,7 @@ export default function Index() {
   const themeAssets = getThemeAssets(theme, resolvedTheme);
   const { isAvailable: isBiometricAvailable, isEnrolled: isBiometricEnrolled, enrolledCpf, enrollBiometric, authenticateBiometric } = useBiometricAuth();
 
+  const [showIntro, setShowIntro] = useState(true);
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
   const [showCpfCheck, setShowCpfCheck] = useState(false);
   const [showRegistration, setShowRegistration] = useState(false);
@@ -78,6 +80,10 @@ export default function Index() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCheckingCpf, setIsCheckingCpf] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  
+  const handleIntroComplete = useCallback(() => {
+    setShowIntro(false);
+  }, []);
   const [isBiometricLoading, setIsBiometricLoading] = useState(false);
   
   // Master login
@@ -792,9 +798,13 @@ export default function Index() {
   }
 
   return (
-    <div className="h-[100dvh] flex flex-col bg-background relative overflow-hidden">
-      {/* Themed Animated Background with Rotating Team Images */}
-      <ThemedHomeBackground />
+    <>
+      {/* Intro Video - plays once per session */}
+      {showIntro && <IntroVideoOverlay onComplete={handleIntroComplete} />}
+      
+      <div className="h-[100dvh] flex flex-col bg-background relative overflow-hidden">
+        {/* Themed Animated Background with Rotating Team Images */}
+        <ThemedHomeBackground />
 
       {/* Security Status Bar - Minimal */}
       <div className="bg-slate-900/95 backdrop-blur-sm border-b border-primary/20 py-1.5 px-3 relative z-20 shrink-0">
@@ -1621,6 +1631,7 @@ export default function Index() {
           </ScrollArea>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </>
   );
 }
