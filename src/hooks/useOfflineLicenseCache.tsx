@@ -110,20 +110,24 @@ export function useOfflineLicenseCache() {
 }
 
 // Utility function to check offline license without hook
-export function checkOfflineLicense(cpf: string): { valid: boolean; license: OfflineLicense | null } {
+export function checkOfflineLicense(cpf: string): { valid: boolean; license: OfflineLicense | null; reason?: string } {
   try {
     const stored = localStorage.getItem(OFFLINE_LICENSE_STORAGE_KEY);
-    if (!stored) return { valid: false, license: null };
+    if (!stored) return { valid: false, license: null, reason: 'no_cache' };
     
     const cache = JSON.parse(stored) as OfflineLicenseCache;
     const normalizedCpf = cpf.replace(/\D/g, '');
     const license = cache.licenses.find(l => l.cpf.replace(/\D/g, '') === normalizedCpf);
     
-    if (!license) return { valid: false, license: null };
+    if (!license) return { valid: false, license: null, reason: 'not_found' };
     
     // Check validity
-    if (license.licenseStatus === 'blocked' || license.licenseStatus === 'expired') {
-      return { valid: false, license };
+    if (license.licenseStatus === 'blocked') {
+      return { valid: false, license, reason: 'blocked' };
+    }
+    
+    if (license.licenseStatus === 'expired') {
+      return { valid: false, license, reason: 'expired' };
     }
     
     if (license.licenseExpiresAt) {
@@ -132,12 +136,17 @@ export function checkOfflineLicense(cpf: string): { valid: boolean; license: Off
         : new Date(license.licenseExpiresAt);
       
       if (!Number.isNaN(expiresAt.getTime()) && expiresAt.getTime() < Date.now()) {
-        return { valid: false, license };
+        return { valid: false, license, reason: 'expired' };
       }
     }
     
     return { valid: true, license };
   } catch {
-    return { valid: false, license: null };
+    return { valid: false, license: null, reason: 'error' };
   }
+}
+
+// Check if we're online
+export function isOnline(): boolean {
+  return navigator.onLine;
 }
