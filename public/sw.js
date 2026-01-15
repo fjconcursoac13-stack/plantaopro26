@@ -4,8 +4,8 @@ const STATIC_CACHE = 'plantao-pro-static-v3';
 const DYNAMIC_CACHE = 'plantao-pro-dynamic-v3';
 
 const STATIC_ASSETS = [
+  // Keep the app shell available for offline, but always prefer NETWORK for navigations.
   '/',
-  '/favicon.ico',
   '/manifest.json',
   '/icon-192.png',
   '/icon-512.png'
@@ -63,6 +63,13 @@ self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (request.method !== 'GET') return;
 
+  // Navigations (HTML/doc requests): ALWAYS prefer network to avoid serving stale app shells
+  // that can create duplicate clients and trigger refresh-token storms.
+  if (request.mode === 'navigate') {
+    event.respondWith(networkFirst(request));
+    return;
+  }
+
   // Handle API requests (Supabase)
   // CRITICAL: never cache authentication endpoints (can break session persistence)
   if (url.hostname.includes('supabase.co')) {
@@ -77,13 +84,13 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Handle same-origin requests - Cache first for static, network first for dynamic
+  // Handle same-origin requests
   if (url.origin === self.location.origin) {
-    // Static assets - Cache first
+    // Static assets (images/fonts/etc.) - Cache first
     if (isStaticAsset(url.pathname)) {
       event.respondWith(cacheFirst(request));
     } else {
-      // Dynamic content - Network first
+      // Everything else - Network first
       event.respondWith(networkFirst(request));
     }
     return;
@@ -92,7 +99,13 @@ self.addEventListener('fetch', (event) => {
 
 // Check if URL is a static asset
 function isStaticAsset(pathname) {
-  const staticExtensions = ['.js', '.css', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.woff', '.woff2'];
+  // Only cache truly static binary assets.
+  // IMPORTANT: do NOT cache JS/CSS/HTML here to avoid stale builds causing auth refresh storms.
+  const staticExtensions = [
+    '.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico',
+    '.woff', '.woff2', '.ttf', '.otf',
+    '.mp3', '.mp4'
+  ];
   return staticExtensions.some(ext => pathname.endsWith(ext));
 }
 
