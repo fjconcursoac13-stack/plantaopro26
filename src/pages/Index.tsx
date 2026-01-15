@@ -48,7 +48,7 @@ import { useSoundEffects } from '@/hooks/useSoundEffects';
 import { ThemeSelector } from '@/components/ThemeSelector';
 import { useBiometricAuth } from '@/hooks/useBiometricAuth';
 import { getThemeAssets } from '@/lib/themeAssets';
-import { IntroVideoOverlay } from '@/components/IntroVideoOverlay';
+
 
 interface Unit {
   id: string;
@@ -67,10 +67,6 @@ export default function Index() {
   const themeAssets = getThemeAssets(theme, resolvedTheme);
   const { isAvailable: isBiometricAvailable, isEnrolled: isBiometricEnrolled, enrolledCpf, enrollBiometric, authenticateBiometric } = useBiometricAuth();
 
-  // Only show intro if not shown this session
-  const [showIntro, setShowIntro] = useState(() => {
-    return !sessionStorage.getItem('plantaopro_intro_session');
-  });
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
   const [showCpfCheck, setShowCpfCheck] = useState(false);
   const [showRegistration, setShowRegistration] = useState(false);
@@ -84,9 +80,6 @@ export default function Index() {
   const [isCheckingCpf, setIsCheckingCpf] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   
-  const handleIntroComplete = useCallback(() => {
-    setShowIntro(false);
-  }, []);
   const [isBiometricLoading, setIsBiometricLoading] = useState(false);
   
   // Master login
@@ -802,9 +795,6 @@ export default function Index() {
 
   return (
     <>
-      {/* Intro Video - plays once per session */}
-      {showIntro && <IntroVideoOverlay onComplete={handleIntroComplete} />}
-      
       <div className="h-[100dvh] flex flex-col bg-background relative overflow-hidden">
         {/* Themed Animated Background with Rotating Team Images */}
         <ThemedHomeBackground />
