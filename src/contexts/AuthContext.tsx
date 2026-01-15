@@ -27,9 +27,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [masterSession, setMasterSessionState] = useState<string | null>(() => {
-    // Check sessionStorage on init
+    // Check both sessionStorage and localStorage for master session
     if (typeof window !== 'undefined') {
-      return sessionStorage.getItem('masterSession');
+      return sessionStorage.getItem('masterSession') || localStorage.getItem('master_user');
     }
     return null;
   });
@@ -37,8 +37,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const setMasterSession = (username: string | null) => {
     if (username) {
       sessionStorage.setItem('masterSession', username);
+      localStorage.setItem('master_user', username);
     } else {
       sessionStorage.removeItem('masterSession');
+      localStorage.removeItem('master_user');
+      localStorage.removeItem('master_token');
     }
     setMasterSessionState(username);
   };
