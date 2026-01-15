@@ -72,7 +72,11 @@ export function SessionMonitorBanner({
 
   const sessionStatus = useMemo(() => {
     if (isLoading) return 'loading';
-    if (!user || !session) return 'no-session';
+    // During token refresh, session may temporarily be null - don't show as "no-session"
+    if (!user && !session) {
+      // Give extra grace period during initial load
+      return 'loading';
+    }
 
     // Supabase tokens rotate frequently; warning too early creates false alarms.
     // Only warn when it's actually very close to expiring.
@@ -84,11 +88,19 @@ export function SessionMonitorBanner({
     return 'active';
   }, [isLoading, user, session, timeUntilExpiry]);
 
+  // Don't show the banner if everything is OK and session is active
+  const shouldHideBanner = sessionStatus === 'active' && isOnline && !isRetrying && !lastError;
+  
+  // Don't show banner during initial loading
+  if (sessionStatus === 'loading' || shouldHideBanner) {
+    return null;
+  }
+
   const getStatusColor = () => {
     if (!isOnline) return 'bg-yellow-600';
     if (isRetrying) return 'bg-blue-600';
     if (lastError) return 'bg-red-600';
-    if (sessionStatus === 'expired' || sessionStatus === 'no-session') return 'bg-red-600';
+    if (sessionStatus === 'expired') return 'bg-red-600';
     if (sessionStatus === 'expiring-soon') return 'bg-amber-600';
     return 'bg-emerald-600';
   };
@@ -96,7 +108,7 @@ export function SessionMonitorBanner({
   const getStatusIcon = () => {
     if (!isOnline) return <WifiOff className="h-4 w-4" />;
     if (isRetrying) return <RefreshCw className="h-4 w-4 animate-spin" />;
-    if (lastError || sessionStatus === 'no-session' || sessionStatus === 'expired') {
+    if (lastError || sessionStatus === 'expired') {
       return <ShieldOff className="h-4 w-4" />;
     }
     if (sessionStatus === 'expiring-soon') return <AlertTriangle className="h-4 w-4" />;
@@ -108,7 +120,6 @@ export function SessionMonitorBanner({
     if (isRetrying) return `Reconectando (${retryCount})`;
     if (lastError) return 'Erro de autenticação';
     if (sessionStatus === 'expired') return 'Sessão expirada';
-    if (sessionStatus === 'no-session') return 'Sem sessão';
     if (sessionStatus === 'expiring-soon') return 'Sessão quase expirando';
     return 'Sessão OK';
   };
