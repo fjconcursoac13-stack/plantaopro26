@@ -12,7 +12,10 @@
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json" />
-    <link rel="apple-touch-icon" href="/favicon.ico" />
+
+    <!-- iOS home screen / standalone -->
+    <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png" />
 
     <meta property="og:title" content="PlantaoPro - Gestão de Escalas" />
     <meta property="og:description" content="Sistema completo para gestão de escalas e plantões." />
@@ -24,21 +27,6 @@
         min-height: 100vh;
       }
     </style>
-
-    <script>
-      // Register service worker for push notifications
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-          navigator.serviceWorker.register('/sw.js', { scope: '/' })
-            .then(function(registration) {
-              console.log('SW registered:', registration.scope);
-            })
-            .catch(function(error) {
-              console.log('SW registration failed:', error);
-            });
-        });
-      }
-    </script>
   </head>
 
   <body>
