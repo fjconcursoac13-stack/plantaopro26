@@ -143,7 +143,7 @@ export function ThemedPanelBackground({
   }, []);
 
   return (
-    <div className={cn("relative min-h-screen", className)}>
+    <div className={cn("relative min-h-[100dvh] h-[100dvh] flex flex-col overflow-hidden", className)}>
       {/* Base background */}
       <div 
         className="fixed inset-0 pointer-events-none z-0"
@@ -208,7 +208,7 @@ export function ThemedPanelBackground({
       )}
       
       {/* Content */}
-      <div className="relative z-10">
+      <div className="relative z-10 flex-1 flex flex-col overflow-hidden">
         {children}
       </div>
     </div>
