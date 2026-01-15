@@ -889,14 +889,14 @@ export default function Index() {
         </div>
       </header>
 
-      {/* Teams Grid Section - Optimized card space */}
-      <section className="flex-1 py-1 landscape:py-1 sm:py-3 px-3 landscape:px-6 sm:px-6 relative z-10 flex items-start justify-center min-h-0 overflow-auto">
-        <div className="w-full max-w-lg landscape:max-w-5xl sm:max-w-3xl md:max-w-6xl lg:max-w-7xl xl:max-w-[1600px] mx-auto">
-          <div className="grid grid-cols-2 landscape:grid-cols-4 md:grid-cols-4 gap-3 landscape:gap-3 sm:gap-5 md:gap-6 lg:gap-8">
+      {/* Teams Grid Section - Definitive layout with proper aspect ratios */}
+      <section className="flex-1 py-2 landscape:py-1 sm:py-4 px-3 landscape:px-4 sm:px-6 relative z-10 flex items-center justify-center min-h-0 overflow-hidden">
+        <div className="w-full h-full max-w-xl landscape:max-w-4xl sm:max-w-2xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl mx-auto flex items-center">
+          <div className="w-full grid grid-cols-2 landscape:grid-cols-4 md:grid-cols-4 gap-2 landscape:gap-2 sm:gap-4 md:gap-5 lg:gap-6">
             {teams.map((team, index) => (
               <div
                 key={team}
-                className="animate-fade-in-scale"
+                className="animate-fade-in-scale aspect-[3/4]"
                 style={{
                   animationDelay: `${400 + index * 80}ms`,
                 }}
