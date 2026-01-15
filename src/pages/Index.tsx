@@ -794,128 +794,67 @@ export default function Index() {
       {/* Themed Animated Background with Rotating Team Images */}
       <ThemedHomeBackground />
 
-      {/* Security Status Bar - Fixed at top */}
-      <div className="bg-slate-900/95 backdrop-blur-sm border-b border-primary/20 py-2 px-4 relative z-20 shrink-0">
+      {/* Security Status Bar - Minimal */}
+      <div className="bg-slate-900/95 backdrop-blur-sm border-b border-primary/20 py-1.5 px-3 relative z-20 shrink-0">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <div className="relative">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                <div className="absolute inset-0 w-2 h-2 rounded-full bg-green-500 animate-ping opacity-75" />
+                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
               </div>
-              <span className="text-[10px] font-mono text-green-400 tracking-wider font-semibold">
-                SISTEMA OPERACIONAL
-              </span>
-            </div>
-            <div className="hidden sm:flex items-center gap-2 text-[9px] font-mono text-slate-500">
-              <span className="px-1.5 py-0.5 rounded bg-slate-800/80 border border-slate-700/50">
-                v2.0
+              <span className="text-[8px] sm:text-[9px] font-mono text-green-400 tracking-wider font-semibold">
+                ONLINE
               </span>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <button
               onClick={() => {
                 playSound('click');
                 setShowThemeSelector(true);
               }}
-              className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-primary/10 border border-primary/30 hover:bg-primary/20 transition-all"
+              className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-primary/10 border border-primary/30 hover:bg-primary/20 transition-all"
               title="Alterar tema"
             >
-              <Palette className="h-3.5 w-3.5 text-primary" />
-              <span className="text-[9px] font-bold text-primary tracking-wide hidden sm:inline">
-                {themeConfig.emoji} {themeConfig.name}
-              </span>
+              <Palette className="h-3 w-3 text-primary" />
             </button>
-            <div className="text-[10px] font-mono text-muted-foreground hidden sm:flex items-center gap-2">
-              <div className="w-1 h-1 rounded-full bg-primary/60" />
-              {new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
-            </div>
-            <div className="text-xs font-mono text-primary font-bold tracking-widest">
+            <div className="text-[10px] font-mono text-primary font-bold">
               {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Hero Section - Ultra compact to push cards up */}
-      <header className="py-1 sm:py-2 px-3 sm:px-4 relative z-10 shrink-0">
-        <div className="max-w-4xl mx-auto text-center">
-          {/* Animated Security Badge - Very compact */}
-          <div className="mb-0.5 sm:mb-1.5 flex flex-col items-center">
-            <div className="relative group">
-              {/* Main badge - Compact */}
-              <div className={cn(
-                "relative w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full border-2 border-primary/40 flex items-center justify-center shadow-2xl shadow-primary/20 group-hover:border-primary/60 transition-all duration-500",
-                themeConfig.colors.isLight 
-                  ? "bg-gradient-to-br from-white via-gray-50 to-gray-100"
-                  : "bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900"
-              )}>
-                {(() => {
-                  const MainIcon = themeAssets.mainIcon;
-                  return <MainIcon className="h-4 w-4 sm:h-6 sm:w-6 md:h-8 md:w-8 text-primary drop-shadow-lg" />;
-                })()}
-                {/* Pulse effect */}
-                <div className="absolute inset-0 rounded-full bg-primary/10 animate-ping opacity-30" style={{ animationDuration: '3s' }} />
-              </div>
-              {/* Badge label */}
-              <div className="absolute -bottom-0.5 sm:-bottom-1 left-1/2 -translate-x-1/2 px-1 sm:px-2 py-0.5 bg-gradient-to-r from-primary to-accent rounded text-[4px] sm:text-[6px] md:text-[7px] font-black text-primary-foreground tracking-[0.08em] sm:tracking-[0.15em] shadow-lg whitespace-nowrap">
-                SEGURANÇA PÚBLICA
-              </div>
-            </div>
+      {/* Hero Section - Minimal to maximize card space */}
+      <header className="py-0.5 sm:py-1 px-2 relative z-10 shrink-0">
+        <div className="max-w-4xl mx-auto text-center flex items-center justify-center gap-2 sm:gap-4">
+          {/* Badge inline */}
+          <div className={cn(
+            "relative w-6 h-6 sm:w-10 sm:h-10 rounded-full border border-primary/40 flex items-center justify-center shrink-0",
+            themeConfig.colors.isLight 
+              ? "bg-gradient-to-br from-white via-gray-50 to-gray-100"
+              : "bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900"
+          )}>
+            {(() => {
+              const MainIcon = themeAssets.mainIcon;
+              return <MainIcon className="h-3 w-3 sm:h-5 sm:w-5 text-primary" />;
+            })()}
           </div>
           
-          {/* Title with animation - Compact */}
-          <div className="space-y-0 sm:space-y-0.5 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-            <h1 className="text-base sm:text-2xl md:text-3xl font-black text-foreground tracking-tight">
+          {/* Title inline */}
+          <div className="flex items-center gap-1 sm:gap-2">
+            <h1 className="text-sm sm:text-xl md:text-2xl font-black text-foreground tracking-tight">
               PLANTÃO <span className="text-primary">PRO</span>
             </h1>
-            <div className="flex items-center justify-center gap-1 sm:gap-2">
-              <div className="w-3 sm:w-8 h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-primary" />
-              <span className="text-[6px] sm:text-[8px] md:text-[10px] font-bold text-muted-foreground tracking-[0.1em] sm:tracking-[0.2em] uppercase">
-                {themeAssets.subtitle}
-              </span>
-              <div className="w-3 sm:w-8 h-[1px] bg-gradient-to-l from-transparent via-primary/50 to-primary" />
-            </div>
+            <span className="text-[6px] sm:text-[8px] font-bold text-muted-foreground tracking-wide uppercase hidden sm:inline">
+              {themeAssets.subtitle}
+            </span>
           </div>
-          
-          {/* Team selection prompt - Ultra compact */}
-          <div className="mt-1 sm:mt-2 animate-fade-in" style={{ animationDelay: '0.5s' }}>
-            <div className="inline-flex items-center gap-1 px-1.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-primary/10 border border-primary/30">
-              {(() => {
-                const TeamIcon = themeAssets.teamIcons.ALFA;
-                return <TeamIcon className="h-2 w-2 sm:h-3 sm:w-3 text-primary" />;
-              })()}
-              <span className="text-[8px] sm:text-xs font-medium text-foreground">Selecione sua equipe</span>
-            </div>
-          </div>
-          
-          {/* Quick Biometric Login Button - Ultra compact */}
-          {isBiometricAvailable && isBiometricEnrolled && enrolledCpf && (
-            <div className="mt-1 sm:mt-2 animate-fade-in" style={{ animationDelay: '0.7s' }}>
-              <Button
-                onClick={handleBiometricLogin}
-                disabled={isBiometricLoading}
-                size="sm"
-                className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold px-2 sm:px-4 py-1 sm:py-2 h-auto shadow-lg shadow-emerald-500/20 text-[8px] sm:text-xs"
-              >
-                {isBiometricLoading ? (
-                  <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 animate-spin" />
-                ) : (
-                  <Fingerprint className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                )}
-                Login Biometria
-              </Button>
-              <p className="text-[7px] sm:text-[10px] text-muted-foreground mt-0.5">
-                CPF: {enrolledCpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')}
-              </p>
-            </div>
-          )}
         </div>
       </header>
 
       {/* Teams Grid Section - Maximum space for EXTRA LARGE cards */}
-      <section className="flex-1 py-2 landscape:py-1 sm:py-4 px-3 landscape:px-6 sm:px-6 relative z-10 flex items-start justify-center min-h-0 overflow-auto">
+      <section className="flex-1 py-1 landscape:py-1 sm:py-3 px-3 landscape:px-6 sm:px-6 relative z-10 flex items-start justify-center min-h-0 overflow-auto">
         <div className="w-full max-w-lg landscape:max-w-5xl sm:max-w-3xl md:max-w-6xl lg:max-w-7xl xl:max-w-[1600px] mx-auto">
           <div className="grid grid-cols-2 landscape:grid-cols-4 md:grid-cols-4 gap-3 landscape:gap-3 sm:gap-5 md:gap-6 lg:gap-8">
             {teams.map((team, index) => (
@@ -923,7 +862,7 @@ export default function Index() {
                 key={team}
                 className="animate-fade-in-scale"
                 style={{
-                  animationDelay: `${600 + index * 100}ms`,
+                  animationDelay: `${400 + index * 80}ms`,
                 }}
               >
                 <ThemedTeamCard
@@ -935,6 +874,7 @@ export default function Index() {
           </div>
         </div>
       </section>
+
 
       {/* Footer - Clean & Minimal with Developer Credit */}
       <footer className="py-2 px-4 bg-background/60 backdrop-blur-sm border-t border-border/20 relative z-20 shrink-0">
