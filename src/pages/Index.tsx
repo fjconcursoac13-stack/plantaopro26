@@ -1280,10 +1280,9 @@ export default function Index() {
                 <Input
                   value={formData.matricula}
                   onChange={(e) => setFormData({ ...formData, matricula: formatMatricula(e.target.value) })}
-                  placeholder="000.000.000"
+                  placeholder="000.000.000 (Opcional)"
                   className="bg-slate-700/50 border-slate-600 text-white"
                   maxLength={11}
-                  required
                 />
                 {regErrors.matricula && <p className="text-xs text-red-400">{regErrors.matricula}</p>}
               </div>
