@@ -127,17 +127,17 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
           }}
         />
         
-        {/* Main Card - Definitive proportional sizing without cutting */}
+        {/* Main Card - Fixed minimum height to ensure visibility */}
         <div 
           className={cn(
             "relative overflow-hidden rounded-xl md:rounded-2xl",
             "border-2 md:border-3 transition-all duration-300 group-hover:shadow-2xl",
-            // Use flexible height based on available space, not fixed min-heights
-            "h-full w-full",
+            // Force minimum height for visibility
+            "w-full min-h-[180px] sm:min-h-[220px] md:min-h-[280px] lg:min-h-[340px] xl:min-h-[400px] 2xl:min-h-[450px]",
+            "aspect-[3/4]"
           )}
           style={{ 
             borderColor: teamColors[team as keyof typeof teamColors]?.primary || '#fff',
-            // Aspect ratio maintained via parent container
           }}
         >
           {/* Team Poster Background - Centered to show face/main content */}
