@@ -1,6 +1,7 @@
-import { useEffect, useState, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useEffect, useState, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { Loader2, RefreshCw, Home, WifiOff, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -17,7 +18,6 @@ export function ReconnectingGuard({
 }: ReconnectingGuardProps) {
   const { user, session, isLoading, masterSession } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
   
   const [showReconnecting, setShowReconnecting] = useState(false);
   const [waitProgress, setWaitProgress] = useState(0);
@@ -26,6 +26,32 @@ export function ReconnectingGuard({
   // Track if user was ever authenticated in this component lifecycle
   const wasAuthenticatedRef = useRef(false);
   const waitStartTime = useRef<number | null>(null);
+  const graceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isCheckingSessionRef = useRef(false);
+
+  // Clear timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (graceTimeoutRef.current) {
+        clearTimeout(graceTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Verify if there's actually a session in Supabase
+  const verifySession = useCallback(async (): Promise<boolean> => {
+    if (isCheckingSessionRef.current) return true;
+    
+    try {
+      isCheckingSessionRef.current = true;
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      return !!currentSession;
+    } catch {
+      return false;
+    } finally {
+      isCheckingSessionRef.current = false;
+    }
+  }, []);
 
   // Update wasAuthenticated when we have a valid session
   useEffect(() => {
@@ -37,12 +63,15 @@ export function ReconnectingGuard({
         setTimedOut(false);
         setWaitProgress(0);
         waitStartTime.current = null;
+        if (graceTimeoutRef.current) {
+          clearTimeout(graceTimeoutRef.current);
+          graceTimeoutRef.current = null;
+        }
       }
     }
   }, [user, session, masterSession, showReconnecting]);
 
-  // CRITICAL: Never redirect during loading or if master session is active
-  // This guard only shows a reconnecting screen, it does NOT redirect
+  // Handle session loss with grace period
   useEffect(() => {
     // Still loading - do nothing
     if (isLoading) return;
@@ -53,24 +82,54 @@ export function ReconnectingGuard({
     // Has valid session - all good
     if (user && session) return;
 
-    // User was authenticated before but now lost session - show reconnecting
+    // Already showing reconnecting or timed out
+    if (showReconnecting) return;
+
+    // User was authenticated before but now lost session - verify with grace period
     if (wasAuthenticatedRef.current && !user && !session) {
-      // Only show if we're not already showing
-      if (!showReconnecting) {
-        setShowReconnecting(true);
-        setTimedOut(false);
-        setWaitProgress(0);
-        waitStartTime.current = Date.now();
+      // Clear any existing grace timeout
+      if (graceTimeoutRef.current) {
+        clearTimeout(graceTimeoutRef.current);
       }
+
+      // Give Supabase 3 seconds to recover the session before showing reconnecting screen
+      // This handles the case where session is temporarily null during token refresh
+      graceTimeoutRef.current = setTimeout(async () => {
+        // Double-check if we still don't have a session
+        const hasSession = await verifySession();
+        
+        if (!hasSession) {
+          // Check context state again (it may have updated)
+          const { data: { session: latestSession } } = await supabase.auth.getSession();
+          
+          if (!latestSession) {
+            setShowReconnecting(true);
+            setTimedOut(false);
+            setWaitProgress(0);
+            waitStartTime.current = Date.now();
+          }
+        }
+      }, 3000); // 3 second grace period
     }
-  }, [user, session, isLoading, masterSession, showReconnecting]);
+  }, [user, session, isLoading, masterSession, showReconnecting, verifySession]);
 
   // Progress timer while reconnecting
   useEffect(() => {
     if (!showReconnecting || timedOut) return;
 
-    const interval = setInterval(() => {
+    const interval = setInterval(async () => {
       if (!waitStartTime.current) return;
+      
+      // Check if session was recovered
+      const hasSession = await verifySession();
+      if (hasSession) {
+        setShowReconnecting(false);
+        setTimedOut(false);
+        setWaitProgress(0);
+        waitStartTime.current = null;
+        clearInterval(interval);
+        return;
+      }
       
       const elapsed = Date.now() - waitStartTime.current;
       const progress = Math.min((elapsed / maxWaitTime) * 100, 100);
@@ -80,10 +139,10 @@ export function ReconnectingGuard({
         setTimedOut(true);
         clearInterval(interval);
       }
-    }, 100);
+    }, 500);
 
     return () => clearInterval(interval);
-  }, [showReconnecting, timedOut, maxWaitTime]);
+  }, [showReconnecting, timedOut, maxWaitTime, verifySession]);
 
   const handleGoHome = () => {
     setShowReconnecting(false);
@@ -92,10 +151,26 @@ export function ReconnectingGuard({
     navigate('/', { replace: true });
   };
 
-  const handleRetry = () => {
+  const handleRetry = async () => {
     setTimedOut(false);
     setWaitProgress(0);
     waitStartTime.current = Date.now();
+    
+    // Try to refresh session instead of full reload
+    try {
+      const { data, error } = await supabase.auth.refreshSession();
+      if (data?.session) {
+        setShowReconnecting(false);
+        return;
+      }
+      if (error) {
+        console.error('[ReconnectingGuard] Refresh failed:', error.message);
+      }
+    } catch (e) {
+      console.error('[ReconnectingGuard] Refresh error:', e);
+    }
+    
+    // Fallback to reload if refresh doesn't work
     window.location.reload();
   };
 
