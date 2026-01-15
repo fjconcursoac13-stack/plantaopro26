@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Shield, Loader2, BadgeCheck, AlertTriangle, Lock, Eye, EyeOff, UserCheck, ArrowLeft, Home, Mail, KeyRound } from 'lucide-react';
+import { Shield, Loader2, BadgeCheck, AlertTriangle, Lock, Eye, EyeOff, UserCheck, ArrowLeft, Home, Mail, KeyRound, WifiOff } from 'lucide-react';
 import { 
   validateCPF, 
   formatCPF
@@ -15,6 +15,7 @@ import {
 import { SavedCredentials, saveCredential, getAutoLoginCredential } from '@/components/auth/SavedCredentials';
 import loginBackground from '@/assets/login-background.jpg';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { checkOfflineLicense, isOnline } from '@/hooks/useOfflineLicenseCache';
 
 interface Unit {
   id: string;
@@ -222,7 +223,52 @@ export default function Auth() {
     const cleanCpf = cpf.replace(/\D/g, '');
     const authEmail = `${cleanCpf}@agent.plantaopro.com`;
     
-    // First, check the agent's license status before attempting login
+    // Check if we're offline - use cached license validation
+    if (!isOnline()) {
+      console.log('[Auth] Offline mode - checking local license cache');
+      const offlineResult = checkOfflineLicense(cleanCpf);
+      
+      if (!offlineResult.license) {
+        toast({
+          title: 'Modo Offline',
+          description: 'Não foi possível verificar sua licença offline. CPF não encontrado no cache local.',
+          variant: 'destructive',
+        });
+        setIsSubmitting(false);
+        return;
+      }
+      
+      if (!offlineResult.valid) {
+        const reasonMessages: Record<string, string> = {
+          blocked: 'Sua licença foi bloqueada.',
+          expired: 'Sua licença expirou.',
+          not_found: 'CPF não encontrado no cache offline.',
+          no_cache: 'Cache offline não disponível.',
+          error: 'Erro ao verificar licença offline.',
+        };
+        
+        toast({
+          title: 'Licença Inválida (Offline)',
+          description: reasonMessages[offlineResult.reason || 'error'] + ' Conecte-se à internet para atualizar.',
+          variant: 'destructive',
+        });
+        setIsSubmitting(false);
+        return;
+      }
+      
+      // Valid offline license - show offline mode message
+      toast({
+        title: 'Modo Offline',
+        description: `Bem-vindo, ${offlineResult.license.name}! Funcionalidades limitadas sem conexão.`,
+        duration: 5000,
+      });
+      
+      // Note: In true offline mode, we can't actually authenticate with Supabase
+      // The offline license check is just validation - user would need connectivity to login
+      // This shows the message but continues to try the actual login
+    }
+    
+    // Online mode - check the agent's license status from database
     try {
       const { data: agentData, error: agentError } = await (supabase as any)
         .from('agents')
@@ -281,6 +327,18 @@ export default function Auth() {
       }
     } catch (error) {
       console.error('Error checking license:', error);
+      
+      // If online check fails, try offline cache as fallback
+      const offlineFallback = checkOfflineLicense(cleanCpf);
+      if (offlineFallback.license && !offlineFallback.valid) {
+        toast({
+          title: 'Licença Inválida',
+          description: 'Sua licença não está válida. Entre em contato com o administrador.',
+          variant: 'destructive',
+        });
+        setIsSubmitting(false);
+        return;
+      }
       // Continue with login if we can't check license
     }
     

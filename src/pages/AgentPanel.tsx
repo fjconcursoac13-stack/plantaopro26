@@ -5,6 +5,7 @@ import { useAgentProfile } from '@/hooks/useAgentProfile';
 import { useBackNavigation } from '@/hooks/useBackNavigation';
 import { useSessionPersistence } from '@/hooks/useSessionPersistence';
 import { useLicenseCheck } from '@/hooks/useLicenseCheck';
+import { useLicenseExpiryNotification } from '@/hooks/useLicenseExpiryNotification';
 import { useShiftNotifications } from '@/hooks/useShiftNotifications';
 import { useBHReminder } from '@/hooks/useBHReminder';
 import { useBHReminderHour } from '@/components/agent-panel/BHReminderSettings';
@@ -112,6 +113,14 @@ export default function AgentPanel() {
     autoLogout: false,
     skipForMaster: true,
     isMasterSession: !!masterSession,
+  });
+
+  // License expiry notification - alerts 7 days before
+  const { daysUntilExpiry, isExpiringSoon } = useLicenseExpiryNotification({
+    licenseExpiresAt: agent?.license_expires_at ?? null,
+    agentId: agent?.id ?? null,
+    enabled: !!agent && !masterSession,
+    warningDaysBefore: 7,
   });
 
   // Shift notifications - checks for upcoming shifts and sends reminders
