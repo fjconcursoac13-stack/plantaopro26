@@ -7,13 +7,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Shield, Loader2, BadgeCheck, AlertTriangle, Lock, Eye, EyeOff, UserCheck, ArrowLeft, Home } from 'lucide-react';
+import { Shield, Loader2, BadgeCheck, AlertTriangle, Lock, Eye, EyeOff, UserCheck, ArrowLeft, Home, Mail, KeyRound } from 'lucide-react';
 import { 
   validateCPF, 
   formatCPF
 } from '@/lib/validators';
 import { SavedCredentials, saveCredential, getAutoLoginCredential } from '@/components/auth/SavedCredentials';
 import loginBackground from '@/assets/login-background.jpg';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface Unit {
   id: string;
@@ -28,11 +29,17 @@ export default function Auth() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState<{ cpf?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ cpf?: string; password?: string; email?: string }>({});
   const [saveCpfEnabled, setSaveCpfEnabled] = useState(false);
   const [savePasswordEnabled, setSavePasswordEnabled] = useState(false);
   const [foundAgent, setFoundAgent] = useState<{ name: string } | null>(null);
   const [isSearchingAgent, setIsSearchingAgent] = useState(false);
+  
+  // Email login state
+  const [loginMethod, setLoginMethod] = useState<'cpf' | 'email'>('cpf');
+  const [email, setEmail] = useState('');
+  const [emailPassword, setEmailPassword] = useState('');
+  const [showEmailPassword, setShowEmailPassword] = useState(false);
   
   // Registration form state - SIMPLIFIED (only essential fields)
   const [units, setUnits] = useState<Unit[]>([]);
@@ -105,15 +112,27 @@ export default function Auth() {
   };
 
   const validateForm = () => {
-    const newErrors: { cpf?: string; password?: string } = {};
+    const newErrors: { cpf?: string; password?: string; email?: string } = {};
     
-    const cleanCpf = cpf.replace(/\D/g, '');
-    if (!cleanCpf || cleanCpf.length !== 11) {
-      newErrors.cpf = 'CPF inválido';
-    }
-    
-    if (!password || password.length < 6) {
-      newErrors.password = 'Senha deve ter pelo menos 6 caracteres';
+    if (loginMethod === 'cpf') {
+      const cleanCpf = cpf.replace(/\D/g, '');
+      if (!cleanCpf || cleanCpf.length !== 11) {
+        newErrors.cpf = 'CPF inválido';
+      }
+      
+      if (!password || password.length < 6) {
+        newErrors.password = 'Senha deve ter pelo menos 6 caracteres';
+      }
+    } else {
+      // Email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!email || !emailRegex.test(email)) {
+        newErrors.email = 'Email inválido';
+      }
+      
+      if (!emailPassword || emailPassword.length < 6) {
+        newErrors.password = 'Senha deve ter pelo menos 6 caracteres';
+      }
     }
     
     setErrors(newErrors);
@@ -175,7 +194,31 @@ export default function Auth() {
 
     setIsSubmitting(true);
 
-    // Generate email from CPF for authentication
+    if (loginMethod === 'email') {
+      // Email login - for admin or users with email
+      const { error } = await signIn(email, emailPassword);
+      
+      if (error) {
+        toast({
+          title: 'Erro ao entrar',
+          description: error.message === 'Invalid login credentials' 
+            ? 'Email ou senha incorretos' 
+            : error.message,
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: 'Bem-vindo!',
+          description: 'Login realizado com sucesso.',
+        });
+        navigate('/dashboard');
+      }
+      
+      setIsSubmitting(false);
+      return;
+    }
+
+    // CPF login flow
     const cleanCpf = cpf.replace(/\D/g, '');
     const authEmail = `${cleanCpf}@agent.plantaopro.com`;
     
@@ -556,7 +599,7 @@ export default function Auth() {
             <CardDescription className="text-slate-400">
               {isMasterLogin 
                 ? 'Área restrita para administrador'
-                : 'Entre com seu CPF para continuar'
+                : 'Entre com seu CPF ou Email para continuar'
               }
             </CardDescription>
           </CardHeader>
@@ -615,106 +658,191 @@ export default function Auth() {
               </form>
             ) : (
               <div className="space-y-4">
-                {/* Info Box for Login */}
-                <div className="p-3 bg-slate-700/30 rounded-lg border border-slate-600 mb-4">
-                  <div className="flex items-start gap-2 text-sm">
-                    <AlertTriangle className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
-                    <p className="text-slate-400">
-                      Use seu <strong className="text-amber-400">CPF</strong> como usuário e a <strong className="text-amber-400">senha que você criou</strong> no cadastro.
-                    </p>
-                  </div>
-                </div>
-
-                <form onSubmit={handleSignIn} className="space-y-4" data-login-form="true">
-                  <div className="space-y-2">
-                    <Label htmlFor="login-cpf" className="text-slate-300">CPF</Label>
-                    <Input
-                      id="login-cpf"
-                      type="text"
-                      placeholder="000.000.000-00"
-                      value={cpf}
-                      onChange={(e) => handleLoginCPFChange(e.target.value)}
-                      required
-                      maxLength={14}
-                      className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500"
-                    />
-                    {errors.cpf && (
-                      <p className="text-sm text-red-400">{errors.cpf}</p>
-                    )}
-                    
-                    {/* Show found agent info */}
-                    {foundAgent && (
-                      <div className="p-2 bg-green-500/20 rounded-lg border border-green-500/40 animate-fade-in">
-                        <div className="flex items-center gap-2">
-                          <UserCheck className="h-3 w-3 text-green-400" />
-                          <span className="text-green-400 font-medium text-xs">Agente: {foundAgent.name}</span>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {cpf.replace(/\D/g, '').length === 11 && !foundAgent && !isSearchingAgent && (
-                      <div className="p-2 bg-amber-500/20 rounded-lg border border-amber-500/40 animate-fade-in">
-                        <div className="flex items-center gap-2">
-                          <AlertTriangle className="h-3 w-3 text-amber-400" />
-                          <span className="text-amber-400 font-medium text-xs">CPF não cadastrado</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="login-password" className="text-slate-300">Senha</Label>
-                    <div className="relative">
-                      <Input
-                        id="login-password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Sua senha"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                        className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500 pr-10"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
-                      >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </button>
-                    </div>
-                    {errors.password && (
-                      <p className="text-sm text-red-400">{errors.password}</p>
-                    )}
-                  </div>
+                {/* Login Method Tabs */}
+                <Tabs value={loginMethod} onValueChange={(v) => setLoginMethod(v as 'cpf' | 'email')} className="w-full">
+                  <TabsList className="grid w-full grid-cols-2 bg-slate-700/50">
+                    <TabsTrigger value="cpf" className="data-[state=active]:bg-amber-500 data-[state=active]:text-slate-900">
+                      <KeyRound className="h-4 w-4 mr-2" />
+                      CPF
+                    </TabsTrigger>
+                    <TabsTrigger value="email" className="data-[state=active]:bg-amber-500 data-[state=active]:text-slate-900">
+                      <Mail className="h-4 w-4 mr-2" />
+                      Email
+                    </TabsTrigger>
+                  </TabsList>
                   
-                  <SavedCredentials
-                    onSelectCredential={(selectedCpf, savedPassword) => {
-                      handleLoginCPFChange(selectedCpf);
-                      if (savedPassword) {
-                        setPassword(savedPassword);
-                      }
-                    }}
-                    onSaveChange={(cpf, pwd) => {
-                      setSaveCpfEnabled(cpf);
-                      setSavePasswordEnabled(pwd);
-                    }}
-                    saveCpf={saveCpfEnabled}
-                    savePassword={savePasswordEnabled}
-                  />
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-900 font-semibold"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Entrando...
-                      </>
-                    ) : (
-                      'Entrar'
-                    )}
-                  </Button>
-                </form>
+                  <TabsContent value="cpf" className="space-y-4 mt-4">
+                    {/* Info Box for CPF Login */}
+                    <div className="p-3 bg-slate-700/30 rounded-lg border border-slate-600">
+                      <div className="flex items-start gap-2 text-sm">
+                        <AlertTriangle className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                        <p className="text-slate-400">
+                          Use seu <strong className="text-amber-400">CPF</strong> como usuário e a <strong className="text-amber-400">senha que você criou</strong> no cadastro.
+                        </p>
+                      </div>
+                    </div>
+
+                    <form onSubmit={handleSignIn} className="space-y-4" data-login-form="true">
+                      <div className="space-y-2">
+                        <Label htmlFor="login-cpf" className="text-slate-300">CPF</Label>
+                        <Input
+                          id="login-cpf"
+                          type="text"
+                          placeholder="000.000.000-00"
+                          value={cpf}
+                          onChange={(e) => handleLoginCPFChange(e.target.value)}
+                          required
+                          maxLength={14}
+                          className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500"
+                        />
+                        {errors.cpf && (
+                          <p className="text-sm text-red-400">{errors.cpf}</p>
+                        )}
+                        
+                        {/* Show found agent info */}
+                        {foundAgent && (
+                          <div className="p-2 bg-green-500/20 rounded-lg border border-green-500/40 animate-fade-in">
+                            <div className="flex items-center gap-2">
+                              <UserCheck className="h-3 w-3 text-green-400" />
+                              <span className="text-green-400 font-medium text-xs">Agente: {foundAgent.name}</span>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {cpf.replace(/\D/g, '').length === 11 && !foundAgent && !isSearchingAgent && (
+                          <div className="p-2 bg-amber-500/20 rounded-lg border border-amber-500/40 animate-fade-in">
+                            <div className="flex items-center gap-2">
+                              <AlertTriangle className="h-3 w-3 text-amber-400" />
+                              <span className="text-amber-400 font-medium text-xs">CPF não cadastrado</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="login-password" className="text-slate-300">Senha</Label>
+                        <div className="relative">
+                          <Input
+                            id="login-password"
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Sua senha"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500 pr-10"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                          >
+                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </button>
+                        </div>
+                        {errors.password && (
+                          <p className="text-sm text-red-400">{errors.password}</p>
+                        )}
+                      </div>
+                      
+                      <SavedCredentials
+                        onSelectCredential={(selectedCpf, savedPassword) => {
+                          handleLoginCPFChange(selectedCpf);
+                          if (savedPassword) {
+                            setPassword(savedPassword);
+                          }
+                        }}
+                        onSaveChange={(cpf, pwd) => {
+                          setSaveCpfEnabled(cpf);
+                          setSavePasswordEnabled(pwd);
+                        }}
+                        saveCpf={saveCpfEnabled}
+                        savePassword={savePasswordEnabled}
+                      />
+                      <Button 
+                        type="submit" 
+                        className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-900 font-semibold"
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Entrando...
+                          </>
+                        ) : (
+                          'Entrar'
+                        )}
+                      </Button>
+                    </form>
+                  </TabsContent>
+                  
+                  <TabsContent value="email" className="space-y-4 mt-4">
+                    {/* Info Box for Email Login */}
+                    <div className="p-3 bg-slate-700/30 rounded-lg border border-slate-600">
+                      <div className="flex items-start gap-2 text-sm">
+                        <Mail className="h-4 w-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                        <p className="text-slate-400">
+                          Login por <strong className="text-amber-400">email</strong> para administradores e usuários cadastrados.
+                        </p>
+                      </div>
+                    </div>
+
+                    <form onSubmit={handleSignIn} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="login-email" className="text-slate-300">Email</Label>
+                        <Input
+                          id="login-email"
+                          type="email"
+                          placeholder="seu@email.com"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                          className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500"
+                        />
+                        {errors.email && (
+                          <p className="text-sm text-red-400">{errors.email}</p>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="email-password" className="text-slate-300">Senha</Label>
+                        <div className="relative">
+                          <Input
+                            id="email-password"
+                            type={showEmailPassword ? "text" : "password"}
+                            placeholder="Sua senha"
+                            value={emailPassword}
+                            onChange={(e) => setEmailPassword(e.target.value)}
+                            required
+                            className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-500 pr-10"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowEmailPassword(!showEmailPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                          >
+                            {showEmailPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                          </button>
+                        </div>
+                        {errors.password && (
+                          <p className="text-sm text-red-400">{errors.password}</p>
+                        )}
+                      </div>
+                      
+                      <Button 
+                        type="submit" 
+                        className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-900 font-semibold"
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Entrando...
+                          </>
+                        ) : (
+                          'Entrar com Email'
+                        )}
+                      </Button>
+                    </form>
+                  </TabsContent>
+                </Tabs>
 
                 {/* Notice about disabled registration */}
                 <div className="p-3 bg-slate-800/50 rounded-lg border border-slate-600 mt-4">
