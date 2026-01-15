@@ -127,38 +127,40 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
           }}
         />
         
-        {/* Main Card - MUCH LARGER aspect ratio for better visibility */}
+        {/* Main Card - EXTRA LARGE for maximum visibility */}
         <div 
           className={cn(
             "relative overflow-hidden rounded-xl md:rounded-2xl",
             "border-2 md:border-3 transition-all duration-300 group-hover:shadow-2xl",
-            "min-h-[220px] landscape:min-h-[140px] sm:min-h-[300px] md:min-h-[380px] lg:min-h-[420px] xl:min-h-[480px]",
+            "min-h-[280px] landscape:min-h-[180px] sm:min-h-[380px] md:min-h-[450px] lg:min-h-[520px] xl:min-h-[580px]",
+            "aspect-[3/4] sm:aspect-[3/4]",
           )}
           style={{ 
             borderColor: teamColors[team as keyof typeof teamColors]?.primary || '#fff',
           }}
         >
-          {/* Team Poster Background - Full coverage */}
+          {/* Team Poster Background - Full coverage with better positioning */}
           <div 
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-500 group-hover:scale-110"
+            className="absolute inset-0 bg-cover bg-top bg-no-repeat transition-transform duration-500 group-hover:scale-105"
             style={{ 
               backgroundImage: `url(${teamPosters[team as keyof typeof teamPosters]})`,
+              backgroundPosition: 'center 15%',
             }}
           />
-          {/* Dark overlay for readability - stronger at bottom for text */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-black/30 group-hover:from-black/90 group-hover:via-black/50 group-hover:to-black/20 transition-all duration-300" />
+          {/* Dark overlay for readability - subtle gradient */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10 group-hover:from-black/85 group-hover:via-black/30 group-hover:to-black/5 transition-all duration-300" />
           
           {/* Top gradient stripe with team color */}
           <div 
-            className="absolute top-0 left-0 right-0 h-1 md:h-1.5 transition-all duration-300 group-hover:h-1.5 md:group-hover:h-2" 
+            className="absolute top-0 left-0 right-0 h-1.5 md:h-2 transition-all duration-300 group-hover:h-2 md:group-hover:h-2.5" 
             style={{ backgroundColor: teamColors[team as keyof typeof teamColors]?.primary }}
           />
           
           {/* Animated scan line */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
             <div 
-              className="absolute w-full h-16 -translate-y-full bg-gradient-to-b from-transparent via-white/20 to-transparent"
-              style={{ animation: 'scan 1.5s ease-in-out infinite' }}
+              className="absolute w-full h-20 -translate-y-full bg-gradient-to-b from-transparent via-white/15 to-transparent"
+              style={{ animation: 'scan 2s ease-in-out infinite' }}
             />
           </div>
           
@@ -167,48 +169,48 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
             <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-green-500 animate-pulse" />
           </div>
           
-          {/* Content - Bottom aligned */}
-          <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4 md:p-6 z-10">
+          {/* Content - Bottom aligned with more space */}
+          <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 md:p-8 z-10">
             <div className="flex flex-col items-center">
-              {/* Icon with team color - LARGER */}
+              {/* Icon with team color - EXTRA LARGE */}
               <div 
-                className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-full flex items-center justify-center mb-2 md:mb-3 shadow-xl group-hover:scale-110 transition-transform duration-300 border-2 md:border-3 border-white/30"
+                className="w-14 h-14 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32 rounded-full flex items-center justify-center mb-3 md:mb-4 shadow-2xl group-hover:scale-110 transition-transform duration-300 border-3 md:border-4 border-white/40"
                 style={{ 
                   backgroundColor: teamColors[team as keyof typeof teamColors]?.primary,
-                  boxShadow: `0 0 35px ${teamColors[team as keyof typeof teamColors]?.glow}`,
+                  boxShadow: `0 0 50px ${teamColors[team as keyof typeof teamColors]?.glow}, 0 0 100px ${teamColors[team as keyof typeof teamColors]?.glow}40`,
                 }}
               >
-                <Icon className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 lg:h-12 lg:w-12 text-white drop-shadow-lg" />
+                <Icon className="h-7 w-7 sm:h-10 sm:w-10 md:h-12 md:w-12 lg:h-14 lg:w-14 xl:h-16 xl:w-16 text-white drop-shadow-lg" />
               </div>
               
-              {/* Team name - Always visible - LARGER */}
-              <div className="flex items-center gap-2 mb-1 md:mb-2">
-                <Star className="h-3 w-3 md:h-4 md:w-4 text-white/80 group-hover:animate-pulse shrink-0" />
+              {/* Team name - Always visible - EXTRA LARGE */}
+              <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
+                <Star className="h-3.5 w-3.5 md:h-5 md:w-5 text-white/80 group-hover:animate-pulse shrink-0" />
                 <h3 
-                  className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-black tracking-[0.15em] text-white drop-shadow-lg"
+                  className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-black tracking-[0.15em] text-white drop-shadow-lg"
                   style={{ 
-                    textShadow: `0 2px 10px ${teamColors[team as keyof typeof teamColors]?.glow}, 0 0 30px ${teamColors[team as keyof typeof teamColors]?.glow}`,
+                    textShadow: `0 2px 15px ${teamColors[team as keyof typeof teamColors]?.glow}, 0 0 40px ${teamColors[team as keyof typeof teamColors]?.glow}`,
                   }}
                 >
                   {team}
                 </h3>
-                <Star className="h-3 w-3 md:h-4 md:w-4 text-white/80 group-hover:animate-pulse shrink-0" />
+                <Star className="h-3.5 w-3.5 md:h-5 md:w-5 text-white/80 group-hover:animate-pulse shrink-0" />
               </div>
               
               {/* Description - Visible on larger screens - LARGER */}
-              <p className="hidden sm:block text-white/80 text-xs md:text-sm text-center font-medium mb-2 md:mb-3 max-w-full truncate">
+              <p className="hidden sm:block text-white/90 text-sm md:text-base lg:text-lg text-center font-medium mb-3 md:mb-4 max-w-full line-clamp-2">
                 {descriptions.description}
               </p>
               
-              {/* Access button - LARGER */}
+              {/* Access button - EXTRA LARGE */}
               <div 
-                className="flex items-center justify-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 md:px-6 md:py-3 rounded-lg md:rounded-xl bg-black/70 backdrop-blur-sm border-2 transition-all duration-300 group-hover:bg-black/90 group-hover:scale-105"
+                className="flex items-center justify-center gap-2 md:gap-3 px-5 py-2.5 sm:px-6 sm:py-3 md:px-8 md:py-4 rounded-xl md:rounded-2xl bg-black/70 backdrop-blur-sm border-2 md:border-3 transition-all duration-300 group-hover:bg-black/90 group-hover:scale-105"
                 style={{ 
                   borderColor: teamColors[team as keyof typeof teamColors]?.primary,
                 }}
               >
-                <Radio className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-green-400 animate-pulse shrink-0" />
-                <span className="text-[10px] sm:text-xs md:text-sm font-bold text-white tracking-widest uppercase">
+                <Radio className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-green-400 animate-pulse shrink-0" />
+                <span className="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-white tracking-widest uppercase">
                   ACESSAR
                 </span>
               </div>

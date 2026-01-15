@@ -838,88 +838,75 @@ export default function Index() {
         </div>
       </div>
 
-      {/* Hero Section - Fixed height, no scroll */}
-      <header className="py-1.5 sm:py-3 px-3 sm:px-4 relative z-10 shrink-0">
+      {/* Hero Section - Ultra compact to push cards up */}
+      <header className="py-1 sm:py-2 px-3 sm:px-4 relative z-10 shrink-0">
         <div className="max-w-4xl mx-auto text-center">
-          {/* Animated Security Badge - Smaller on mobile */}
-          <div className="mb-1 sm:mb-3 flex flex-col items-center">
+          {/* Animated Security Badge - Very compact */}
+          <div className="mb-0.5 sm:mb-1.5 flex flex-col items-center">
             <div className="relative group">
-              {/* Outer rotating ring - Hidden on small mobile */}
-              <div className="absolute -inset-3 rounded-full border border-primary/20 animate-[spin_20s_linear_infinite] hidden sm:block">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-primary rounded-full" />
-              </div>
-              {/* Second rotating ring - Hidden on mobile */}
-              <div className="absolute -inset-6 rounded-full border border-primary/10 animate-[spin_30s_linear_infinite_reverse] hidden md:block">
-                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-1 h-1 bg-accent rounded-full" />
-              </div>
-              {/* Main badge - Smaller on mobile */}
+              {/* Main badge - Compact */}
               <div className={cn(
-                "relative w-10 h-10 sm:w-16 sm:h-16 md:w-24 md:h-24 rounded-full border-2 border-primary/40 flex items-center justify-center shadow-2xl shadow-primary/20 group-hover:border-primary/60 transition-all duration-500",
+                "relative w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full border-2 border-primary/40 flex items-center justify-center shadow-2xl shadow-primary/20 group-hover:border-primary/60 transition-all duration-500",
                 themeConfig.colors.isLight 
                   ? "bg-gradient-to-br from-white via-gray-50 to-gray-100"
                   : "bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900"
               )}>
                 {(() => {
                   const MainIcon = themeAssets.mainIcon;
-                  return <MainIcon className="h-5 w-5 sm:h-8 sm:w-8 md:h-12 md:w-12 text-primary drop-shadow-lg" />;
+                  return <MainIcon className="h-4 w-4 sm:h-6 sm:w-6 md:h-8 md:w-8 text-primary drop-shadow-lg" />;
                 })()}
                 {/* Pulse effect */}
                 <div className="absolute inset-0 rounded-full bg-primary/10 animate-ping opacity-30" style={{ animationDuration: '3s' }} />
               </div>
               {/* Badge label */}
-              <div className="absolute -bottom-1 sm:-bottom-2 left-1/2 -translate-x-1/2 px-1.5 sm:px-3 py-0.5 bg-gradient-to-r from-primary to-accent rounded text-[5px] sm:text-[7px] md:text-[8px] font-black text-primary-foreground tracking-[0.08em] sm:tracking-[0.15em] shadow-lg whitespace-nowrap">
+              <div className="absolute -bottom-0.5 sm:-bottom-1 left-1/2 -translate-x-1/2 px-1 sm:px-2 py-0.5 bg-gradient-to-r from-primary to-accent rounded text-[4px] sm:text-[6px] md:text-[7px] font-black text-primary-foreground tracking-[0.08em] sm:tracking-[0.15em] shadow-lg whitespace-nowrap">
                 SEGURANÇA PÚBLICA
               </div>
             </div>
           </div>
           
-          {/* Title with animation - Smaller on mobile */}
-          <div className="space-y-0.5 sm:space-y-2 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-            <h1 className="text-lg sm:text-3xl md:text-5xl font-black text-foreground tracking-tight">
+          {/* Title with animation - Compact */}
+          <div className="space-y-0 sm:space-y-0.5 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+            <h1 className="text-base sm:text-2xl md:text-3xl font-black text-foreground tracking-tight">
               PLANTÃO <span className="text-primary">PRO</span>
             </h1>
-            <div className="flex items-center justify-center gap-1.5 sm:gap-3">
-              <div className="w-4 sm:w-12 h-[1px] sm:h-[2px] bg-gradient-to-r from-transparent via-primary/50 to-primary" />
-              <span className="text-[7px] sm:text-[10px] md:text-xs font-bold text-muted-foreground tracking-[0.1em] sm:tracking-[0.25em] uppercase">
+            <div className="flex items-center justify-center gap-1 sm:gap-2">
+              <div className="w-3 sm:w-8 h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-primary" />
+              <span className="text-[6px] sm:text-[8px] md:text-[10px] font-bold text-muted-foreground tracking-[0.1em] sm:tracking-[0.2em] uppercase">
                 {themeAssets.subtitle}
               </span>
-              <div className="w-4 sm:w-12 h-[1px] sm:h-[2px] bg-gradient-to-l from-transparent via-primary/50 to-primary" />
+              <div className="w-3 sm:w-8 h-[1px] bg-gradient-to-l from-transparent via-primary/50 to-primary" />
             </div>
           </div>
           
-          {/* Subtitle - Hidden on mobile */}
-          <p className="text-muted-foreground text-[10px] sm:text-xs md:text-sm mt-1 sm:mt-3 animate-fade-in max-w-md mx-auto hidden sm:block" style={{ animationDelay: '0.5s' }}>
-            Controle profissional de plantões para equipes de segurança pública
-          </p>
-          
-          {/* Team selection prompt - More compact */}
-          <div className="mt-2 sm:mt-4 animate-fade-in" style={{ animationDelay: '0.7s' }}>
-            <div className="inline-flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-1 sm:py-2 rounded-full bg-primary/10 border border-primary/30">
+          {/* Team selection prompt - Ultra compact */}
+          <div className="mt-1 sm:mt-2 animate-fade-in" style={{ animationDelay: '0.5s' }}>
+            <div className="inline-flex items-center gap-1 px-1.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-primary/10 border border-primary/30">
               {(() => {
                 const TeamIcon = themeAssets.teamIcons.ALFA;
-                return <TeamIcon className="h-2.5 w-2.5 sm:h-4 sm:w-4 text-primary" />;
+                return <TeamIcon className="h-2 w-2 sm:h-3 sm:w-3 text-primary" />;
               })()}
-              <span className="text-[10px] sm:text-sm font-medium text-foreground">Selecione sua equipe</span>
+              <span className="text-[8px] sm:text-xs font-medium text-foreground">Selecione sua equipe</span>
             </div>
           </div>
           
-          {/* Quick Biometric Login Button - More compact */}
+          {/* Quick Biometric Login Button - Ultra compact */}
           {isBiometricAvailable && isBiometricEnrolled && enrolledCpf && (
-            <div className="mt-1.5 sm:mt-3 animate-fade-in" style={{ animationDelay: '0.9s' }}>
+            <div className="mt-1 sm:mt-2 animate-fade-in" style={{ animationDelay: '0.7s' }}>
               <Button
                 onClick={handleBiometricLogin}
                 disabled={isBiometricLoading}
                 size="sm"
-                className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold px-3 sm:px-6 py-1.5 sm:py-3 h-auto shadow-lg shadow-emerald-500/20 text-[10px] sm:text-sm"
+                className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold px-2 sm:px-4 py-1 sm:py-2 h-auto shadow-lg shadow-emerald-500/20 text-[8px] sm:text-xs"
               >
                 {isBiometricLoading ? (
-                  <Loader2 className="h-3.5 w-3.5 sm:h-5 sm:w-5 mr-1 sm:mr-2 animate-spin" />
+                  <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 mr-1 animate-spin" />
                 ) : (
-                  <Fingerprint className="h-3.5 w-3.5 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
+                  <Fingerprint className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                 )}
-                Login com Biometria
+                Login Biometria
               </Button>
-              <p className="text-[8px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-2">
+              <p className="text-[7px] sm:text-[10px] text-muted-foreground mt-0.5">
                 CPF: {enrolledCpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')}
               </p>
             </div>
@@ -927,16 +914,16 @@ export default function Index() {
         </div>
       </header>
 
-      {/* Teams Grid Section - Fills remaining space, MUCH LARGER cards, landscape optimized */}
-      <section className="flex-1 py-3 landscape:py-1 sm:py-8 px-4 landscape:px-8 sm:px-8 relative z-10 flex items-center justify-center min-h-0 overflow-auto">
-        <div className="w-full max-w-md landscape:max-w-4xl sm:max-w-2xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 landscape:grid-cols-4 md:grid-cols-4 gap-4 landscape:gap-4 sm:gap-6 md:gap-8 lg:gap-10">
+      {/* Teams Grid Section - Maximum space for EXTRA LARGE cards */}
+      <section className="flex-1 py-2 landscape:py-1 sm:py-4 px-3 landscape:px-6 sm:px-6 relative z-10 flex items-start justify-center min-h-0 overflow-auto">
+        <div className="w-full max-w-lg landscape:max-w-5xl sm:max-w-3xl md:max-w-6xl lg:max-w-7xl xl:max-w-[1600px] mx-auto">
+          <div className="grid grid-cols-2 landscape:grid-cols-4 md:grid-cols-4 gap-3 landscape:gap-3 sm:gap-5 md:gap-6 lg:gap-8">
             {teams.map((team, index) => (
               <div
                 key={team}
                 className="animate-fade-in-scale"
                 style={{
-                  animationDelay: `${800 + index * 150}ms`,
+                  animationDelay: `${600 + index * 100}ms`,
                 }}
               >
                 <ThemedTeamCard
