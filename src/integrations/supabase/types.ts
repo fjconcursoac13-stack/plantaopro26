@@ -500,6 +500,90 @@ export type Database = {
         }
         Relationships: []
       }
+      license_activation_codes: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          duration_days: number
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          max_uses: number | null
+          used_count: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          duration_days?: number
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          used_count?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          duration_days?: number
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          used_count?: number
+        }
+        Relationships: []
+      }
+      license_code_usage: {
+        Row: {
+          activated_at: string
+          agent_id: string
+          code_id: string
+          id: string
+          new_expires_at: string
+          previous_expires_at: string | null
+          previous_status: string | null
+        }
+        Insert: {
+          activated_at?: string
+          agent_id: string
+          code_id: string
+          id?: string
+          new_expires_at: string
+          previous_expires_at?: string | null
+          previous_status?: string | null
+        }
+        Update: {
+          activated_at?: string
+          agent_id?: string
+          code_id?: string
+          id?: string
+          new_expires_at?: string
+          previous_expires_at?: string | null
+          previous_status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "license_code_usage_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "license_code_usage_code_id_fkey"
+            columns: ["code_id"]
+            isOneToOne: false
+            referencedRelation: "license_activation_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       login_attempts: {
         Row: {
           attempt_time: string
@@ -568,6 +652,63 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      offline_license_cache: {
+        Row: {
+          agent_id: string
+          cached_at: string
+          cpf: string
+          id: string
+          last_sync: string
+          license_expires_at: string | null
+          license_status: string
+          name: string
+          password_hash: string | null
+          team: string | null
+          unit_id: string | null
+        }
+        Insert: {
+          agent_id: string
+          cached_at?: string
+          cpf: string
+          id?: string
+          last_sync?: string
+          license_expires_at?: string | null
+          license_status?: string
+          name: string
+          password_hash?: string | null
+          team?: string | null
+          unit_id?: string | null
+        }
+        Update: {
+          agent_id?: string
+          cached_at?: string
+          cpf?: string
+          id?: string
+          last_sync?: string
+          license_expires_at?: string | null
+          license_status?: string
+          name?: string
+          password_hash?: string | null
+          team?: string | null
+          unit_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "offline_license_cache_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: true
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "offline_license_cache_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "units"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       overtime_bank: {
         Row: {
@@ -939,6 +1080,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      activate_license_with_code: {
+        Args: { p_agent_id?: string; p_code: string }
+        Returns: Json
+      }
       calculate_bh_balance: { Args: { p_agent_id: string }; Returns: number }
       calculate_bh_value: { Args: { p_agent_id: string }; Returns: number }
       check_rate_limit: {
@@ -979,6 +1124,7 @@ export type Database = {
         Args: { p_identifier: string; p_ip?: string; p_success: boolean }
         Returns: undefined
       }
+      sync_offline_license_cache: { Args: never; Returns: number }
       toggle_agent_freeze: {
         Args: { p_admin_id: string; p_agent_id: string; p_freeze: boolean }
         Returns: boolean

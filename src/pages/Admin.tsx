@@ -46,7 +46,11 @@ import { format, differenceInDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { LicenseManagementDialog } from '@/components/admin/LicenseManagementDialog';
 import { AdminTransferDialog } from '@/components/admin/AdminTransferDialog';
+import { LicenseActivationCodeManager } from '@/components/admin/LicenseActivationCodeManager';
+import { BulkLicenseActivator } from '@/components/admin/BulkLicenseActivator';
+import { OfflineLicenseCacheManager } from '@/components/admin/OfflineLicenseCacheManager';
 import { toast } from 'sonner';
+import { HardDrive, Zap } from 'lucide-react';
 
 interface UserWithRole {
   id: string;
@@ -442,6 +446,10 @@ export default function Admin() {
                   <Users className="h-4 w-4 mr-2" />
                   Usuários
                 </TabsTrigger>
+                <TabsTrigger value="offline" className="data-[state=active]:bg-slate-700">
+                  <HardDrive className="h-4 w-4 mr-2" />
+                  Offline
+                </TabsTrigger>
               </TabsList>
 
               {/* Units Tab */}
@@ -755,6 +763,13 @@ export default function Admin() {
                     </ScrollArea>
                   </CardContent>
                 </Card>
+              </TabsContent>
+
+              {/* Offline Tab */}
+              <TabsContent value="offline" className="space-y-4">
+                <BulkLicenseActivator onActivated={fetchData} />
+                <LicenseActivationCodeManager />
+                <OfflineLicenseCacheManager />
               </TabsContent>
             </Tabs>
             
