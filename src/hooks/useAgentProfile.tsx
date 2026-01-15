@@ -92,49 +92,57 @@ export function useAgentProfile() {
       try {
         setIsLoading(true);
         setError(null);
-        
-        // Extract CPF from email (format: cpf@agent.plantaopro.com)
-        const emailParts = user.email!.split('@');
-        const localPart = emailParts[0] || '';
-        const cpfDigits = localPart.replace(/\D/g, '');
-        const looksLikeCpf = cpfDigits.length === 11;
-        
+
         let foundAgent = null;
-        
-        // Try CPF lookup first (most common case)
-        if (looksLikeCpf && mountedRef.current) {
-          const { data, error: fetchError } = await (supabase as any)
+
+        // 1) Most reliable: link by auth user id (agents.id is created to match auth.uid())
+        if (mountedRef.current) {
+          const { data: idData, error: idError } = await (supabase as any)
             .from('agents')
             .select(AGENT_SELECT_QUERY)
-            .eq('cpf', cpfDigits)
+            .eq('id', user.id)
             .maybeSingle();
 
-          if (fetchError) {
-            throw fetchError;
+          if (idError) throw idError;
+          if (idData) {
+            foundAgent = idData;
           }
+        }
 
-          if (data) {
-            foundAgent = data;
-          } else if (mountedRef.current) {
-            // Try formatted CPF (legacy format: 000.000.000-00)
-            const cpfFormatted = formatCPF(cpfDigits);
-            const { data: formattedData, error: formattedError } = await (supabase as any)
+        // 2) Fallback: Extract CPF from virtual email (format: cpf@agent.plantaopro.com)
+        if (!foundAgent && mountedRef.current) {
+          const emailParts = user.email!.split('@');
+          const localPart = emailParts[0] || '';
+          const cpfDigits = localPart.replace(/\D/g, '');
+          const looksLikeCpf = cpfDigits.length === 11;
+
+          if (looksLikeCpf) {
+            const { data, error: fetchError } = await (supabase as any)
               .from('agents')
               .select(AGENT_SELECT_QUERY)
-              .eq('cpf', cpfFormatted)
+              .eq('cpf', cpfDigits)
               .maybeSingle();
 
-            if (formattedError) {
-              throw formattedError;
-            }
+            if (fetchError) throw fetchError;
 
-            if (formattedData) {
-              foundAgent = formattedData;
+            if (data) {
+              foundAgent = data;
+            } else {
+              // Try formatted CPF (legacy format: 000.000.000-00)
+              const cpfFormatted = formatCPF(cpfDigits);
+              const { data: formattedData, error: formattedError } = await (supabase as any)
+                .from('agents')
+                .select(AGENT_SELECT_QUERY)
+                .eq('cpf', cpfFormatted)
+                .maybeSingle();
+
+              if (formattedError) throw formattedError;
+              if (formattedData) foundAgent = formattedData;
             }
           }
         }
 
-        // Fallback: try email lookup (for non-CPF logins)
+        // 3) Last fallback: try email lookup (only works if agents.email is filled)
         if (!foundAgent && mountedRef.current) {
           const { data: emailData, error: emailError } = await (supabase as any)
             .from('agents')
@@ -142,13 +150,8 @@ export function useAgentProfile() {
             .eq('email', user.email)
             .maybeSingle();
 
-          if (emailError) {
-            throw emailError;
-          }
-
-          if (emailData) {
-            foundAgent = emailData;
-          }
+          if (emailError) throw emailError;
+          if (emailData) foundAgent = emailData;
         }
 
         if (mountedRef.current) {
