@@ -754,7 +754,7 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
     const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
 
     return (
-      <Card className="bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-green-900/20 border-3 border-green-500/40 shadow-lg shadow-green-500/10 transition-all duration-300 hover:border-green-400/50 hover:shadow-green-500/20 hover:scale-[1.01] group">
+      <Card className="card-night-green bg-gradient-to-br from-[hsl(222,60%,3%)] via-[hsl(222,55%,5%)] to-[hsl(142,40%,8%)] border-3 border-green-500/50 transition-all duration-300 hover:border-green-400/70 group">
         <CardContent className="p-5 md:p-6 space-y-4">
           {/* Balance Header - LARGER with GLOW */}
           <div className="flex items-center gap-4">
