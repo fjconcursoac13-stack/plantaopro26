@@ -403,34 +403,20 @@ export default function AgentPanel() {
                     </Tooltip>
                   </TooltipProvider>
                   
-                  {/* Exit Button - More Visible */}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={async () => {
-                      await supabase.auth.signOut();
-                      navigate('/');
-                    }}
-                    className="hidden sm:flex items-center gap-1.5 border-red-500/50 text-red-400 hover:bg-red-500/20 hover:text-red-300 hover:border-red-400 h-9 px-3 transition-all duration-200"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    <span className="text-xs font-medium">Sair</span>
-                  </Button>
-                  
-                  {/* Mobile Exit Button (Icon Only) */}
+                  {/* Exit Button - Highly Visible */}
                   <TooltipProvider>
                     <Tooltip delayDuration={200}>
                       <TooltipTrigger asChild>
                         <Button
-                          variant="ghost"
-                          size="icon"
+                          variant="outline"
                           onClick={async () => {
                             await supabase.auth.signOut();
                             navigate('/');
                           }}
-                          className="sm:hidden text-red-400 hover:bg-red-500/20 hover:text-red-300 h-9 w-9 transition-all duration-200 hover:scale-105"
+                          className="flex items-center gap-2 bg-gradient-to-r from-red-600/20 to-red-500/10 border-2 border-red-500/60 text-red-400 hover:bg-red-500/30 hover:text-red-300 hover:border-red-400 h-10 px-4 transition-all duration-200 hover:scale-105 shadow-lg shadow-red-500/20"
                         >
-                          <LogOut className="h-4 w-4" />
+                          <LogOut className="h-4 w-4 md:h-5 md:w-5" />
+                          <span className="text-sm font-semibold tracking-wide">SAIR</span>
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent 
@@ -439,7 +425,7 @@ export default function AgentPanel() {
                       >
                         <div className="flex items-center gap-2">
                           <LogOut className="h-3.5 w-3.5" />
-                          <span>Sair do Sistema</span>
+                          <span>Sair e voltar para Tela Inicial</span>
                         </div>
                       </TooltipContent>
                     </Tooltip>
