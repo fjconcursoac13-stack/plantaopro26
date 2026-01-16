@@ -962,7 +962,7 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
           
           {/* Visual Scale - Only days with BH */}
           <div className="grid grid-cols-2 gap-2">
-            {/* First Fortnight - Only programmed days */}
+            {/* First Fortnight - Only programmed days - CLICKABLE */}
             {(() => {
               const today = new Date();
               const firstFortnightDays = bhDates
@@ -974,28 +974,41 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
                 .map(d => d.getDate())
                 .sort((a, b) => a - b);
               
+              const isActive = fortnightInfo.label === '1ª Quinzena';
+              
               return (
-                <div className={`p-3 rounded-lg border-2 transition-all ${
-                  fortnightInfo.label === '1ª Quinzena' 
-                    ? 'bg-blue-500/20 border-blue-500/50 ring-2 ring-blue-500/30' 
-                    : 'bg-slate-700/30 border-slate-600/50 opacity-60'
-                }`}>
+                <div 
+                  onClick={() => {
+                    if (isActive) {
+                      // Focus on calendar section to add/edit BH
+                      setSelectedDate(new Date());
+                      toast.info('Selecione um dia no calendário abaixo para registrar BH');
+                    } else {
+                      toast.warning('Quinzena fechada - não é possível editar');
+                    }
+                  }}
+                  className={`p-3 rounded-lg border-2 transition-all cursor-pointer ${
+                    isActive 
+                      ? 'bg-blue-500/20 border-blue-500/50 ring-2 ring-blue-500/30 hover:bg-blue-500/30 hover:scale-[1.02] active:scale-[0.98]' 
+                      : 'bg-slate-700/30 border-slate-600/50 opacity-60 cursor-not-allowed'
+                  }`}
+                >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-1.5 min-w-0">
-                      {fortnightInfo.label === '1ª Quinzena' ? (
+                      {isActive ? (
                         <Unlock className="h-3.5 w-3.5 text-blue-400 shrink-0" />
                       ) : (
                         <Lock className="h-3.5 w-3.5 text-slate-500 shrink-0" />
                       )}
                       <span className={`text-xs font-semibold truncate ${
-                        fortnightInfo.label === '1ª Quinzena' ? 'text-blue-400' : 'text-slate-500'
+                        isActive ? 'text-blue-400' : 'text-slate-500'
                       }`}>
                         1ª Quinz.
                       </span>
                     </div>
-                    {fortnightInfo.label === '1ª Quinzena' && (
+                    {isActive && (
                       <Badge className="text-[9px] bg-blue-500/30 text-blue-300 border-blue-500/50 px-1.5 py-0 shrink-0">
-                        Ativa
+                        Toque p/ editar
                       </Badge>
                     )}
                   </div>
@@ -1003,7 +1016,7 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
                   {firstFortnightDays.length > 0 ? (
                     <div className="flex flex-wrap gap-1 justify-center">
                       {firstFortnightDays.map(day => {
-                        const isToday = today.getDate() === day && fortnightInfo.label === '1ª Quinzena';
+                        const isToday = today.getDate() === day && isActive;
                         return (
                           <div
                             key={day}
@@ -1030,7 +1043,7 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
               );
             })()}
 
-            {/* Second Fortnight - Only programmed days */}
+            {/* Second Fortnight - Only programmed days - CLICKABLE */}
             {(() => {
               const today = new Date();
               const secondFortnightDays = bhDates
@@ -1042,28 +1055,41 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
                 .map(d => d.getDate())
                 .sort((a, b) => a - b);
               
+              const isActive = fortnightInfo.label === '2ª Quinzena';
+              
               return (
-                <div className={`p-3 rounded-lg border-2 transition-all ${
-                  fortnightInfo.label === '2ª Quinzena' 
-                    ? 'bg-purple-500/20 border-purple-500/50 ring-2 ring-purple-500/30' 
-                    : 'bg-slate-700/30 border-slate-600/50 opacity-60'
-                }`}>
+                <div 
+                  onClick={() => {
+                    if (isActive) {
+                      // Focus on calendar section to add/edit BH
+                      setSelectedDate(new Date());
+                      toast.info('Selecione um dia no calendário abaixo para registrar BH');
+                    } else {
+                      toast.warning('Quinzena fechada - não é possível editar');
+                    }
+                  }}
+                  className={`p-3 rounded-lg border-2 transition-all cursor-pointer ${
+                    isActive 
+                      ? 'bg-purple-500/20 border-purple-500/50 ring-2 ring-purple-500/30 hover:bg-purple-500/30 hover:scale-[1.02] active:scale-[0.98]' 
+                      : 'bg-slate-700/30 border-slate-600/50 opacity-60 cursor-not-allowed'
+                  }`}
+                >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-1.5 min-w-0">
-                      {fortnightInfo.label === '2ª Quinzena' ? (
+                      {isActive ? (
                         <Unlock className="h-3.5 w-3.5 text-purple-400 shrink-0" />
                       ) : (
                         <Lock className="h-3.5 w-3.5 text-slate-500 shrink-0" />
                       )}
                       <span className={`text-xs font-semibold truncate ${
-                        fortnightInfo.label === '2ª Quinzena' ? 'text-purple-400' : 'text-slate-500'
+                        isActive ? 'text-purple-400' : 'text-slate-500'
                       }`}>
                         2ª Quinz.
                       </span>
                     </div>
-                    {fortnightInfo.label === '2ª Quinzena' && (
+                    {isActive && (
                       <Badge className="text-[9px] bg-purple-500/30 text-purple-300 border-purple-500/50 px-1.5 py-0 shrink-0">
-                        Ativa
+                        Toque p/ editar
                       </Badge>
                     )}
                   </div>
@@ -1071,7 +1097,7 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
                   {secondFortnightDays.length > 0 ? (
                     <div className="flex flex-wrap gap-1 justify-center">
                       {secondFortnightDays.map(day => {
-                        const isToday = today.getDate() === day && fortnightInfo.label === '2ª Quinzena';
+                        const isToday = today.getDate() === day && isActive;
                         return (
                           <div
                             key={day}
