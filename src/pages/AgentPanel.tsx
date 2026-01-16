@@ -46,6 +46,46 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { toast } from '@/hooks/use-toast';
 
+// Real-Time Clock Component
+function RealTimeClock() {
+  const [time, setTime] = useState(new Date());
+  
+  useEffect(() => {
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+  
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString('pt-BR', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  };
+  
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('pt-BR', { 
+      weekday: 'short',
+      day: '2-digit', 
+      month: 'short'
+    }).toUpperCase();
+  };
+  
+  return (
+    <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-slate-800/90 via-slate-900/90 to-slate-800/90 rounded-xl border border-cyan-500/40 shadow-lg shadow-cyan-500/10">
+      <Clock className="h-4 w-4 text-cyan-400" />
+      <div className="flex flex-col items-center">
+        <span className="text-sm md:text-base font-mono font-bold text-cyan-300 tracking-wider tabular-nums">
+          {formatTime(time)}
+        </span>
+        <span className="text-[8px] md:text-[9px] text-cyan-400/70 font-medium tracking-wider -mt-0.5">
+          {formatDate(time)}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export default function AgentPanel() {
   const { user, isLoading, masterSession } = useAuth();
   const { agent, isLoading: isLoadingAgent } = useAgentProfile();
@@ -284,15 +324,18 @@ export default function AgentPanel() {
                   </div>
                 </div>
 
-                {/* Center: Status Indicators */}
-                <div className="flex items-center gap-2 md:gap-3">
+                {/* Center: Real-Time Clock + Status */}
+                <div className="flex items-center gap-2 md:gap-4">
+                  {/* Real-Time Clock */}
+                  <RealTimeClock />
+                  
                   {/* Online Status */}
-                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-500/15 border border-green-500/40">
+                  <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/50 shadow-lg shadow-green-500/10">
                     <div className="relative">
-                      <div className="w-2 h-2 rounded-full bg-green-500" />
-                      <div className="absolute inset-0 w-2 h-2 rounded-full bg-green-400 animate-ping opacity-60" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-gradient-to-r from-green-400 to-emerald-500" />
+                      <div className="absolute inset-0 w-2.5 h-2.5 rounded-full bg-green-400 animate-ping opacity-50" />
                     </div>
-                    <span className="text-[9px] md:text-[10px] font-bold text-green-400 uppercase tracking-wide hidden md:inline">Online</span>
+                    <span className="text-[10px] md:text-xs font-bold text-green-400 uppercase tracking-wider hidden md:inline">Online</span>
                   </div>
                   
                   {/* Role Badge */}
@@ -301,9 +344,9 @@ export default function AgentPanel() {
                   </div>
                   
                   {/* Trial Badge */}
-                  <div className="hidden lg:flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30">
-                    <Gift className="h-3 w-3 text-amber-400" />
-                    <span className="text-[9px] font-bold text-amber-400">{getRemainingTrialDays()}d</span>
+                  <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-gradient-to-r from-amber-500/15 to-orange-500/15 border border-amber-500/40 shadow-lg shadow-amber-500/10">
+                    <Gift className="h-3.5 w-3.5 text-amber-400" />
+                    <span className="text-[10px] font-bold text-amber-400">{getRemainingTrialDays()}d</span>
                   </div>
                 </div>
 
@@ -393,77 +436,77 @@ export default function AgentPanel() {
                 </div>
                 
                 {/* Tabs Grid - Larger and More Professional */}
-                <TabsList className="bg-slate-800/60 border-2 border-slate-700/50 p-2 h-auto grid grid-cols-5 lg:grid-cols-9 gap-2 rounded-xl">
+                <TabsList className="bg-gradient-to-br from-slate-800/80 via-slate-900/70 to-slate-800/80 border-2 border-amber-500/20 p-2.5 md:p-3 h-auto grid grid-cols-5 lg:grid-cols-9 gap-2 md:gap-3 rounded-xl shadow-inner">
                   <TabsTrigger 
                     value="equipe" 
-                    className="flex flex-col items-center justify-center gap-1 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-lg data-[state=active]:scale-105 rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/60 min-h-[52px] md:min-h-[60px] border border-transparent data-[state=active]:border-amber-300"
+                    className="flex flex-col items-center justify-center gap-1.5 text-[10px] md:text-xs p-2.5 md:p-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:via-amber-500 data-[state=active]:to-orange-600 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-amber-500/30 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-gradient-to-br hover:from-amber-500/20 hover:to-orange-500/20 hover:scale-102 min-h-[56px] md:min-h-[70px] border-2 border-slate-600/50 data-[state=active]:border-amber-300 text-amber-200/80 hover:text-amber-100"
                   >
-                    <Users className="h-4 w-4 md:h-5 md:w-5" />
-                    <span>Equipe</span>
+                    <Users className="h-5 w-5 md:h-6 md:w-6" />
+                    <span className="tracking-wide">Equipe</span>
                   </TabsTrigger>
                   
                   <TabsTrigger 
                     value="plantoes" 
-                    className="flex flex-col items-center justify-center gap-1 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-lg data-[state=active]:scale-105 rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/60 min-h-[52px] md:min-h-[60px] border border-transparent data-[state=active]:border-amber-300"
+                    className="flex flex-col items-center justify-center gap-1.5 text-[10px] md:text-xs p-2.5 md:p-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-orange-400 data-[state=active]:via-orange-500 data-[state=active]:to-red-600 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:shadow-orange-500/30 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-gradient-to-br hover:from-orange-500/20 hover:to-red-500/20 hover:scale-102 min-h-[56px] md:min-h-[70px] border-2 border-slate-600/50 data-[state=active]:border-orange-300 text-orange-200/80 hover:text-orange-100"
                   >
-                    <Calendar className="h-4 w-4 md:h-5 md:w-5" />
-                    <span>Plantões</span>
+                    <Calendar className="h-5 w-5 md:h-6 md:w-6" />
+                    <span className="tracking-wide">Plantões</span>
                   </TabsTrigger>
                   
                   <TabsTrigger 
                     value="bh" 
-                    className="flex flex-col items-center justify-center gap-1 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-400 data-[state=active]:to-teal-500 data-[state=active]:text-black data-[state=active]:shadow-lg data-[state=active]:scale-105 rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/60 min-h-[52px] md:min-h-[60px] border border-transparent data-[state=active]:border-emerald-300"
+                    className="flex flex-col items-center justify-center gap-1.5 text-[10px] md:text-xs p-2.5 md:p-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-400 data-[state=active]:via-green-500 data-[state=active]:to-teal-600 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-emerald-500/30 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-gradient-to-br hover:from-emerald-500/20 hover:to-teal-500/20 hover:scale-102 min-h-[56px] md:min-h-[70px] border-2 border-slate-600/50 data-[state=active]:border-emerald-300 text-emerald-200/80 hover:text-emerald-100"
                   >
-                    <Clock className="h-4 w-4 md:h-5 md:w-5" />
-                    <span>BH</span>
+                    <Clock className="h-5 w-5 md:h-6 md:w-6" />
+                    <span className="tracking-wide">BH</span>
                   </TabsTrigger>
                   
                   <TabsTrigger 
                     value="folgas" 
-                    className="flex flex-col items-center justify-center gap-1 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:to-violet-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105 rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/60 min-h-[52px] md:min-h-[60px] border border-transparent data-[state=active]:border-purple-300"
+                    className="flex flex-col items-center justify-center gap-1.5 text-[10px] md:text-xs p-2.5 md:p-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:via-violet-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:shadow-purple-500/30 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-gradient-to-br hover:from-purple-500/20 hover:to-violet-500/20 hover:scale-102 min-h-[56px] md:min-h-[70px] border-2 border-slate-600/50 data-[state=active]:border-purple-300 text-purple-200/80 hover:text-purple-100"
                   >
-                    <CalendarOff className="h-4 w-4 md:h-5 md:w-5" />
-                    <span>Folgas</span>
+                    <CalendarOff className="h-5 w-5 md:h-6 md:w-6" />
+                    <span className="tracking-wide">Folgas</span>
                   </TabsTrigger>
                   
                   <TabsTrigger 
                     value="agenda" 
-                    className="flex flex-col items-center justify-center gap-1 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-cyan-400 data-[state=active]:to-blue-500 data-[state=active]:text-black data-[state=active]:shadow-lg data-[state=active]:scale-105 rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/60 min-h-[52px] md:min-h-[60px] border border-transparent data-[state=active]:border-cyan-300"
+                    className="flex flex-col items-center justify-center gap-1.5 text-[10px] md:text-xs p-2.5 md:p-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-cyan-400 data-[state=active]:via-sky-500 data-[state=active]:to-blue-600 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-cyan-500/30 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-gradient-to-br hover:from-cyan-500/20 hover:to-blue-500/20 hover:scale-102 min-h-[56px] md:min-h-[70px] border-2 border-slate-600/50 data-[state=active]:border-cyan-300 text-cyan-200/80 hover:text-cyan-100"
                   >
-                    <CalendarDays className="h-4 w-4 md:h-5 md:w-5" />
-                    <span>Agenda</span>
+                    <CalendarDays className="h-5 w-5 md:h-6 md:w-6" />
+                    <span className="tracking-wide">Agenda</span>
                   </TabsTrigger>
                   
                   <TabsTrigger 
                     value="planejador" 
-                    className="flex flex-col items-center justify-center gap-1 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-rose-400 data-[state=active]:to-red-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105 rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/60 min-h-[52px] md:min-h-[60px] border border-transparent data-[state=active]:border-rose-300"
+                    className="flex flex-col items-center justify-center gap-1.5 text-[10px] md:text-xs p-2.5 md:p-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-rose-400 data-[state=active]:via-red-500 data-[state=active]:to-pink-600 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:shadow-rose-500/30 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-gradient-to-br hover:from-rose-500/20 hover:to-pink-500/20 hover:scale-102 min-h-[56px] md:min-h-[70px] border-2 border-slate-600/50 data-[state=active]:border-rose-300 text-rose-200/80 hover:text-rose-100"
                   >
-                    <Calculator className="h-4 w-4 md:h-5 md:w-5" />
-                    <span>Plan</span>
+                    <Calculator className="h-5 w-5 md:h-6 md:w-6" />
+                    <span className="tracking-wide">Plan</span>
                   </TabsTrigger>
                   
                   <TabsTrigger 
                     value="permutas" 
-                    className="flex flex-col items-center justify-center gap-1 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-lg data-[state=active]:scale-105 rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/60 min-h-[52px] md:min-h-[60px] border border-transparent data-[state=active]:border-amber-300"
+                    className="flex flex-col items-center justify-center gap-1.5 text-[10px] md:text-xs p-2.5 md:p-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-yellow-400 data-[state=active]:via-amber-500 data-[state=active]:to-orange-600 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-yellow-500/30 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-gradient-to-br hover:from-yellow-500/20 hover:to-amber-500/20 hover:scale-102 min-h-[56px] md:min-h-[70px] border-2 border-slate-600/50 data-[state=active]:border-yellow-300 text-yellow-200/80 hover:text-yellow-100"
                   >
-                    <ArrowRightLeft className="h-4 w-4 md:h-5 md:w-5" />
-                    <span>Troca</span>
+                    <ArrowRightLeft className="h-5 w-5 md:h-6 md:w-6" />
+                    <span className="tracking-wide">Troca</span>
                   </TabsTrigger>
                   
                   <TabsTrigger 
                     value="chat" 
-                    className="flex flex-col items-center justify-center gap-1 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-400 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105 rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/60 min-h-[52px] md:min-h-[60px] border border-transparent data-[state=active]:border-blue-300"
+                    className="flex flex-col items-center justify-center gap-1.5 text-[10px] md:text-xs p-2.5 md:p-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-400 data-[state=active]:via-indigo-500 data-[state=active]:to-violet-600 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:shadow-blue-500/30 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-gradient-to-br hover:from-blue-500/20 hover:to-indigo-500/20 hover:scale-102 min-h-[56px] md:min-h-[70px] border-2 border-slate-600/50 data-[state=active]:border-blue-300 text-blue-200/80 hover:text-blue-100"
                   >
-                    <MessageCircle className="h-4 w-4 md:h-5 md:w-5" />
-                    <span>Chat</span>
+                    <MessageCircle className="h-5 w-5 md:h-6 md:w-6" />
+                    <span className="tracking-wide">Chat</span>
                   </TabsTrigger>
                   
                   <TabsTrigger 
                     value="config" 
-                    className="flex flex-col items-center justify-center gap-1 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-slate-400 data-[state=active]:to-slate-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105 rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/60 min-h-[52px] md:min-h-[60px] border border-transparent data-[state=active]:border-slate-300"
+                    className="flex flex-col items-center justify-center gap-1.5 text-[10px] md:text-xs p-2.5 md:p-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-slate-400 data-[state=active]:via-gray-500 data-[state=active]:to-zinc-600 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:shadow-slate-500/30 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-gradient-to-br hover:from-slate-500/20 hover:to-gray-500/20 hover:scale-102 min-h-[56px] md:min-h-[70px] border-2 border-slate-600/50 data-[state=active]:border-slate-300 text-slate-200/80 hover:text-slate-100"
                   >
-                    <Settings className="h-4 w-4 md:h-5 md:w-5" />
-                    <span>Config</span>
+                    <Settings className="h-5 w-5 md:h-6 md:w-6" />
+                    <span className="tracking-wide">Config</span>
                   </TabsTrigger>
                 </TabsList>
               </div>
