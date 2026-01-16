@@ -53,6 +53,7 @@ interface Agent {
   unit_name: string | null;
   bh_hourly_rate: number | null;
   bh_limit: number | null;
+  bh_future_months_allowed: number | null;
 }
 
 interface BHEntry {
@@ -99,6 +100,7 @@ export function AgentBHManagement({ onDataChange }: Props) {
   // Agent config states
   const [editHourlyRate, setEditHourlyRate] = useState('');
   const [editBhLimit, setEditBhLimit] = useState('');
+  const [editFutureMonths, setEditFutureMonths] = useState('0');
 
   useEffect(() => {
     fetchData();
@@ -109,7 +111,7 @@ export function AgentBHManagement({ onDataChange }: Props) {
       setIsLoading(true);
       
       const [agentsRes, unitsRes, bhRes] = await Promise.all([
-        supabase.from('agents').select('id, name, matricula, team, unit_id, bh_hourly_rate, bh_limit').eq('is_active', true),
+        supabase.from('agents').select('id, name, matricula, team, unit_id, bh_hourly_rate, bh_limit, bh_future_months_allowed').eq('is_active', true),
         supabase.from('units').select('id, name'),
         supabase.from('overtime_bank').select('*').order('created_at', { ascending: false }),
       ]);
@@ -182,6 +184,7 @@ export function AgentBHManagement({ onDataChange }: Props) {
     setAdjustmentReason('');
     setEditHourlyRate((agent.bh_hourly_rate || 15).toString());
     setEditBhLimit((agent.bh_limit || 70).toString());
+    setEditFutureMonths((agent.bh_future_months_allowed || 0).toString());
     setDialogOpen(true);
   };
 
@@ -199,6 +202,7 @@ export function AgentBHManagement({ onDataChange }: Props) {
       
       const hourlyRateValue = parseFloat(editHourlyRate);
       const bhLimitValue = parseFloat(editBhLimit);
+      const futureMonthsValue = parseInt(editFutureMonths) || 0;
       
       if (isNaN(hourlyRateValue) || hourlyRateValue <= 0) {
         toast.error('Valor por hora inválido');
@@ -210,12 +214,13 @@ export function AgentBHManagement({ onDataChange }: Props) {
         return;
       }
       
-      // Update agent's bh_hourly_rate and bh_limit
+      // Update agent's bh_hourly_rate, bh_limit, and bh_future_months_allowed
       const { error: updateError } = await supabase
         .from('agents')
         .update({
           bh_hourly_rate: hourlyRateValue,
-          bh_limit: bhLimitValue
+          bh_limit: bhLimitValue,
+          bh_future_months_allowed: futureMonthsValue
         })
         .eq('id', selectedAgent.id);
         
@@ -577,6 +582,29 @@ export function AgentBHManagement({ onDataChange }: Props) {
                   className="bg-slate-700/50 border-slate-600 font-mono"
                 />
               </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label className="text-slate-300 flex items-center gap-2">
+                <Calendar className="h-3 w-3 text-purple-400" />
+                Meses Futuros Permitidos
+              </Label>
+              <Select value={editFutureMonths} onValueChange={setEditFutureMonths}>
+                <SelectTrigger className="bg-slate-700/50 border-slate-600">
+                  <SelectValue placeholder="Selecione" />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-800 border-slate-700">
+                  <SelectItem value="0">Apenas mês atual</SelectItem>
+                  <SelectItem value="1">+1 mês futuro</SelectItem>
+                  <SelectItem value="2">+2 meses futuros</SelectItem>
+                  <SelectItem value="3">+3 meses futuros</SelectItem>
+                  <SelectItem value="6">+6 meses futuros</SelectItem>
+                  <SelectItem value="12">+12 meses futuros</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-slate-500">
+                Define até quando o agente pode registrar BH antecipadamente.
+              </p>
             </div>
             
             <div className="space-y-2">

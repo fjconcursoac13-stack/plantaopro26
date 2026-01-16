@@ -385,14 +385,16 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
     }
   };
 
+  const [bhFutureMonthsAllowed, setBhFutureMonthsAllowed] = useState(0);
+
   const fetchBHData = async () => {
     try {
       setIsLoading(true);
       
-      // Fetch agent's hourly rate and limit
+      // Fetch agent's hourly rate, limit, and future months config
       const { data: agentData } = await (supabase as any)
         .from('agents')
-        .select('bh_hourly_rate, bh_limit')
+        .select('bh_hourly_rate, bh_limit, bh_future_months_allowed')
         .eq('id', agentId)
         .single();
 
@@ -401,6 +403,9 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
       }
       if (agentData?.bh_limit) {
         setBhLimit(Number(agentData.bh_limit));
+      }
+      if (agentData?.bh_future_months_allowed !== undefined) {
+        setBhFutureMonthsAllowed(Number(agentData.bh_future_months_allowed) || 0);
       }
 
       // Fetch overtime entries
@@ -1238,11 +1243,12 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
               onSelect={handleDateClick}
               locale={ptBR}
               disabled={(date) => {
-                // Permitir marcar dias futuros dentro do mês corrente.
-                // Bloquear apenas datas após o fim do mês atual.
+                // Permitir marcar dias futuros baseado na configuração bhFutureMonthsAllowed
                 const today = new Date();
-                const monthEnd = endOfMonth(today);
-                if (isAfter(startOfDay(date), startOfDay(monthEnd))) return true;
+                const maxAllowedDate = addMonths(endOfMonth(today), bhFutureMonthsAllowed);
+                
+                // Bloquear datas após o limite permitido
+                if (isAfter(startOfDay(date), startOfDay(maxAllowedDate))) return true;
 
                 // Limit reached
                 if (isAtLimit) return true;

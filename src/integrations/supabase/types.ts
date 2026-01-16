@@ -216,6 +216,7 @@ export type Database = {
           address: string | null
           age: number | null
           avatar_url: string | null
+          bh_future_months_allowed: number | null
           bh_hourly_rate: number | null
           bh_limit: number | null
           birth_date: string | null
@@ -248,6 +249,7 @@ export type Database = {
           address?: string | null
           age?: number | null
           avatar_url?: string | null
+          bh_future_months_allowed?: number | null
           bh_hourly_rate?: number | null
           bh_limit?: number | null
           birth_date?: string | null
@@ -280,6 +282,7 @@ export type Database = {
           address?: string | null
           age?: number | null
           avatar_url?: string | null
+          bh_future_months_allowed?: number | null
           bh_hourly_rate?: number | null
           bh_limit?: number | null
           birth_date?: string | null
@@ -653,6 +656,44 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          agent_id: string
+          content: string | null
+          created_at: string
+          id: string
+          is_read: boolean
+          title: string
+          type: string
+        }
+        Insert: {
+          agent_id: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          title: string
+          type?: string
+        }
+        Update: {
+          agent_id?: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          title?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       offline_license_cache: {
         Row: {
           agent_id: string
@@ -903,6 +944,71 @@ export type Database = {
             columns: ["agent_id"]
             isOneToOne: false
             referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shift_swaps: {
+        Row: {
+          created_at: string
+          id: string
+          reason: string | null
+          requester_id: string
+          requester_shift_id: string
+          status: string
+          target_id: string
+          target_shift_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reason?: string | null
+          requester_id: string
+          requester_shift_id: string
+          status?: string
+          target_id: string
+          target_shift_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reason?: string | null
+          requester_id?: string
+          requester_shift_id?: string
+          status?: string
+          target_id?: string
+          target_shift_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shift_swaps_requester_id_fkey"
+            columns: ["requester_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shift_swaps_requester_shift_id_fkey"
+            columns: ["requester_shift_id"]
+            isOneToOne: false
+            referencedRelation: "agent_shifts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shift_swaps_target_id_fkey"
+            columns: ["target_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shift_swaps_target_shift_id_fkey"
+            columns: ["target_shift_id"]
+            isOneToOne: false
+            referencedRelation: "agent_shifts"
             referencedColumns: ["id"]
           },
         ]
