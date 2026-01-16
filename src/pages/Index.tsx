@@ -919,10 +919,10 @@ export default function Index() {
         </div>
       </header>
 
-      {/* Teams Grid Section - Optimized for mobile portrait */}
-      <section className="flex-1 py-2 sm:py-4 px-3 sm:px-6 relative z-10 flex items-center justify-center min-h-0 overflow-hidden">
-        <div className="w-full h-full max-w-sm sm:max-w-2xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl mx-auto flex items-center justify-center">
-          <div className="w-full grid grid-cols-2 landscape:grid-cols-4 md:grid-cols-4 gap-2 sm:gap-4 md:gap-5 lg:gap-6 auto-rows-fr">
+      {/* Teams Grid Section - Optimized for both portrait and landscape */}
+      <section className="flex-1 py-2 sm:py-3 px-2 sm:px-4 relative z-10 flex items-center justify-center min-h-0 overflow-hidden">
+        <div className="w-full h-full max-w-[95vw] landscape:max-w-[90vw] sm:max-w-2xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl mx-auto flex items-center justify-center">
+          <div className="w-full grid grid-cols-2 landscape:grid-cols-4 md:grid-cols-4 gap-1.5 landscape:gap-2 sm:gap-3 md:gap-4 lg:gap-5 auto-rows-fr">
             {teams.map((team, index) => (
               <div
                 key={team}
@@ -942,55 +942,60 @@ export default function Index() {
       </section>
 
 
-      {/* Footer - Compact single row */}
-      <footer className="py-1.5 sm:py-2 px-3 sm:px-4 bg-slate-900/90 backdrop-blur-sm border-t border-primary/20 relative z-20 shrink-0">
-        <div className="max-w-6xl mx-auto flex items-center justify-between gap-2">
+      {/* Footer - Compact with Developer Credit on desktop */}
+      <footer className="py-1 sm:py-1.5 px-2 sm:px-4 bg-slate-900/95 backdrop-blur-sm border-t border-primary/20 relative z-20 shrink-0">
+        <div className="max-w-6xl mx-auto flex items-center justify-between gap-1">
           {/* Left: Branding + Audio */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="flex items-center gap-1.5 text-slate-400">
-              <Shield className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
-              <span className="text-[10px] sm:text-xs font-semibold">© {new Date().getFullYear()}</span>
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="flex items-center gap-1 text-slate-500">
+              <Shield className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-primary/70" />
+              <span className="text-[9px] sm:text-[10px] font-medium">© {new Date().getFullYear()}</span>
             </div>
-            <span className="text-[10px] sm:text-xs font-bold bg-gradient-to-r from-primary to-amber-400 bg-clip-text text-transparent">
+            <span className="hidden sm:inline text-[10px] font-bold bg-gradient-to-r from-primary to-amber-400 bg-clip-text text-transparent">
               FRANC D'NIS
             </span>
             <HomeAudioPlayer />
           </div>
           
+          {/* Center: Developer Credit - Desktop only */}
+          <div className="hidden lg:flex items-center">
+            <DeveloperFooter variant="transparent" />
+          </div>
+          
           {/* Right: Actions - Compact */}
-          <div className="flex items-center gap-0.5 sm:gap-1">
+          <div className="flex items-center gap-0.5">
             <button
               onClick={() => setShowAboutDialog(true)}
-              className="p-1.5 sm:p-2 text-slate-500 hover:text-primary rounded-lg transition-colors"
+              className="p-1 sm:p-1.5 text-slate-500 hover:text-primary rounded transition-colors"
               title="Sobre"
             >
-              <Info className="h-4 w-4 sm:h-5 sm:w-5" />
+              <Info className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </button>
             
             {getSavedCredentials().length > 0 && (
               <button
                 onClick={() => setShowCredentialsManager(true)}
-                className="p-1.5 sm:p-2 text-slate-500 hover:text-amber-400 rounded-lg transition-colors"
+                className="p-1 sm:p-1.5 text-slate-500 hover:text-amber-400 rounded transition-colors"
                 title="Credenciais"
               >
-                <KeyRound className="h-4 w-4 sm:h-5 sm:w-5" />
+                <KeyRound className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </button>
             )}
             
             <button
               onClick={() => navigate('/auth')}
-              className="p-1.5 sm:p-2 text-slate-500 hover:text-cyan-400 rounded-lg transition-colors"
+              className="p-1 sm:p-1.5 text-slate-500 hover:text-cyan-400 rounded transition-colors"
               title="Login Admin"
             >
-              <Mail className="h-4 w-4 sm:h-5 sm:w-5" />
+              <Mail className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </button>
             
             <button
               onClick={() => setShowMasterLogin(true)}
-              className="p-1.5 sm:p-2 text-slate-500 hover:text-red-400 rounded-lg transition-colors"
+              className="p-1 sm:p-1.5 text-slate-500 hover:text-red-400 rounded transition-colors"
               title="Master"
             >
-              <Lock className="h-4 w-4 sm:h-5 sm:w-5" />
+              <Lock className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </button>
           </div>
         </div>
