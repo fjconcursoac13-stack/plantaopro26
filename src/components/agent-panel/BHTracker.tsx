@@ -747,14 +747,20 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
     );
   }
 
-  if (compact) {
+  // State for expanded view in compact mode
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  if (compact && !isExpanded) {
     const today = new Date();
     const todayDay = today.getDate();
     const isFirstFortnight = todayDay <= 15;
     const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
 
     return (
-      <Card className="card-night-green bg-gradient-to-br from-[hsl(222,60%,4%)] via-[hsl(222,55%,6%)] to-[hsl(142,40%,8%)] border-2 border-green-500/40 transition-all duration-300 hover:border-green-400/60">
+      <Card 
+        className="card-night-green bg-gradient-to-br from-[hsl(222,60%,4%)] via-[hsl(222,55%,6%)] to-[hsl(142,40%,8%)] border-2 border-green-500/40 transition-all duration-300 hover:border-green-400/60 cursor-pointer hover:scale-[1.02] active:scale-[0.99]"
+        onClick={() => setIsExpanded(true)}
+      >
         <CardContent className="p-3 md:p-4 space-y-3">
           {/* Balance Header - Compact */}
           <div className="flex items-center gap-3">
@@ -806,18 +812,23 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
             />
           </div>
 
-          {/* Compact Fortnight Indicators */}
+          {/* Compact Fortnight Indicators + Click hint */}
           <div className="flex items-center justify-between pt-2 border-t border-slate-700/50">
             <div className="flex items-center gap-1.5">
               <Shield className="h-3 w-3 text-amber-400" />
               <span className="text-[10px] font-semibold text-slate-400">Quinzenas</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <Badge className={`text-[9px] py-0 px-1.5 ${isFirstFortnight ? 'bg-blue-500/20 text-blue-300 border-blue-500/30' : 'bg-slate-700/50 text-slate-500 border-slate-600/30'}`}>
-                1ª
-              </Badge>
-              <Badge className={`text-[9px] py-0 px-1.5 ${!isFirstFortnight ? 'bg-purple-500/20 text-purple-300 border-purple-500/30' : 'bg-slate-700/50 text-slate-500 border-slate-600/30'}`}>
-                2ª
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
+                <Badge className={`text-[9px] py-0 px-1.5 ${isFirstFortnight ? 'bg-blue-500/20 text-blue-300 border-blue-500/30' : 'bg-slate-700/50 text-slate-500 border-slate-600/30'}`}>
+                  1ª
+                </Badge>
+                <Badge className={`text-[9px] py-0 px-1.5 ${!isFirstFortnight ? 'bg-purple-500/20 text-purple-300 border-purple-500/30' : 'bg-slate-700/50 text-slate-500 border-slate-600/30'}`}>
+                  2ª
+                </Badge>
+              </div>
+              <Badge className="text-[8px] py-0 px-1.5 bg-green-500/20 text-green-300 border-green-500/30">
+                Toque para registrar
               </Badge>
             </div>
           </div>
@@ -834,14 +845,27 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
             <Clock className="h-5 w-5 text-amber-500" />
             <span>Banco de Horas</span>
           </CardTitle>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => saveAlertSettings(!alertsEnabled, alertDaysBefore)}
-            className={alertsEnabled ? 'text-amber-400 hover:text-amber-300' : 'text-slate-400 hover:text-slate-300'}
-          >
-            {alertsEnabled ? <Bell className="h-4 w-4" /> : <BellOff className="h-4 w-4" />}
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => saveAlertSettings(!alertsEnabled, alertDaysBefore)}
+              className={alertsEnabled ? 'text-amber-400 hover:text-amber-300' : 'text-slate-400 hover:text-slate-300'}
+            >
+              {alertsEnabled ? <Bell className="h-4 w-4" /> : <BellOff className="h-4 w-4" />}
+            </Button>
+            {compact && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsExpanded(false)}
+                className="text-slate-400 hover:text-white"
+              >
+                <TrendingDown className="h-4 w-4" />
+                <span className="text-xs ml-1">Minimizar</span>
+              </Button>
+            )}
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
