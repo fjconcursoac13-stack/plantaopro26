@@ -184,7 +184,7 @@ export function TeamMembersCard({ unitId, team, currentAgentId }: TeamMembersCar
 
   return (
     <>
-      <Card className="relative bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-amber-900/20 border-3 border-amber-500/40 shadow-2xl shadow-amber-900/20 overflow-hidden transition-all duration-300 hover:shadow-amber-500/20 hover:border-amber-400/50 hover:scale-[1.01] group">
+      <Card className="card-night-amber bg-gradient-to-br from-[hsl(222,60%,3%)] via-[hsl(222,55%,5%)] to-[hsl(38,40%,8%)] border-3 border-amber-500/50 overflow-hidden transition-all duration-300 hover:border-amber-400/70 group relative">
         {/* Glow Effect */}
         <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-transparent to-amber-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         

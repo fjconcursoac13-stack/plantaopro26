@@ -66,6 +66,27 @@
     --background: 222 47% 6%;
     --foreground: 210 40% 98%;
   }
+
+  /* Ultra Dark Night Mode - High Contrast for Night Use */
+  .night-mode {
+    --background: 222 60% 3%;
+    --foreground: 210 40% 98%;
+    --card: 222 55% 5%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 55% 6%;
+    --popover-foreground: 210 40% 98%;
+    --secondary: 222 45% 8%;
+    --secondary-foreground: 210 40% 95%;
+    --muted: 222 40% 7%;
+    --muted-foreground: 215 20% 60%;
+    --border: 222 35% 15%;
+    --input: 222 45% 8%;
+    
+    --gradient-dark: linear-gradient(180deg, hsl(222 60% 3%) 0%, hsl(222 60% 1%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(222 55% 6%) 0%, hsl(222 55% 3%) 100%);
+    --shadow-card: 0 8px 40px hsl(0 0% 0% / 0.5);
+    --shadow-glow: 0 0 50px hsl(187 85% 53% / 0.2);
+  }
 }
 
 @layer base {
@@ -356,6 +377,116 @@
 
   .font-mono {
     font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* Night Mode Card Styles - Ultra Dark with High Contrast */
+  .card-night {
+    @apply relative overflow-hidden;
+    background: linear-gradient(145deg, hsl(222 60% 4%) 0%, hsl(222 65% 2%) 100%);
+    border-width: 2px;
+    box-shadow: 
+      0 0 0 1px hsl(222 50% 12%),
+      0 8px 40px hsl(0 0% 0% / 0.6),
+      inset 0 1px 0 hsl(222 40% 15% / 0.3);
+  }
+
+  .card-night-green {
+    @apply card-night;
+    border-color: hsl(142 70% 35% / 0.6);
+    box-shadow: 
+      0 0 0 1px hsl(142 70% 25% / 0.3),
+      0 8px 40px hsl(0 0% 0% / 0.6),
+      0 0 30px hsl(142 70% 35% / 0.15),
+      inset 0 1px 0 hsl(142 50% 20% / 0.3);
+  }
+
+  .card-night-amber {
+    @apply card-night;
+    border-color: hsl(38 90% 45% / 0.6);
+    box-shadow: 
+      0 0 0 1px hsl(38 90% 35% / 0.3),
+      0 8px 40px hsl(0 0% 0% / 0.6),
+      0 0 30px hsl(38 90% 45% / 0.15),
+      inset 0 1px 0 hsl(38 70% 25% / 0.3);
+  }
+
+  .card-night-emerald {
+    @apply card-night;
+    border-color: hsl(160 80% 40% / 0.6);
+    box-shadow: 
+      0 0 0 1px hsl(160 80% 30% / 0.3),
+      0 8px 40px hsl(0 0% 0% / 0.6),
+      0 0 30px hsl(160 80% 40% / 0.15),
+      inset 0 1px 0 hsl(160 60% 25% / 0.3);
+  }
+
+  .card-night-cyan {
+    @apply card-night;
+    border-color: hsl(187 80% 45% / 0.6);
+    box-shadow: 
+      0 0 0 1px hsl(187 80% 35% / 0.3),
+      0 8px 40px hsl(0 0% 0% / 0.6),
+      0 0 30px hsl(187 80% 45% / 0.15),
+      inset 0 1px 0 hsl(187 60% 25% / 0.3);
+  }
+
+  .card-night-orange {
+    @apply card-night;
+    border-color: hsl(25 90% 50% / 0.6);
+    box-shadow: 
+      0 0 0 1px hsl(25 90% 40% / 0.3),
+      0 8px 40px hsl(0 0% 0% / 0.6),
+      0 0 30px hsl(25 90% 50% / 0.15),
+      inset 0 1px 0 hsl(25 70% 30% / 0.3);
+  }
+
+  .card-night-purple {
+    @apply card-night;
+    border-color: hsl(270 70% 50% / 0.6);
+    box-shadow: 
+      0 0 0 1px hsl(270 70% 40% / 0.3),
+      0 8px 40px hsl(0 0% 0% / 0.6),
+      0 0 30px hsl(270 70% 50% / 0.15),
+      inset 0 1px 0 hsl(270 50% 30% / 0.3);
+  }
+
+  .card-night-rose {
+    @apply card-night;
+    border-color: hsl(350 70% 50% / 0.6);
+    box-shadow: 
+      0 0 0 1px hsl(350 70% 40% / 0.3),
+      0 8px 40px hsl(0 0% 0% / 0.6),
+      0 0 30px hsl(350 70% 50% / 0.15),
+      inset 0 1px 0 hsl(350 50% 30% / 0.3);
+  }
+
+  /* Night mode hover effects */
+  .card-night:hover,
+  .card-night-green:hover,
+  .card-night-amber:hover,
+  .card-night-emerald:hover,
+  .card-night-cyan:hover,
+  .card-night-orange:hover,
+  .card-night-purple:hover,
+  .card-night-rose:hover {
+    transform: scale(1.01);
+    transition: all 0.3s ease;
+  }
+
+  .card-night-green:hover {
+    border-color: hsl(142 70% 45% / 0.8);
+    box-shadow: 
+      0 0 0 1px hsl(142 70% 35% / 0.4),
+      0 12px 50px hsl(0 0% 0% / 0.7),
+      0 0 50px hsl(142 70% 40% / 0.25);
+  }
+
+  .card-night-amber:hover {
+    border-color: hsl(38 90% 55% / 0.8);
+    box-shadow: 
+      0 0 0 1px hsl(38 90% 45% / 0.4),
+      0 12px 50px hsl(0 0% 0% / 0.7),
+      0 0 50px hsl(38 90% 50% / 0.25);
   }
 }
 
