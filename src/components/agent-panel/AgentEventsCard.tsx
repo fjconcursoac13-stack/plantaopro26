@@ -210,27 +210,34 @@ export function AgentEventsCard({ agentId }: AgentEventsCardProps) {
     .slice(0, 5);
 
   return (
-    <Card className="bg-slate-800/50 border-slate-700">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center justify-between text-lg">
-          <div className="flex items-center gap-2">
-            <CalendarDays className="h-5 w-5 text-amber-500" />
-            <span>Agenda Pessoal</span>
+    <Card className="relative bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-cyan-900/20 border-3 border-cyan-500/40 shadow-2xl shadow-cyan-900/20 overflow-hidden transition-all duration-300 hover:shadow-cyan-500/20 hover:border-cyan-400/50 hover:scale-[1.01] group">
+      {/* Glow Effect */}
+      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-transparent to-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      
+      <CardHeader className="pb-4 relative">
+        <CardTitle className="flex items-center justify-between text-xl md:text-2xl">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-gradient-to-br from-cyan-500/30 to-blue-500/20 border border-cyan-500/40">
+              <CalendarDays className="h-6 w-6 md:h-7 md:w-7 text-cyan-400" />
+            </div>
+            <span className="font-bold bg-gradient-to-r from-cyan-200 to-blue-300 bg-clip-text text-transparent">
+              Agenda Pessoal
+            </span>
           </div>
-          <Badge variant="outline" className="text-slate-400">
+          <Badge className="text-sm bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-300 border-cyan-500/40 px-3 py-1">
             {events.length} eventos
           </Badge>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-5 relative">
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-amber-500" />
+            <Loader2 className="h-6 w-6 animate-spin text-cyan-500" />
           </div>
         ) : (
           <>
             {/* Calendar with events */}
-            <div className="bg-slate-700/30 rounded-lg p-2">
+            <div className="bg-slate-800/60 rounded-xl p-3 border-2 border-cyan-500/20">
               <Calendar
                 mode="single"
                 selected={selectedDate}
@@ -243,15 +250,15 @@ export function AgentEventsCard({ agentId }: AgentEventsCardProps) {
                 }}
                 modifiersStyles={{
                   event: {
-                    backgroundColor: 'rgba(139, 92, 246, 0.3)',
-                    color: '#a78bfa',
+                    backgroundColor: 'rgba(6, 182, 212, 0.3)',
+                    color: '#22d3ee',
                     fontWeight: 'bold',
                     borderRadius: '50%'
                   }
                 }}
                 className="rounded-md"
               />
-              <p className="text-xs text-slate-400 text-center mt-2">
+              <p className="text-sm text-cyan-300/60 text-center mt-3 font-medium">
                 Clique em uma data para adicionar ou editar eventos
               </p>
             </div>
