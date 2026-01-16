@@ -247,8 +247,8 @@ export default function AgentPanel() {
       <SessionMonitorBanner />
 
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
-        <main className={`flex-1 p-3 md:p-6 lg:p-8 overflow-y-auto overflow-x-hidden pb-safe ${showLicenseWarning ? 'pt-28' : ''}`}>
-          <div className="max-w-7xl mx-auto space-y-3 md:space-y-6 animate-fade-in">
+        <main className={`flex-1 p-4 md:p-8 lg:p-10 overflow-y-auto overflow-x-hidden pb-safe ${showLicenseWarning ? 'pt-28' : ''}`}>
+          <div className="max-w-7xl mx-auto space-y-4 md:space-y-8 animate-fade-in">
             {/* Header Actions */}
             <div className="flex items-center justify-between">
               <BackButton fallbackPath="/" />
@@ -305,43 +305,43 @@ export default function AgentPanel() {
             />
 
             {/* Agent Header - LARGER e mais proporcional */}
-            <div className="bg-gradient-to-r from-slate-800 via-slate-800/95 to-amber-900/20 rounded-xl md:rounded-2xl p-4 md:p-6 lg:p-8 border border-amber-500/30 shadow-lg shadow-amber-500/10">
-              <div className="flex items-center justify-between gap-4">
+            <div className="bg-gradient-to-br from-slate-800/95 via-slate-900/90 to-amber-950/30 rounded-2xl md:rounded-3xl p-5 md:p-8 lg:p-10 border-2 border-amber-500/40 shadow-2xl shadow-amber-500/20 backdrop-blur-sm">
+              <div className="flex items-center justify-between gap-4 md:gap-6">
                 <div 
-                  className="flex items-center gap-4 md:gap-5 cursor-pointer hover:opacity-80 transition-opacity flex-1 min-w-0"
+                  className="flex items-center gap-4 md:gap-6 cursor-pointer hover:opacity-90 transition-all duration-300 flex-1 min-w-0"
                   onClick={() => navigate('/agent-profile')}
                   title="Editar meu perfil"
                 >
-                  <Avatar className="w-14 h-14 md:w-20 md:h-20 lg:w-24 lg:h-24 border-3 md:border-4 border-amber-500/50 shadow-lg shadow-amber-500/20 flex-shrink-0">
+                  <Avatar className="w-16 h-16 md:w-24 md:h-24 lg:w-28 lg:h-28 border-4 md:border-[5px] border-amber-500/60 shadow-xl shadow-amber-500/30 flex-shrink-0 ring-2 ring-amber-400/20 ring-offset-2 ring-offset-slate-900">
                     {(agent as any).avatar_url && <AvatarImage src={(agent as any).avatar_url} alt={agent.name} />}
-                    <AvatarFallback className="bg-gradient-to-br from-amber-500 to-amber-600 text-xl md:text-3xl lg:text-4xl font-bold text-black">
+                    <AvatarFallback className="bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 text-2xl md:text-4xl lg:text-5xl font-black text-black">
                       {agent.name.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div className="min-w-0 flex-1">
                     {/* Nome destacado - MAIOR */}
-                    <h1 className="text-xl md:text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 tracking-wide truncate">
+                    <h1 className="text-2xl md:text-4xl lg:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 tracking-wide truncate drop-shadow-lg">
                       {agent.name}
                     </h1>
                     
                     {/* Badges em linha - MAIORES */}
-                    <div className="flex items-center gap-2 mt-2 flex-wrap">
+                    <div className="flex items-center gap-2 md:gap-3 mt-3 flex-wrap">
                       {getRoleBadge((agent as any).role)}
                       {(agent as any).blood_type && (
-                        <Badge className="bg-red-500/20 text-red-400 border-red-500/40 flex items-center gap-1 text-xs md:text-sm px-2 py-0.5">
-                          <Droplet className="h-3 w-3 md:h-4 md:w-4" />
+                        <Badge className="bg-red-500/25 text-red-300 border-red-500/50 flex items-center gap-1.5 text-sm md:text-base px-3 py-1 font-semibold">
+                          <Droplet className="h-4 w-4 md:h-5 md:w-5" />
                           {(agent as any).blood_type}
                         </Badge>
                       )}
                       {agent.team && (
-                        <Badge className="bg-slate-700/80 text-amber-400 border-amber-500/30 text-xs md:text-sm px-2 py-0.5 hidden sm:flex">
+                        <Badge className="bg-slate-700/90 text-amber-300 border-amber-500/40 text-sm md:text-base px-3 py-1 hidden sm:flex font-semibold">
                           {agent.team}
                         </Badge>
                       )}
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="flex items-center gap-3 flex-shrink-0">
                   <AgentRoleSelector agentId={agent.id} currentRole={(agent as any).role || 'agent'} />
                   <NotificationsPanel agentId={agent.id} />
                 </div>
@@ -349,54 +349,54 @@ export default function AgentPanel() {
             </div>
 
             {/* Quick Stats Row - MAIOR proporção */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-8">
               <ProfessionalShiftTimer agentId={agent.id} compact />
               <BHTracker agentId={agent.id} compact />
             </div>
 
             {/* Main Tabs - Maior e mais visível */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 md:space-y-6">
-              <TabsList className="bg-slate-800/60 border border-slate-700/50 p-1 h-auto flex flex-wrap gap-1 rounded-xl">
-                <TabsTrigger value="equipe" className="flex items-center gap-1.5 text-xs md:text-sm px-3 py-2 md:px-4 md:py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg">
-                  <Users className="h-4 w-4 md:h-5 md:w-5" />
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-5 md:space-y-8">
+              <TabsList className="bg-gradient-to-r from-slate-800/80 via-slate-900/90 to-slate-800/80 border-2 border-slate-600/60 p-2 h-auto flex flex-wrap gap-2 rounded-2xl shadow-xl backdrop-blur-sm">
+                <TabsTrigger value="equipe" className="flex items-center gap-2 text-sm md:text-base px-4 py-2.5 md:px-5 md:py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-400 data-[state=active]:to-amber-500 data-[state=active]:text-black data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/30 rounded-xl font-semibold transition-all duration-200">
+                  <Users className="h-5 w-5 md:h-6 md:w-6" />
                   <span className="hidden sm:inline">Equipe</span>
                 </TabsTrigger>
-                <TabsTrigger value="plantoes" className="flex items-center gap-1.5 text-xs md:text-sm px-3 py-2 md:px-4 md:py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg">
-                  <Calendar className="h-4 w-4 md:h-5 md:w-5" />
+                <TabsTrigger value="plantoes" className="flex items-center gap-2 text-sm md:text-base px-4 py-2.5 md:px-5 md:py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-400 data-[state=active]:to-amber-500 data-[state=active]:text-black data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/30 rounded-xl font-semibold transition-all duration-200">
+                  <Calendar className="h-5 w-5 md:h-6 md:w-6" />
                   <span className="hidden sm:inline">Plantões</span>
                 </TabsTrigger>
-                <TabsTrigger value="bh" className="flex items-center gap-1.5 text-xs md:text-sm px-3 py-2 md:px-4 md:py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg">
-                  <Clock className="h-4 w-4 md:h-5 md:w-5" />
-                  <span>BH</span>
+                <TabsTrigger value="bh" className="flex items-center gap-2 text-sm md:text-base px-4 py-2.5 md:px-5 md:py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-400 data-[state=active]:to-green-500 data-[state=active]:text-black data-[state=active]:shadow-lg data-[state=active]:shadow-green-500/30 rounded-xl font-semibold transition-all duration-200">
+                  <Clock className="h-5 w-5 md:h-6 md:w-6" />
+                  <span className="font-bold">BH</span>
                 </TabsTrigger>
-                <TabsTrigger value="folgas" className="flex items-center gap-1.5 text-xs md:text-sm px-3 py-2 md:px-4 md:py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg">
-                  <CalendarOff className="h-4 w-4 md:h-5 md:w-5" />
+                <TabsTrigger value="folgas" className="flex items-center gap-2 text-sm md:text-base px-4 py-2.5 md:px-5 md:py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-400 data-[state=active]:to-amber-500 data-[state=active]:text-black data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/30 rounded-xl font-semibold transition-all duration-200">
+                  <CalendarOff className="h-5 w-5 md:h-6 md:w-6" />
                   <span className="hidden sm:inline">Folgas</span>
                 </TabsTrigger>
-                <TabsTrigger value="agenda" className="flex items-center gap-1.5 text-xs md:text-sm px-3 py-2 md:px-4 md:py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg">
-                  <CalendarDays className="h-4 w-4 md:h-5 md:w-5" />
+                <TabsTrigger value="agenda" className="flex items-center gap-2 text-sm md:text-base px-4 py-2.5 md:px-5 md:py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-400 data-[state=active]:to-amber-500 data-[state=active]:text-black data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/30 rounded-xl font-semibold transition-all duration-200">
+                  <CalendarDays className="h-5 w-5 md:h-6 md:w-6" />
                   <span className="hidden sm:inline">Agenda</span>
                 </TabsTrigger>
-                <TabsTrigger value="planejador" className="flex items-center gap-1.5 text-xs md:text-sm px-3 py-2 md:px-4 md:py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg">
-                  <Calculator className="h-4 w-4 md:h-5 md:w-5" />
+                <TabsTrigger value="planejador" className="flex items-center gap-2 text-sm md:text-base px-4 py-2.5 md:px-5 md:py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-400 data-[state=active]:to-amber-500 data-[state=active]:text-black data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/30 rounded-xl font-semibold transition-all duration-200">
+                  <Calculator className="h-5 w-5 md:h-6 md:w-6" />
                   <span className="hidden sm:inline">Plan</span>
                 </TabsTrigger>
-                <TabsTrigger value="permutas" className="flex items-center gap-1.5 text-xs md:text-sm px-3 py-2 md:px-4 md:py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg">
-                  <ArrowRightLeft className="h-4 w-4 md:h-5 md:w-5" />
+                <TabsTrigger value="permutas" className="flex items-center gap-2 text-sm md:text-base px-4 py-2.5 md:px-5 md:py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-400 data-[state=active]:to-amber-500 data-[state=active]:text-black data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/30 rounded-xl font-semibold transition-all duration-200">
+                  <ArrowRightLeft className="h-5 w-5 md:h-6 md:w-6" />
                   <span className="hidden sm:inline">Troca</span>
                 </TabsTrigger>
-                <TabsTrigger value="chat" className="flex items-center gap-1.5 text-xs md:text-sm px-3 py-2 md:px-4 md:py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg">
-                  <MessageCircle className="h-4 w-4 md:h-5 md:w-5" />
+                <TabsTrigger value="chat" className="flex items-center gap-2 text-sm md:text-base px-4 py-2.5 md:px-5 md:py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-400 data-[state=active]:to-blue-500 data-[state=active]:text-black data-[state=active]:shadow-lg data-[state=active]:shadow-blue-500/30 rounded-xl font-semibold transition-all duration-200">
+                  <MessageCircle className="h-5 w-5 md:h-6 md:w-6" />
                   <span className="hidden sm:inline">Chat</span>
                 </TabsTrigger>
-                <TabsTrigger value="config" className="flex items-center gap-1.5 text-xs md:text-sm px-3 py-2 md:px-4 md:py-2.5 data-[state=active]:bg-amber-500 data-[state=active]:text-black rounded-lg">
-                  <Settings className="h-4 w-4 md:h-5 md:w-5" />
+                <TabsTrigger value="config" className="flex items-center gap-2 text-sm md:text-base px-4 py-2.5 md:px-5 md:py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-slate-400 data-[state=active]:to-slate-500 data-[state=active]:text-black data-[state=active]:shadow-lg rounded-xl font-semibold transition-all duration-200">
+                  <Settings className="h-5 w-5 md:h-6 md:w-6" />
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="equipe" className="space-y-4">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                  <div className="lg:col-span-2 space-y-4">
+              <TabsContent value="equipe" className="space-y-5 md:space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 md:gap-6">
+                  <div className="lg:col-span-2 space-y-5 md:space-y-6">
                     <TeamMembersCard 
                       unitId={agent.unit_id} 
                       team={agent.team} 
@@ -417,15 +417,15 @@ export default function AgentPanel() {
                 </div>
               </TabsContent>
 
-              <TabsContent value="plantoes" className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <TabsContent value="plantoes" className="space-y-5 md:space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
                   <ProfessionalShiftTimer agentId={agent.id} />
                   <ShiftScheduleCard agentId={agent.id} />
                 </div>
                 <ShiftCalendarOverview agentId={agent.id} />
               </TabsContent>
 
-              <TabsContent value="bh" className="space-y-4">
+              <TabsContent value="bh" className="space-y-5 md:space-y-6">
                 <BHTracker agentId={agent.id} />
               </TabsContent>
 
@@ -463,8 +463,8 @@ export default function AgentPanel() {
                 />
               </TabsContent>
 
-              <TabsContent value="config" className="space-y-4">
-                <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+              <TabsContent value="config" className="space-y-5 md:space-y-6">
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 md:gap-6">
                   <AgentSettingsCard
                     agentId={agent.id}
                     agentName={agent.name}
@@ -472,20 +472,20 @@ export default function AgentPanel() {
                     currentAvatarUrl={(agent as any).avatar_url}
                     onUpdate={() => window.location.reload()}
                   />
-                  <div className="space-y-4">
+                  <div className="space-y-5 md:space-y-6">
                     <NotificationSettings />
                     <BHReminderSettings agentId={agent.id} />
                     
                     {/* Diagnostic Tools Section */}
-                    <div className="bg-card border rounded-lg p-4 space-y-3">
-                      <h3 className="font-medium text-sm flex items-center gap-2">
-                        <Settings className="h-4 w-4" />
+                    <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 border-2 border-slate-600/50 rounded-2xl p-5 md:p-6 space-y-4 shadow-lg">
+                      <h3 className="font-semibold text-base md:text-lg flex items-center gap-2 text-slate-200">
+                        <Settings className="h-5 w-5 text-amber-400" />
                         Ferramentas de Diagnóstico
                       </h3>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-sm text-slate-400">
                         Use estas ferramentas para resolver problemas de conexão ou sessão.
                       </p>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-3">
                         <DiagnosticReportButton />
                         <SafeModeToggle variant="compact" />
                       </div>
