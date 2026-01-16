@@ -525,9 +525,9 @@ export function ChatPanel({ agentId, unitId, team, agentName, agentRole }: ChatP
 
   if (isLoading) {
     return (
-      <Card className="bg-slate-800/50 border-slate-700">
+      <Card className="bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-emerald-900/20 border-3 border-emerald-500/40 shadow-lg shadow-emerald-500/10">
         <CardContent className="flex items-center justify-center py-12">
-          <Loader2 className="h-6 w-6 animate-spin text-amber-500" />
+          <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
         </CardContent>
       </Card>
     );
@@ -537,13 +537,15 @@ export function ChatPanel({ agentId, unitId, team, agentName, agentRole }: ChatP
   const currentConfig = chatRoomConfig[chatType];
 
   return (
-    <Card className="bg-slate-800/50 border-slate-700 h-[600px] flex flex-col">
-      <CardHeader className="pb-2 border-b border-slate-700">
+    <Card className="bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-emerald-900/20 border-3 border-emerald-500/40 shadow-lg shadow-emerald-500/10 h-[600px] flex flex-col transition-all duration-300 hover:border-emerald-400/50 hover:shadow-emerald-500/20 hover:scale-[1.01] group">
+      <CardHeader className="pb-2 border-b border-emerald-500/20">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <MessageCircle className="h-5 w-5 text-amber-500" />
-            <span>Chat</span>
-            <Badge variant="outline" className={`text-xs ${currentConfig.color} border-current`}>
+          <CardTitle className="flex items-center gap-3 text-lg">
+            <div className="p-2 rounded-lg bg-emerald-500/20 group-hover:bg-emerald-500/30 transition-colors">
+              <MessageCircle className="h-6 w-6 text-emerald-400" />
+            </div>
+            <span className="text-xl font-bold bg-gradient-to-r from-emerald-300 to-emerald-500 bg-clip-text text-transparent">Chat</span>
+            <Badge variant="outline" className={`text-sm font-semibold ${currentConfig.color} border-current px-3 py-1`}>
               {currentConfig.label}
             </Badge>
           </CardTitle>
