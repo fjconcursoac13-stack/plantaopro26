@@ -251,171 +251,201 @@ export default function AgentPanel() {
         <main className={`flex-1 p-4 md:p-8 lg:p-10 overflow-y-auto overflow-x-hidden pb-safe ${showLicenseWarning ? 'pt-28' : ''}`}>
           <div className="max-w-7xl mx-auto space-y-4 md:space-y-8 animate-fade-in">
             {/* Professional Header Bar with Agent Info */}
-            <div className="bg-gradient-to-r from-slate-900/98 via-slate-800/95 to-slate-900/98 rounded-lg border border-amber-500/50 shadow-xl backdrop-blur-md overflow-hidden">
-              <div className="flex items-center gap-2 p-2">
-                {/* Left: Back Button */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigate(-1)}
-                  className="border border-slate-600/50 hover:border-amber-500/50 hover:bg-amber-900/20 text-slate-300 hover:text-amber-400 h-9 px-2"
-                >
-                  <ArrowRightLeft className="h-4 w-4 rotate-180" />
-                </Button>
-
-                {/* Center: Agent Profile - Compact */}
+            <div className="bg-gradient-to-r from-slate-900/98 via-slate-800/95 to-slate-900/98 rounded-xl border-2 border-amber-500/40 shadow-2xl backdrop-blur-md overflow-hidden">
+              <div className="flex items-center gap-3 p-3 md:p-4">
+                {/* Agent Profile - Main Focus */}
                 <div 
-                  className="flex items-center gap-2 flex-1 min-w-0 cursor-pointer hover:opacity-90 transition-opacity px-2 py-1 rounded-lg hover:bg-slate-700/30"
+                  className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer hover:opacity-90 transition-all duration-200 p-2 rounded-xl hover:bg-slate-700/40 group"
                   onClick={() => navigate('/agent-profile')}
                 >
-                  <Avatar className="w-9 h-9 border-2 border-amber-500/60 shadow-md flex-shrink-0">
-                    {(agent as any).avatar_url && <AvatarImage src={(agent as any).avatar_url} alt={agent.name} />}
-                    <AvatarFallback className="bg-gradient-to-br from-amber-400 to-amber-600 text-sm font-black text-black">
+                  <Avatar className="w-14 h-14 md:w-16 md:h-16 border-3 border-amber-500/70 shadow-lg flex-shrink-0 ring-2 ring-amber-400/20 group-hover:ring-amber-400/40 transition-all">
+                    {(agent as any).avatar_url && <AvatarImage src={(agent as any).avatar_url} alt={agent.name} className="object-cover" />}
+                    <AvatarFallback className="bg-gradient-to-br from-amber-400 via-amber-500 to-orange-600 text-xl md:text-2xl font-black text-black">
                       {agent.name.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="min-w-0 flex-1 hidden sm:block">
-                    <h1 className="text-sm font-bold text-amber-200 truncate leading-tight">
+                  <div className="min-w-0 flex-1">
+                    <h1 className="text-base md:text-lg font-bold text-amber-100 truncate leading-tight">
                       {agent.name}
                     </h1>
-                    <div className="flex items-center gap-1 flex-wrap">
+                    <div className="flex items-center gap-2 flex-wrap mt-0.5">
                       {agent.team && (
-                        <span className="text-[10px] text-amber-400/80 font-medium">{agent.team}</span>
+                        <Badge variant="outline" className="text-[10px] md:text-xs border-amber-500/50 text-amber-400 bg-amber-500/10 px-2 py-0">
+                          {agent.team}
+                        </Badge>
                       )}
                       {(agent as any).blood_type && (
-                        <span className="text-[10px] text-red-400/80 flex items-center gap-0.5">
-                          <Droplet className="h-2.5 w-2.5" />
+                        <span className="text-[10px] md:text-xs text-red-400/90 flex items-center gap-0.5 bg-red-500/10 px-1.5 py-0.5 rounded">
+                          <Droplet className="h-3 w-3" />
                           {(agent as any).blood_type}
                         </span>
                       )}
+                      {getRoleBadge((agent as any).role)}
                     </div>
                   </div>
                 </div>
 
-                {/* Right: Actions */}
-                <div className="flex items-center gap-1 flex-shrink-0">
-                  {getRoleBadge((agent as any).role)}
+                {/* Right: Actions - Compact */}
+                <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
                   <AgentRoleSelector agentId={agent.id} currentRole={(agent as any).role || 'agent'} />
                   <NotificationsPanel agentId={agent.id} />
                   
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowWelcomeDialog(true)}
-                    className="text-amber-400 hover:bg-amber-900/30 h-9 px-2"
-                  >
-                    <Gift className="h-4 w-4" />
-                    <span className="ml-1 text-[10px] font-bold bg-amber-500/30 px-1 py-0.5 rounded-full">
-                      {getRemainingTrialDays()}d
-                    </span>
-                  </Button>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => setShowWelcomeDialog(true)}
+                          className="border-amber-500/50 hover:border-amber-400 hover:bg-amber-900/30 text-amber-400 h-10 w-10 md:h-11 md:w-11"
+                        >
+                          <Gift className="h-4 w-4 md:h-5 md:w-5" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Trial: {getRemainingTrialDays()} dias</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                   
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => navigate('/')}
-                    className="text-slate-300 hover:text-blue-400 hover:bg-blue-900/20 h-9 px-2"
-                  >
-                    <Home className="h-4 w-4" />
-                  </Button>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => navigate('/')}
+                          className="border-blue-500/50 hover:border-blue-400 hover:bg-blue-900/30 text-blue-400 h-10 w-10 md:h-11 md:w-11"
+                        >
+                          <Home className="h-4 w-4 md:h-5 md:w-5" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Início</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                   
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={async () => {
-                      await supabase.auth.signOut();
-                      navigate('/');
-                    }}
-                    className="text-red-400 hover:bg-red-900/30 h-9 px-2"
-                  >
-                    <LogOut className="h-4 w-4" />
-                  </Button>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={async () => {
+                            await supabase.auth.signOut();
+                            navigate('/');
+                          }}
+                          className="border-red-500/50 hover:border-red-400 hover:bg-red-900/30 text-red-400 h-10 w-10 md:h-11 md:w-11"
+                        >
+                          <LogOut className="h-4 w-4 md:h-5 md:w-5" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Sair</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
               </div>
             </div>
 
             {/* Main Tabs - Professional Control Panel */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-3">
-              <div className="bg-gradient-to-r from-slate-900/98 via-slate-800/95 to-slate-900/98 rounded-lg border border-slate-600/50 shadow-lg backdrop-blur-md p-1.5">
-                <div className="flex items-center gap-1 mb-1.5 px-2">
-                  <Shield className="h-3.5 w-3.5 text-amber-400" />
-                  <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">Painel de Controle</span>
-                  <Zap className="h-3 w-3 text-amber-500/60" />
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+              <div className="bg-gradient-to-br from-slate-900/98 via-slate-800/95 to-slate-900/98 rounded-xl border-2 border-amber-500/30 shadow-2xl backdrop-blur-md p-3 md:p-4">
+                {/* Control Panel Header */}
+                <div className="flex items-center justify-between mb-3 px-1">
+                  <div className="flex items-center gap-2">
+                    <div className="p-2 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg shadow-lg">
+                      <Shield className="h-5 w-5 text-black" />
+                    </div>
+                    <div>
+                      <h2 className="text-sm md:text-base font-bold text-amber-100 tracking-wide">PAINEL DE CONTROLE</h2>
+                      <p className="text-[10px] text-amber-400/70 uppercase tracking-widest">Sistema Operacional</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Zap className="h-4 w-4 text-amber-400 animate-pulse" />
+                    <span className="text-[10px] text-emerald-400 font-medium">ATIVO</span>
+                  </div>
                 </div>
-                <TabsList className="bg-slate-800/50 border border-slate-700/50 p-1 h-auto grid grid-cols-5 lg:grid-cols-9 gap-1 rounded-lg">
+                
+                {/* Tabs Grid - Larger and More Professional */}
+                <TabsList className="bg-slate-800/60 border-2 border-slate-700/50 p-2 h-auto grid grid-cols-5 lg:grid-cols-9 gap-2 rounded-xl">
                   <TabsTrigger 
                     value="equipe" 
-                    className="flex flex-col items-center justify-center gap-0.5 text-[9px] md:text-[10px] p-1.5 md:p-2 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-md rounded-md font-bold transition-all duration-150 hover:bg-slate-700/50 min-h-[40px] md:min-h-[44px]"
+                    className="flex flex-col items-center justify-center gap-1 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-lg data-[state=active]:scale-105 rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/60 min-h-[52px] md:min-h-[60px] border border-transparent data-[state=active]:border-amber-300"
                   >
-                    <Users className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                    <Users className="h-4 w-4 md:h-5 md:w-5" />
                     <span>Equipe</span>
                   </TabsTrigger>
                   
                   <TabsTrigger 
                     value="plantoes" 
-                    className="flex flex-col items-center justify-center gap-0.5 text-[9px] md:text-[10px] p-1.5 md:p-2 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-md rounded-md font-bold transition-all duration-150 hover:bg-slate-700/50 min-h-[40px] md:min-h-[44px]"
+                    className="flex flex-col items-center justify-center gap-1 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-lg data-[state=active]:scale-105 rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/60 min-h-[52px] md:min-h-[60px] border border-transparent data-[state=active]:border-amber-300"
                   >
-                    <Calendar className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                    <Calendar className="h-4 w-4 md:h-5 md:w-5" />
                     <span>Plantões</span>
                   </TabsTrigger>
                   
                   <TabsTrigger 
                     value="bh" 
-                    className="flex flex-col items-center justify-center gap-0.5 text-[9px] md:text-[10px] p-1.5 md:p-2 data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-400 data-[state=active]:to-teal-500 data-[state=active]:text-black data-[state=active]:shadow-md rounded-md font-bold transition-all duration-150 hover:bg-slate-700/50 min-h-[40px] md:min-h-[44px]"
+                    className="flex flex-col items-center justify-center gap-1 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-400 data-[state=active]:to-teal-500 data-[state=active]:text-black data-[state=active]:shadow-lg data-[state=active]:scale-105 rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/60 min-h-[52px] md:min-h-[60px] border border-transparent data-[state=active]:border-emerald-300"
                   >
-                    <Clock className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                    <Clock className="h-4 w-4 md:h-5 md:w-5" />
                     <span>BH</span>
                   </TabsTrigger>
                   
                   <TabsTrigger 
                     value="folgas" 
-                    className="flex flex-col items-center justify-center gap-0.5 text-[9px] md:text-[10px] p-1.5 md:p-2 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:to-violet-500 data-[state=active]:text-white data-[state=active]:shadow-md rounded-md font-bold transition-all duration-150 hover:bg-slate-700/50 min-h-[40px] md:min-h-[44px]"
+                    className="flex flex-col items-center justify-center gap-1 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:to-violet-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105 rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/60 min-h-[52px] md:min-h-[60px] border border-transparent data-[state=active]:border-purple-300"
                   >
-                    <CalendarOff className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                    <CalendarOff className="h-4 w-4 md:h-5 md:w-5" />
                     <span>Folgas</span>
                   </TabsTrigger>
                   
                   <TabsTrigger 
                     value="agenda" 
-                    className="flex flex-col items-center justify-center gap-0.5 text-[9px] md:text-[10px] p-1.5 md:p-2 data-[state=active]:bg-gradient-to-br data-[state=active]:from-cyan-400 data-[state=active]:to-blue-500 data-[state=active]:text-black data-[state=active]:shadow-md rounded-md font-bold transition-all duration-150 hover:bg-slate-700/50 min-h-[40px] md:min-h-[44px]"
+                    className="flex flex-col items-center justify-center gap-1 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-cyan-400 data-[state=active]:to-blue-500 data-[state=active]:text-black data-[state=active]:shadow-lg data-[state=active]:scale-105 rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/60 min-h-[52px] md:min-h-[60px] border border-transparent data-[state=active]:border-cyan-300"
                   >
-                    <CalendarDays className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                    <CalendarDays className="h-4 w-4 md:h-5 md:w-5" />
                     <span>Agenda</span>
                   </TabsTrigger>
                   
                   <TabsTrigger 
                     value="planejador" 
-                    className="flex flex-col items-center justify-center gap-0.5 text-[9px] md:text-[10px] p-1.5 md:p-2 data-[state=active]:bg-gradient-to-br data-[state=active]:from-rose-400 data-[state=active]:to-red-500 data-[state=active]:text-white data-[state=active]:shadow-md rounded-md font-bold transition-all duration-150 hover:bg-slate-700/50 min-h-[40px] md:min-h-[44px]"
+                    className="flex flex-col items-center justify-center gap-1 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-rose-400 data-[state=active]:to-red-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105 rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/60 min-h-[52px] md:min-h-[60px] border border-transparent data-[state=active]:border-rose-300"
                   >
-                    <Calculator className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                    <Calculator className="h-4 w-4 md:h-5 md:w-5" />
                     <span>Plan</span>
                   </TabsTrigger>
                   
                   <TabsTrigger 
                     value="permutas" 
-                    className="flex flex-col items-center justify-center gap-0.5 text-[9px] md:text-[10px] p-1.5 md:p-2 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-md rounded-md font-bold transition-all duration-150 hover:bg-slate-700/50 min-h-[40px] md:min-h-[44px]"
+                    className="flex flex-col items-center justify-center gap-1 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-lg data-[state=active]:scale-105 rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/60 min-h-[52px] md:min-h-[60px] border border-transparent data-[state=active]:border-amber-300"
                   >
-                    <ArrowRightLeft className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                    <ArrowRightLeft className="h-4 w-4 md:h-5 md:w-5" />
                     <span>Troca</span>
                   </TabsTrigger>
                   
                   <TabsTrigger 
                     value="chat" 
-                    className="flex flex-col items-center justify-center gap-0.5 text-[9px] md:text-[10px] p-1.5 md:p-2 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-400 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-md rounded-md font-bold transition-all duration-150 hover:bg-slate-700/50 min-h-[40px] md:min-h-[44px]"
+                    className="flex flex-col items-center justify-center gap-1 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-400 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105 rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/60 min-h-[52px] md:min-h-[60px] border border-transparent data-[state=active]:border-blue-300"
                   >
-                    <MessageCircle className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                    <MessageCircle className="h-4 w-4 md:h-5 md:w-5" />
                     <span>Chat</span>
                   </TabsTrigger>
                   
                   <TabsTrigger 
                     value="config" 
-                    className="flex flex-col items-center justify-center gap-0.5 text-[9px] md:text-[10px] p-1.5 md:p-2 data-[state=active]:bg-gradient-to-br data-[state=active]:from-slate-400 data-[state=active]:to-slate-600 data-[state=active]:text-white data-[state=active]:shadow-md rounded-md font-bold transition-all duration-150 hover:bg-slate-700/50 min-h-[40px] md:min-h-[44px]"
+                    className="flex flex-col items-center justify-center gap-1 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-slate-400 data-[state=active]:to-slate-600 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:scale-105 rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/60 min-h-[52px] md:min-h-[60px] border border-transparent data-[state=active]:border-slate-300"
                   >
-                    <Settings className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                    <Settings className="h-4 w-4 md:h-5 md:w-5" />
                     <span>Config</span>
                   </TabsTrigger>
                 </TabsList>
               </div>
+
               {/* Profile Completion Alert */}
               <ProfileCompletionAlert agentId={agent.id} agentName={agent.name} />
 
@@ -430,30 +460,24 @@ export default function AgentPanel() {
                 onComplete={checkAgentShifts}
               />
 
-              {/* Quick Stats Row */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-                <ProfessionalShiftTimer agentId={agent.id} compact />
-                <BHTracker agentId={agent.id} compact />
-              </div>
-
-              <TabsContent value="equipe" className="space-y-5 md:space-y-6 animate-fade-in">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 md:gap-6">
-                  <div className="lg:col-span-2 space-y-5 md:space-y-6">
+              <TabsContent value="equipe" className="space-y-4 animate-fade-in">
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                  <div className="lg:col-span-3">
                     <TeamMembersCard 
                       unitId={agent.unit_id} 
                       team={agent.team} 
                       currentAgentId={agent.id}
                     />
+                  </div>
+                  <div className="lg:col-span-1 space-y-4">
+                    <TacticalRadar 
+                      unitId={agent.unit_id || undefined}
+                      compact={true}
+                    />
                     <BirthdayCard 
                       agentId={agent.id}
                       team={agent.team}
                       unitId={agent.unit_id}
-                    />
-                  </div>
-                  <div className="lg:col-span-1 h-fit">
-                    <TacticalRadar 
-                      unitId={agent.unit_id || undefined}
-                      compact={false}
                     />
                   </div>
                 </div>
