@@ -944,25 +944,25 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
                 : 'bg-slate-700/30 border-slate-600/50 opacity-60'
             }`}>
               <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 min-w-0">
                   {fortnightInfo.label === '1ª Quinzena' ? (
-                    <Unlock className="h-3.5 w-3.5 text-blue-400" />
+                    <Unlock className="h-3.5 w-3.5 text-blue-400 shrink-0" />
                   ) : (
-                    <Lock className="h-3.5 w-3.5 text-slate-500" />
+                    <Lock className="h-3.5 w-3.5 text-slate-500 shrink-0" />
                   )}
-                  <span className={`text-xs font-semibold ${
+                  <span className={`text-xs font-semibold truncate ${
                     fortnightInfo.label === '1ª Quinzena' ? 'text-blue-400' : 'text-slate-500'
                   }`}>
-                    1ª Quinzena
+                    1ª Quinz.
                   </span>
                 </div>
                 {fortnightInfo.label === '1ª Quinzena' && (
-                  <Badge className="text-[10px] bg-blue-500/30 text-blue-300 border-blue-500/50">
+                  <Badge className="text-[9px] bg-blue-500/30 text-blue-300 border-blue-500/50 px-1.5 py-0 shrink-0">
                     Ativa
                   </Badge>
                 )}
               </div>
-              <div className="flex justify-center gap-0.5">
+              <div className="grid grid-cols-8 gap-0.5 justify-items-center">
                 {Array.from({ length: 15 }, (_, i) => {
                   const day = i + 1;
                   const today = new Date();
@@ -990,7 +990,7 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
                   );
                 })}
               </div>
-              <p className="text-[10px] text-center mt-1.5 text-slate-500">Dias 1 a 15</p>
+              <p className="text-[10px] text-center mt-1.5 text-slate-500">1 a 15</p>
             </div>
 
             {/* Second Fortnight */}
@@ -1000,25 +1000,25 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
                 : 'bg-slate-700/30 border-slate-600/50 opacity-60'
             }`}>
               <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 min-w-0">
                   {fortnightInfo.label === '2ª Quinzena' ? (
-                    <Unlock className="h-3.5 w-3.5 text-purple-400" />
+                    <Unlock className="h-3.5 w-3.5 text-purple-400 shrink-0" />
                   ) : (
-                    <Lock className="h-3.5 w-3.5 text-slate-500" />
+                    <Lock className="h-3.5 w-3.5 text-slate-500 shrink-0" />
                   )}
-                  <span className={`text-xs font-semibold ${
+                  <span className={`text-xs font-semibold truncate ${
                     fortnightInfo.label === '2ª Quinzena' ? 'text-purple-400' : 'text-slate-500'
                   }`}>
-                    2ª Quinzena
+                    2ª Quinz.
                   </span>
                 </div>
                 {fortnightInfo.label === '2ª Quinzena' && (
-                  <Badge className="text-[10px] bg-purple-500/30 text-purple-300 border-purple-500/50">
+                  <Badge className="text-[9px] bg-purple-500/30 text-purple-300 border-purple-500/50 px-1.5 py-0 shrink-0">
                     Ativa
                   </Badge>
                 )}
               </div>
-              <div className="flex justify-center gap-0.5 flex-wrap">
+              <div className="grid grid-cols-8 gap-0.5 justify-items-center">
                 {Array.from({ length: fortnightInfo.endDay - 15 }, (_, i) => {
                   const day = i + 16;
                   const today = new Date();
@@ -1046,7 +1046,7 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
                   );
                 })}
               </div>
-              <p className="text-[10px] text-center mt-1.5 text-slate-500">Dias 16 a {fortnightInfo.endDay}</p>
+              <p className="text-[10px] text-center mt-1.5 text-slate-500">16 a {fortnightInfo.endDay}</p>
             </div>
           </div>
 
