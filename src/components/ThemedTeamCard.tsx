@@ -127,13 +127,13 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
           }}
         />
         
-        {/* Main Card - Optimized for mobile portrait visibility */}
+        {/* Main Card - Optimized for both portrait and landscape */}
         <div 
           className={cn(
             "relative overflow-hidden rounded-lg sm:rounded-xl md:rounded-2xl",
             "border-2 md:border-3 transition-all duration-300 group-hover:shadow-2xl",
-            // Optimized heights for mobile portrait - shorter on small screens
-            "w-full min-h-[140px] h-[calc(35vh-2rem)] sm:min-h-[200px] sm:h-auto md:min-h-[280px] lg:min-h-[340px] xl:min-h-[400px] 2xl:min-h-[460px]"
+            // Portrait: taller cards. Landscape: shorter to fit 4 in row
+            "w-full min-h-[120px] h-[calc(32vh-2rem)] landscape:min-h-[80px] landscape:h-[calc(70vh-4rem)] sm:min-h-[180px] sm:h-auto md:min-h-[260px] lg:min-h-[320px] xl:min-h-[380px]"
           )}
           style={{ 
             borderColor: teamColors[team as keyof typeof teamColors]?.primary || '#fff',
