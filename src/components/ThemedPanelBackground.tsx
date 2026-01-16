@@ -1,5 +1,5 @@
 import { useTheme } from '@/contexts/ThemeContext';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, forwardRef } from 'react';
 import { getThemeAssets } from '@/lib/themeAssets';
 import { teamPosters, teamColors } from '@/lib/teamAssets';
 import { cn } from '@/lib/utils';
@@ -125,12 +125,12 @@ function ThemePanelEffects({ theme }: { theme: string }) {
   );
 }
 
-export function ThemedPanelBackground({ 
+export const ThemedPanelBackground = forwardRef<HTMLDivElement, ThemedPanelBackgroundProps>(function ThemedPanelBackground({ 
   team, 
   className,
   children,
   showTeamImage = true,
-}: ThemedPanelBackgroundProps) {
+}, ref) {
   const { theme, resolvedTheme, themeConfig } = useTheme();
   const themeAssets = getThemeAssets(theme, resolvedTheme);
   const [mounted, setMounted] = useState(false);
@@ -143,7 +143,7 @@ export function ThemedPanelBackground({
   }, []);
 
   return (
-    <div className={cn("relative min-h-[100dvh] h-[100dvh] flex flex-col overflow-hidden", className)}>
+    <div ref={ref} className={cn("relative min-h-[100dvh] h-[100dvh] flex flex-col overflow-hidden", className)}>
       {/* Base background - DARKER and MORE VIBRANT */}
       <div 
         className="fixed inset-0 pointer-events-none z-0"
@@ -217,4 +217,4 @@ export function ThemedPanelBackground({
       </div>
     </div>
   );
-}
+});

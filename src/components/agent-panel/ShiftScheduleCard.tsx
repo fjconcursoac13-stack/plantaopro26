@@ -216,13 +216,13 @@ export function ShiftScheduleCard({ agentId }: ShiftScheduleCardProps) {
 
   return (
     <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
-      <Card className="bg-slate-800/50 border-slate-700">
-        <CardHeader className="pb-3">
+      <Card className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 border-2 border-slate-700/60 shadow-xl transition-all duration-300 hover:shadow-2xl hover:border-amber-500/30">
+        <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
             <CollapsibleTrigger className="flex-1">
-              <CardTitle className="flex items-center gap-2 text-lg cursor-pointer hover:opacity-80 transition-opacity">
-                <CalendarIcon className="h-5 w-5 text-amber-500" />
-                <span>Escala de Plantões</span>
+              <CardTitle className="flex items-center gap-3 text-xl cursor-pointer hover:opacity-80 transition-all duration-200">
+                <CalendarIcon className="h-6 w-6 text-amber-500 drop-shadow-lg" />
+                <span className="font-bold">Escala de Plantões</span>
                 {/* Offline indicator */}
                 {isFromCache && (
                   <span className="flex items-center gap-1 text-amber-400 text-[10px] font-normal">
@@ -366,9 +366,9 @@ export function ShiftScheduleCard({ agentId }: ShiftScheduleCardProps) {
                       <div
                         key={shift.id}
                         onClick={() => handleShiftClick(shift)}
-                        className={`flex items-center justify-between p-3 rounded-lg cursor-pointer hover:opacity-80 transition-opacity ${statusInfo.color}`}
+                        className={`flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-lg ${statusInfo.color} border border-slate-700/50`}
                       >
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
                           <StatusIcon className={`h-4 w-4 ${statusInfo.textColor}`} />
                           <div>
                             <p className={`font-medium ${statusInfo.textColor}`}>
@@ -402,12 +402,12 @@ export function ShiftScheduleCard({ agentId }: ShiftScheduleCardProps) {
                     <div
                       key={shift.id}
                       onClick={() => handleShiftClick(shift)}
-                      className={`flex items-center justify-between p-3 rounded-lg cursor-pointer hover:opacity-80 transition-opacity ${
+                      className={`flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all duration-200 hover:scale-[1.02] hover:shadow-lg ${
                         isTodayShift
-                          ? 'bg-green-500/20 border border-green-500/30'
+                          ? 'bg-green-500/25 border-2 border-green-500/40 shadow-lg shadow-green-500/10'
                           : shift.is_vacation 
-                            ? 'bg-purple-500/20 border border-purple-500/30'
-                            : 'bg-slate-700/30'
+                            ? 'bg-purple-500/25 border-2 border-purple-500/40 shadow-lg shadow-purple-500/10'
+                            : 'bg-slate-700/40 border border-slate-600/50'
                       }`}
                     >
                       <div>
