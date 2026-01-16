@@ -248,60 +248,60 @@ export function ProfessionalShiftTimer({ agentId, compact = false }: Professiona
   // COMPACT VERSION - Para a linha de stats
   if (compact) {
     return (
-      <Card className="card-night-amber bg-gradient-to-br from-[hsl(222,60%,3%)] via-[hsl(222,55%,5%)] to-[hsl(38,40%,8%)] border-3 border-amber-500/50 overflow-hidden transition-all duration-300 hover:border-amber-400/70 group">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-4">
-            <div className={`relative p-4 rounded-2xl transition-all duration-300 group-hover:scale-110 ${
+      <Card className="card-night-amber bg-gradient-to-br from-[hsl(222,60%,4%)] via-[hsl(222,55%,6%)] to-[hsl(38,40%,8%)] border-2 border-amber-500/40 overflow-hidden transition-all duration-300 hover:border-amber-400/60">
+        <CardContent className="p-3 md:p-4">
+          <div className="flex items-center gap-3">
+            <div className={`relative p-2.5 md:p-3 rounded-xl transition-all duration-300 ${
               isOnDuty 
                 ? timeRemaining.hours < 2 
-                  ? 'bg-gradient-to-br from-amber-500/30 to-amber-600/20 ring-2 ring-amber-500/50 shadow-lg shadow-amber-500/30 pulse-critical-amber'
-                  : 'bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 ring-2 ring-emerald-500/50 shadow-lg shadow-emerald-500/30 pulse-critical-green' 
+                  ? 'bg-amber-500/20 ring-2 ring-amber-500/40'
+                  : 'bg-emerald-500/20 ring-2 ring-emerald-500/40' 
                 : nextShift && isShiftSoon(nextShift.shift_date)
-                  ? 'bg-gradient-to-br from-amber-500/30 to-amber-600/20 ring-2 ring-amber-500/50 shadow-lg shadow-amber-500/30 pulse-critical-amber'
-                  : 'bg-slate-700/60'
+                  ? 'bg-amber-500/20 ring-2 ring-amber-500/40'
+                  : 'bg-slate-700/50'
             }`}>
               {isOnDuty ? (
-                <Play className={`h-7 w-7 drop-shadow-lg ${timeRemaining.hours < 2 ? 'text-amber-400 pulse-icon-critical' : 'text-emerald-400'}`} />
+                <Play className={`h-5 w-5 md:h-6 md:w-6 ${timeRemaining.hours < 2 ? 'text-amber-400' : 'text-emerald-400'}`} />
               ) : nextShift && isShiftSoon(nextShift.shift_date) ? (
-                <AlertTriangle className="h-7 w-7 text-amber-400 pulse-icon-critical" />
+                <AlertTriangle className="h-5 w-5 md:h-6 md:w-6 text-amber-400" />
               ) : (
-                <Clock className="h-7 w-7 text-slate-400" />
+                <Clock className="h-5 w-5 md:h-6 md:w-6 text-slate-400" />
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm text-slate-400 uppercase tracking-wider font-bold">Plantão</p>
+              <p className="text-[10px] md:text-xs text-slate-400 uppercase tracking-wider font-bold">Plantão</p>
               {isOnDuty ? (
-                <p className={`text-2xl md:text-3xl font-black font-mono leading-tight drop-shadow-lg ${
-                  timeRemaining.hours < 2 ? 'text-amber-400 pulse-text-critical' : 'text-emerald-400'
+                <p className={`text-xl md:text-2xl font-black font-mono leading-tight ${
+                  timeRemaining.hours < 2 ? 'text-amber-400' : 'text-emerald-400'
                 }`}>
                   {formatUnit(timeRemaining.hours)}:{formatUnit(timeRemaining.minutes)}:{formatUnit(timeRemaining.seconds)}
                 </p>
               ) : nextShift ? (
-                <div className={`flex items-center gap-2 ${isShiftSoon(nextShift.shift_date) ? 'pulse-critical-amber rounded-lg px-2 py-1 -mx-2' : ''}`}>
-                  <Calendar className={`h-5 w-5 ${isShiftSoon(nextShift.shift_date) ? 'text-amber-400 pulse-icon-critical' : 'text-amber-400'}`} />
-                  <p className={`text-lg md:text-xl font-bold leading-tight ${isShiftSoon(nextShift.shift_date) ? 'text-amber-400 pulse-text-critical' : 'text-slate-200'}`}>
+                <div className="flex items-center gap-1.5">
+                  <Calendar className={`h-4 w-4 ${isShiftSoon(nextShift.shift_date) ? 'text-amber-400' : 'text-amber-400/70'}`} />
+                  <p className={`text-base md:text-lg font-bold ${isShiftSoon(nextShift.shift_date) ? 'text-amber-400' : 'text-slate-200'}`}>
                     {format(parseISO(nextShift.shift_date), "dd/MM", { locale: ptBR })} • {nextShift.start_time}
                   </p>
                 </div>
               ) : (
-                <p className="text-base text-slate-500 leading-tight">Sem escalas</p>
+                <p className="text-sm text-slate-500">Sem escalas</p>
               )}
             </div>
             {isOnDuty && (
-              <div className={`text-right px-4 py-2 rounded-2xl border-2 shadow-lg ${
+              <div className={`text-right px-3 py-1.5 rounded-xl border ${
                 timeRemaining.hours < 2 
-                  ? 'bg-gradient-to-br from-amber-500/20 to-amber-600/10 border-amber-500/40 shadow-amber-500/20 pulse-critical-amber'
-                  : 'bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 border-emerald-500/40 shadow-emerald-500/20'
+                  ? 'bg-amber-500/15 border-amber-500/30'
+                  : 'bg-emerald-500/15 border-emerald-500/30'
               }`}>
-                <p className="text-xs text-slate-400 font-medium uppercase">Progresso</p>
-                <p className={`text-xl font-black ${timeRemaining.hours < 2 ? 'text-amber-400 pulse-text-critical' : 'text-emerald-400'}`}>{progress.toFixed(0)}%</p>
+                <p className="text-[10px] text-slate-400 font-medium">Progresso</p>
+                <p className={`text-lg font-black ${timeRemaining.hours < 2 ? 'text-amber-400' : 'text-emerald-400'}`}>{progress.toFixed(0)}%</p>
               </div>
             )}
           </div>
           {isOnDuty && (
-            <div className="mt-4 h-3 bg-slate-700/80 rounded-full overflow-hidden border-2 border-slate-600/50">
+            <div className="mt-3 h-2 bg-slate-700/60 rounded-full overflow-hidden">
               <div 
-                className="h-full bg-gradient-to-r from-amber-500 via-amber-400 to-emerald-500 transition-all duration-1000 rounded-full shadow-lg shadow-amber-500/30"
+                className="h-full bg-gradient-to-r from-amber-500 to-emerald-500 transition-all duration-1000 rounded-full"
                 style={{ width: `${progress}%` }}
               />
             </div>
