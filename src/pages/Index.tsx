@@ -1572,7 +1572,7 @@ export default function Index() {
                     <div>
                       <h4 className="text-sm font-semibold text-foreground mb-1">Desenvolvedor</h4>
                       <p className="text-xs text-muted-foreground leading-relaxed">
-                        <strong className="text-foreground text-sm">Franc Denis de Souza e Silva</strong>
+                        <strong className="text-foreground text-sm">Franc D'nis</strong>
                         <br />
                         <span className="text-primary">Agente Socioeducativo</span> • <strong className="text-foreground">Feijó, Acre</strong>
                       </p>
