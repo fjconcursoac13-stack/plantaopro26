@@ -819,7 +819,7 @@ export default function Index() {
 
   return (
     <>
-      <div className="h-[100dvh] flex flex-col bg-background relative overflow-hidden">
+      <div className="h-[100dvh] flex flex-col bg-background relative overflow-hidden touch-none overscroll-none">
         {/* Themed Animated Background with Rotating Team Images */}
         <ThemedHomeBackground />
 
@@ -942,65 +942,56 @@ export default function Index() {
       </section>
 
 
-      {/* Footer - Professional with Developer Credit and Audio Player */}
-      <footer className="py-3 sm:py-4 px-4 sm:px-6 bg-gradient-to-t from-slate-900/95 via-slate-900/90 to-transparent backdrop-blur-md border-t-2 border-primary/20 relative z-20 shrink-0">
-        <div className="max-w-6xl mx-auto flex flex-col gap-3">
-          {/* Developer Credit - Tactical Style */}
-          <DeveloperFooter variant="transparent" />
+      {/* Footer - Compact single row */}
+      <footer className="py-1.5 sm:py-2 px-3 sm:px-4 bg-slate-900/90 backdrop-blur-sm border-t border-primary/20 relative z-20 shrink-0">
+        <div className="max-w-6xl mx-auto flex items-center justify-between gap-2">
+          {/* Left: Branding + Audio */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-1.5 text-slate-400">
+              <Shield className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
+              <span className="text-[10px] sm:text-xs font-semibold">© {new Date().getFullYear()}</span>
+            </div>
+            <span className="text-[10px] sm:text-xs font-bold bg-gradient-to-r from-primary to-amber-400 bg-clip-text text-transparent">
+              FRANC D'NIS
+            </span>
+            <HomeAudioPlayer />
+          </div>
           
-          {/* Bottom row: Branding + Audio + Actions */}
-          <div className="flex items-center justify-between">
-            {/* Left: Branding + Copyright + Audio Player */}
-            <div className="flex items-center gap-4 sm:gap-5">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/50 border border-slate-700/50">
-                <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                <span className="text-xs sm:text-sm font-semibold text-slate-300">
-                  © {new Date().getFullYear()} PlantãoPro
-                </span>
-              </div>
-              <HomeAudioPlayer />
-            </div>
+          {/* Right: Actions - Compact */}
+          <div className="flex items-center gap-0.5 sm:gap-1">
+            <button
+              onClick={() => setShowAboutDialog(true)}
+              className="p-1.5 sm:p-2 text-slate-500 hover:text-primary rounded-lg transition-colors"
+              title="Sobre"
+            >
+              <Info className="h-4 w-4 sm:h-5 sm:w-5" />
+            </button>
             
-            {/* Right: Actions - Larger professional buttons */}
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              {/* About */}
+            {getSavedCredentials().length > 0 && (
               <button
-                onClick={() => setShowAboutDialog(true)}
-                className="p-2.5 sm:p-3 text-slate-400 hover:text-primary hover:bg-primary/10 border border-transparent hover:border-primary/30 rounded-xl transition-all duration-300 group"
-                title="Sobre o PlantãoPro"
+                onClick={() => setShowCredentialsManager(true)}
+                className="p-1.5 sm:p-2 text-slate-500 hover:text-amber-400 rounded-lg transition-colors"
+                title="Credenciais"
               >
-                <Info className="h-5 w-5 sm:h-6 sm:w-6 group-hover:scale-110 transition-transform" />
+                <KeyRound className="h-4 w-4 sm:h-5 sm:w-5" />
               </button>
-              
-              {/* Saved credentials */}
-              {getSavedCredentials().length > 0 && (
-                <button
-                  onClick={() => setShowCredentialsManager(true)}
-                  className="p-2.5 sm:p-3 text-slate-400 hover:text-amber-400 hover:bg-amber-500/10 border border-transparent hover:border-amber-500/30 rounded-xl transition-all duration-300 group"
-                  title="Credenciais salvas"
-                >
-                  <KeyRound className="h-5 w-5 sm:h-6 sm:w-6 group-hover:scale-110 transition-transform" />
-                </button>
-              )}
-              
-              {/* Admin - Email Login */}
-              <button
-                onClick={() => navigate('/auth')}
-                className="p-2.5 sm:p-3 text-slate-400 hover:text-cyan-400 hover:bg-cyan-500/10 border border-transparent hover:border-cyan-500/30 rounded-xl transition-all duration-300 group"
-                title="Login Admin (Email)"
-              >
-                <Mail className="h-5 w-5 sm:h-6 sm:w-6 group-hover:scale-110 transition-transform" />
-              </button>
-              
-              {/* Master Admin */}
-              <button
-                onClick={() => setShowMasterLogin(true)}
-                className="p-2.5 sm:p-3 text-slate-400 hover:text-red-400 hover:bg-red-500/10 border border-transparent hover:border-red-500/30 rounded-xl transition-all duration-300 group"
-                title="Acesso Master"
-              >
-                <Lock className="h-5 w-5 sm:h-6 sm:w-6 group-hover:scale-110 transition-transform" />
-              </button>
-            </div>
+            )}
+            
+            <button
+              onClick={() => navigate('/auth')}
+              className="p-1.5 sm:p-2 text-slate-500 hover:text-cyan-400 rounded-lg transition-colors"
+              title="Login Admin"
+            >
+              <Mail className="h-4 w-4 sm:h-5 sm:w-5" />
+            </button>
+            
+            <button
+              onClick={() => setShowMasterLogin(true)}
+              className="p-1.5 sm:p-2 text-slate-500 hover:text-red-400 rounded-lg transition-colors"
+              title="Master"
+            >
+              <Lock className="h-4 w-4 sm:h-5 sm:w-5" />
+            </button>
           </div>
         </div>
       </footer>
