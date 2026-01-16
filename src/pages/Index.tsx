@@ -827,36 +827,56 @@ export default function Index() {
         {/* Animated Particles/Stars Effect */}
         <ParticleBackground particleCount={50} />
 
-      {/* Header with Title and Status */}
+      {/* Header - Professional Status Bar */}
       <div className="bg-gradient-to-r from-slate-900/98 via-slate-800/95 to-slate-900/98 backdrop-blur-md border-b border-primary/30 py-2 px-3 sm:px-4 relative z-20 shrink-0">
         <div className="max-w-6xl mx-auto">
-          {/* Main Row: Logo, Title, Actions */}
           <div className="flex items-center justify-between gap-2">
-            {/* Left: Logo + Title */}
-            <div className="flex items-center gap-2">
-              <div className={cn(
-                "w-9 h-9 sm:w-11 sm:h-11 rounded-full border-2 border-primary/60 flex items-center justify-center shadow-lg",
-                themeConfig.colors.isLight ? "bg-white/95" : "bg-slate-800/95"
-              )}>
-                {(() => {
-                  const MainIcon = themeAssets.mainIcon;
-                  return <MainIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />;
-                })()}
+            {/* Left: Status Indicators */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              {/* Live Pulse Indicator */}
+              <div className="flex items-center gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-green-500/15 border border-green-500/40 shadow-md">
+                <div className="relative">
+                  <div className="w-2 h-2 rounded-full bg-green-500" />
+                  <div className="absolute inset-0 w-2 h-2 rounded-full bg-green-400 animate-ping opacity-75" />
+                </div>
+                <span className="text-[9px] sm:text-[11px] font-bold text-green-400 uppercase tracking-wider">ONLINE</span>
               </div>
-              <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
-                <h1 className="text-base sm:text-xl font-black leading-none tracking-tight animate-[slideInLeft_0.6s_ease-out_forwards] opacity-0" style={{ animationDelay: '150ms', animationFillMode: 'forwards' }}>
-                  <span className="text-foreground drop-shadow-[0_0_8px_rgba(255,255,255,0.3)] animate-[glow_3s_ease-in-out_infinite]">PLANTÃO</span>
-                  <span className="text-primary ml-1 drop-shadow-[0_0_10px_hsl(var(--primary)/0.5)] animate-[pulse-glow_2s_ease-in-out_infinite]">PRO</span>
-                </h1>
-                <p className="text-[8px] sm:text-[9px] text-muted-foreground tracking-widest uppercase animate-fade-in opacity-0" style={{ animationDelay: '400ms', animationFillMode: 'forwards' }}>{themeAssets.subtitle}</p>
+              
+              {/* Security Badge */}
+              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30">
+                <Shield className="h-3.5 w-3.5 text-amber-400" />
+                <span className="text-[10px] font-semibold text-amber-400/90 uppercase tracking-wide">Seguro</span>
               </div>
             </div>
             
-            {/* Center: Status Badge - Hidden on very small screens */}
-            <div className="hidden xs:flex items-center">
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-500/15 border border-green-500/40 shadow-sm">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-[10px] sm:text-xs font-bold text-green-400 uppercase tracking-wide">Sistema Ativo</span>
+            {/* Center: Animated Signal Wave */}
+            <div className="flex items-center gap-1">
+              <div className="flex items-center gap-0.5">
+                {[1, 2, 3, 4, 5].map((bar) => (
+                  <div 
+                    key={bar}
+                    className="w-0.5 sm:w-1 bg-primary rounded-full animate-pulse"
+                    style={{ 
+                      height: `${bar * 3 + 4}px`,
+                      animationDelay: `${bar * 100}ms`,
+                      opacity: 0.5 + (bar * 0.1)
+                    }}
+                  />
+                ))}
+              </div>
+              <Radio className="h-4 w-4 text-primary ml-1 animate-pulse" />
+              <div className="flex items-center gap-0.5 ml-1">
+                {[5, 4, 3, 2, 1].map((bar) => (
+                  <div 
+                    key={bar}
+                    className="w-0.5 sm:w-1 bg-primary rounded-full animate-pulse"
+                    style={{ 
+                      height: `${bar * 3 + 4}px`,
+                      animationDelay: `${bar * 100}ms`,
+                      opacity: 0.5 + (bar * 0.1)
+                    }}
+                  />
+                ))}
               </div>
             </div>
             
@@ -867,14 +887,14 @@ export default function Index() {
                   playSound('click');
                   setShowThemeSelector(true);
                 }}
-                className="p-1.5 sm:p-2 rounded-lg bg-primary/10 border border-primary/40 hover:bg-primary/20 transition-colors shadow-sm"
+                className="p-1.5 sm:p-2 rounded-lg bg-primary/10 border border-primary/40 hover:bg-primary/20 transition-all duration-200 shadow-sm hover:shadow-md hover:scale-105"
                 title="Tema"
               >
                 <Palette className="h-4 w-4 text-primary" />
               </button>
-              <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-800/60 border border-slate-600/40 shadow-sm">
-                <Clock className="h-3 w-3 text-primary" />
-                <span className="text-xs font-mono font-bold text-primary">
+              <div className="flex items-center gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-slate-800/70 border border-slate-600/50 shadow-md">
+                <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-primary animate-pulse" />
+                <span className="text-xs sm:text-sm font-mono font-bold text-primary tracking-wider">
                   {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
