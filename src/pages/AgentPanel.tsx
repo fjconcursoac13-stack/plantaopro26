@@ -403,6 +403,21 @@ export default function AgentPanel() {
                     </Tooltip>
                   </TooltipProvider>
                   
+                  {/* Exit Button - More Visible */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={async () => {
+                      await supabase.auth.signOut();
+                      navigate('/');
+                    }}
+                    className="hidden sm:flex items-center gap-1.5 border-red-500/50 text-red-400 hover:bg-red-500/20 hover:text-red-300 hover:border-red-400 h-9 px-3 transition-all duration-200"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span className="text-xs font-medium">Sair</span>
+                  </Button>
+                  
+                  {/* Mobile Exit Button (Icon Only) */}
                   <TooltipProvider>
                     <Tooltip delayDuration={200}>
                       <TooltipTrigger asChild>
@@ -413,9 +428,9 @@ export default function AgentPanel() {
                             await supabase.auth.signOut();
                             navigate('/');
                           }}
-                          className="text-red-400 hover:bg-red-500/20 hover:text-red-300 h-9 w-9 md:h-10 md:w-10 transition-all duration-200 hover:scale-105"
+                          className="sm:hidden text-red-400 hover:bg-red-500/20 hover:text-red-300 h-9 w-9 transition-all duration-200 hover:scale-105"
                         >
-                          <LogOut className="h-4 w-4 md:h-5 md:w-5" />
+                          <LogOut className="h-4 w-4" />
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent 

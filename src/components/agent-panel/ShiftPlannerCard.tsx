@@ -337,7 +337,96 @@ const ShiftPlannerCard = ({ agentId }: ShiftPlannerCardProps) => {
     </div>
   );
 
-  const renderSlots = (slots: TimeSlot[], emptyMessage: string) => {
+  // Timeline colors for agents
+  const timelineColors = [
+    'bg-amber-500',
+    'bg-blue-500',
+    'bg-green-500',
+    'bg-purple-500',
+    'bg-red-500',
+    'bg-cyan-500',
+    'bg-pink-500',
+    'bg-orange-500',
+    'bg-teal-500',
+    'bg-indigo-500',
+  ];
+
+  const renderTimeline = (slots: TimeSlot[], startTime: string, endTime: string) => {
+    if (slots.length === 0) return null;
+
+    // Calculate total duration for timeline
+    let startMinutes = parseTime(startTime);
+    let endMinutes = parseTime(endTime);
+    if (endMinutes <= startMinutes) {
+      endMinutes += 24 * 60;
+    }
+    const totalMinutes = endMinutes - startMinutes;
+
+    return (
+      <div className="mt-4 p-4 bg-slate-800/50 rounded-xl border border-slate-600/50">
+        <div className="text-sm font-medium text-slate-300 mb-3 flex items-center gap-2">
+          <Clock className="h-4 w-4 text-amber-400" />
+          Timeline Visual
+        </div>
+        
+        {/* Timeline Bar */}
+        <div className="relative h-12 bg-slate-700/50 rounded-lg overflow-hidden border border-slate-600/50">
+          {slots.map((slot, idx) => {
+            const slotStartMinutes = parseTime(slot.start);
+            const slotEndMinutes = parseTime(slot.end);
+            
+            // Adjust for overnight shifts
+            let adjustedStart = slotStartMinutes;
+            let adjustedEnd = slotEndMinutes;
+            if (slotStartMinutes < startMinutes) adjustedStart += 24 * 60;
+            if (slotEndMinutes <= startMinutes) adjustedEnd += 24 * 60;
+            if (adjustedEnd <= adjustedStart) adjustedEnd += 24 * 60;
+            
+            const left = ((adjustedStart - startMinutes) / totalMinutes) * 100;
+            const width = ((adjustedEnd - adjustedStart) / totalMinutes) * 100;
+            
+            return (
+              <div
+                key={slot.agent}
+                className={`absolute top-0 h-full ${timelineColors[idx % timelineColors.length]} flex items-center justify-center transition-all hover:brightness-110 cursor-pointer group`}
+                style={{ left: `${left}%`, width: `${width}%` }}
+                title={`Agente ${slot.agent}: ${slot.start} - ${slot.end} (${slot.duration})`}
+              >
+                <span className="text-xs font-bold text-white/90 drop-shadow-md">
+                  {slot.agent}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+        
+        {/* Time Markers */}
+        <div className="flex justify-between mt-2 text-xs text-slate-400 font-mono">
+          <span className="flex items-center gap-1">
+            <div className="w-2 h-2 rounded-full bg-green-400" />
+            {startTime}
+          </span>
+          <span className="flex items-center gap-1">
+            <div className="w-2 h-2 rounded-full bg-red-400" />
+            {endTime}
+          </span>
+        </div>
+
+        {/* Legend */}
+        <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-slate-600/50">
+          {slots.map((slot, idx) => (
+            <div key={slot.agent} className="flex items-center gap-1.5 text-xs">
+              <div className={`w-3 h-3 rounded ${timelineColors[idx % timelineColors.length]}`} />
+              <span className="text-slate-300">Ag {slot.agent}</span>
+              <span className="text-slate-500 font-mono">{slot.start}-{slot.end}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const renderSlots = (slots: TimeSlot[], emptyMessage: string, startTime: string, endTime: string) => {
     if (slots.length === 0) {
       return (
         <div className="text-center text-muted-foreground py-8">
@@ -348,16 +437,19 @@ const ShiftPlannerCard = ({ agentId }: ShiftPlannerCardProps) => {
 
     return (
       <div className="space-y-2 mt-4">
-        <div className="text-sm font-medium text-muted-foreground mb-3">
-          Distribuição calculada:
+        {/* Visual Timeline */}
+        {renderTimeline(slots, startTime, endTime)}
+        
+        <div className="text-sm font-medium text-muted-foreground mb-3 mt-4">
+          Distribuição detalhada:
         </div>
-        {slots.map((slot) => (
+        {slots.map((slot, idx) => (
           <div
             key={slot.agent}
-            className="flex items-center justify-between p-3 bg-muted/50 rounded-lg border border-slate-700"
+            className="flex items-center justify-between p-3 bg-muted/50 rounded-lg border border-slate-700 hover:border-slate-500 transition-colors"
           >
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400 font-semibold">
+              <div className={`w-8 h-8 rounded-full ${timelineColors[idx % timelineColors.length]} flex items-center justify-center text-white font-bold shadow-lg`}>
                 {slot.agent}
               </div>
               <div>
@@ -455,7 +547,9 @@ const ShiftPlannerCard = ({ agentId }: ShiftPlannerCardProps) => {
               )}
               {renderSlots(
                 vigilanceSlots,
-                "Clique em 'Calcular Vigilância' para ver a distribuição"
+                "Clique em 'Calcular Vigilância' para ver a distribuição",
+                vigilanceStartTime,
+                vigilanceEndTime
               )}
             </div>
           </TabsContent>
@@ -479,7 +573,9 @@ const ShiftPlannerCard = ({ agentId }: ShiftPlannerCardProps) => {
               )}
               {renderSlots(
                 roundsSlots,
-                "Clique em 'Calcular Rondas' para ver a distribuição"
+                "Clique em 'Calcular Rondas' para ver a distribuição",
+                roundsStartTime,
+                roundsEndTime
               )}
             </div>
           </TabsContent>
@@ -503,7 +599,9 @@ const ShiftPlannerCard = ({ agentId }: ShiftPlannerCardProps) => {
               )}
               {renderSlots(
                 restSlots,
-                "Clique em 'Calcular Descanso' para ver a distribuição"
+                "Clique em 'Calcular Descanso' para ver a distribuição",
+                restStartTime,
+                restEndTime
               )}
             </div>
           </TabsContent>
