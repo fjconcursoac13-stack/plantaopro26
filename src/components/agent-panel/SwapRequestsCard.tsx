@@ -234,8 +234,8 @@ export function SwapRequestsCard({ agentId, unitId, team }: SwapRequestsCardProp
             <span className="font-bold bg-gradient-to-r from-orange-200 to-amber-300 bg-clip-text text-transparent">
               Permutas de Plantão
             </span>
-            {pendingForMe.length > 0 && (
-              <Badge className="bg-gradient-to-r from-red-500 to-rose-500 text-white border-0 shadow-lg shadow-red-500/30 animate-pulse px-3 py-1">
+          {pendingForMe.length > 0 && (
+              <Badge className="bg-gradient-to-r from-red-500 to-rose-500 text-white border-0 shadow-lg shadow-red-500/30 px-3 py-1">
                 {pendingForMe.length}
               </Badge>
             )}

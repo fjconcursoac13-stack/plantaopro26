@@ -356,37 +356,49 @@ export default function AgentPanel() {
                   <NotificationsPanel agentId={agent.id} />
                   
                   <TooltipProvider>
-                    <Tooltip>
+                    <Tooltip delayDuration={200}>
                       <TooltipTrigger asChild>
                         <Button
                           variant="ghost"
                           size="icon"
                           onClick={() => setShowWelcomeDialog(true)}
-                          className="text-amber-400 hover:bg-amber-500/20 h-9 w-9 md:h-10 md:w-10 lg:hidden"
+                          className="text-amber-400 hover:bg-amber-500/20 hover:text-amber-300 h-9 w-9 md:h-10 md:w-10 lg:hidden transition-all duration-200 hover:scale-105"
                         >
-                          <Gift className="h-4 w-4" />
+                          <Gift className="h-4 w-4 md:h-5 md:w-5" />
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Trial: {getRemainingTrialDays()} dias</p>
+                      <TooltipContent 
+                        side="bottom" 
+                        className="bg-amber-600 text-white border-amber-500 px-3 py-2 font-semibold shadow-lg shadow-amber-500/30"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Gift className="h-3.5 w-3.5" />
+                          <span>Trial: {getRemainingTrialDays()} dias restantes</span>
+                        </div>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                   
                   <TooltipProvider>
-                    <Tooltip>
+                    <Tooltip delayDuration={200}>
                       <TooltipTrigger asChild>
                         <Button
                           variant="ghost"
                           size="icon"
                           onClick={() => navigate('/')}
-                          className="text-blue-400 hover:bg-blue-500/20 h-9 w-9 md:h-10 md:w-10"
+                          className="text-blue-400 hover:bg-blue-500/20 hover:text-blue-300 h-9 w-9 md:h-10 md:w-10 transition-all duration-200 hover:scale-105"
                         >
-                          <Home className="h-4 w-4" />
+                          <Home className="h-4 w-4 md:h-5 md:w-5" />
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Início</p>
+                      <TooltipContent 
+                        side="bottom" 
+                        className="bg-blue-600 text-white border-blue-500 px-3 py-2 font-semibold shadow-lg shadow-blue-500/30"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Home className="h-3.5 w-3.5" />
+                          <span>Tela Inicial</span>
+                        </div>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -538,6 +550,8 @@ export default function AgentPanel() {
                       unitId={agent.unit_id} 
                       team={agent.team} 
                       currentAgentId={agent.id}
+                      currentAgentName={agent.name}
+                      unitName={agent.unit?.name}
                     />
                   </div>
                   <div className="lg:col-span-1 space-y-4">
