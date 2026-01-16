@@ -48,6 +48,7 @@ import { useSoundEffects } from '@/hooks/useSoundEffects';
 import { ThemeSelector } from '@/components/ThemeSelector';
 import { useBiometricAuth } from '@/hooks/useBiometricAuth';
 import { getThemeAssets } from '@/lib/themeAssets';
+import { ParticleBackground } from '@/components/ParticleBackground';
 
 
 interface Unit {
@@ -822,6 +823,9 @@ export default function Index() {
       <div className="h-[100dvh] flex flex-col bg-background relative overflow-hidden touch-none overscroll-none">
         {/* Themed Animated Background with Rotating Team Images */}
         <ThemedHomeBackground />
+        
+        {/* Animated Particles/Stars Effect */}
+        <ParticleBackground particleCount={50} />
 
       {/* Header with Title and Status */}
       <div className="bg-gradient-to-r from-slate-900/98 via-slate-800/95 to-slate-900/98 backdrop-blur-md border-b border-primary/30 py-2 px-3 sm:px-4 relative z-20 shrink-0">
