@@ -144,52 +144,55 @@ export function ThemedPanelBackground({
 
   return (
     <div className={cn("relative min-h-[100dvh] h-[100dvh] flex flex-col overflow-hidden", className)}>
-      {/* Base background */}
+      {/* Base background - DARKER and MORE VIBRANT */}
       <div 
         className="fixed inset-0 pointer-events-none z-0"
         style={{
-          background: `linear-gradient(180deg, 
-            hsl(var(--background)) 0%, 
-            hsl(var(--card)) 30%,
-            hsl(var(--background)) 100%
+          background: `linear-gradient(160deg, 
+            hsl(222 47% 8%) 0%, 
+            hsl(222 47% 12%) 25%,
+            hsl(222 47% 10%) 50%,
+            hsl(222 47% 8%) 75%,
+            hsl(220 47% 6%) 100%
           )`,
         }}
       />
       
-      {/* Team poster background */}
+      {/* Team poster background - MORE VISIBLE */}
       {mounted && showTeamImage && poster && (
         <>
           <div 
             className="fixed inset-0 bg-cover bg-center bg-no-repeat pointer-events-none z-0 transition-opacity duration-500"
             style={{ 
               backgroundImage: `url(${poster})`,
-              opacity: 0.08,
-              filter: 'blur(1px)',
+              opacity: 0.12,
+              filter: 'blur(0.5px) saturate(1.2)',
             }}
           />
-          {/* Team color overlay */}
+          {/* Team color overlay - MORE VIBRANT */}
           <div 
             className="fixed inset-0 pointer-events-none z-0"
             style={{
-              background: `linear-gradient(180deg, 
-                hsl(var(--background) / 0.9) 0%, 
-                ${colors?.glow || 'transparent'} 30%,
-                hsl(var(--background) / 0.85) 50%,
-                ${colors?.glow || 'transparent'} 70%,
-                hsl(var(--background) / 0.95) 100%
+              background: `linear-gradient(160deg, 
+                hsl(222 47% 8% / 0.85) 0%, 
+                ${colors?.glow || 'transparent'} 25%,
+                hsl(222 47% 10% / 0.8) 50%,
+                ${colors?.glow || 'transparent'} 75%,
+                hsl(222 47% 8% / 0.9) 100%
               )`,
             }}
           />
         </>
       )}
       
-      {/* Theme-specific ambient glow */}
+      {/* Theme-specific ambient glow - MORE INTENSE */}
       <div 
         className="fixed inset-0 pointer-events-none z-0 transition-all duration-1000"
         style={{
           background: `
-            radial-gradient(ellipse at 10% 20%, ${themeAssets.ambientGlow.primary} 0%, transparent 50%),
-            radial-gradient(ellipse at 90% 80%, ${themeAssets.ambientGlow.secondary} 0%, transparent 50%)
+            radial-gradient(ellipse at 5% 15%, ${themeAssets.ambientGlow.primary} 0%, transparent 45%),
+            radial-gradient(ellipse at 95% 85%, ${themeAssets.ambientGlow.secondary} 0%, transparent 45%),
+            radial-gradient(ellipse at 50% 50%, rgba(251, 191, 36, 0.03) 0%, transparent 60%)
           `,
         }}
       />
@@ -197,12 +200,13 @@ export function ThemedPanelBackground({
       {/* Theme-specific panel effects */}
       {mounted && <ThemePanelEffects theme={resolvedTheme} />}
       
-      {/* Team color accent line at top */}
+      {/* Team color accent line at top - THICKER and MORE VISIBLE */}
       {colors && (
         <div 
-          className="fixed top-0 left-0 right-0 h-1 z-20 pointer-events-none"
+          className="fixed top-0 left-0 right-0 h-1.5 z-20 pointer-events-none"
           style={{
-            background: `linear-gradient(90deg, transparent, ${colors.primary}, transparent)`,
+            background: `linear-gradient(90deg, transparent 5%, ${colors.primary} 25%, ${colors.primary} 75%, transparent 95%)`,
+            boxShadow: `0 0 20px ${colors.primary}40, 0 0 40px ${colors.primary}20`,
           }}
         />
       )}

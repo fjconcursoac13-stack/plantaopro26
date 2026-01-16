@@ -754,78 +754,78 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
     const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
 
     return (
-      <Card className="bg-gradient-to-br from-slate-800 to-slate-800/50 border-slate-700">
-        <CardContent className="p-4 space-y-3">
-          {/* Balance Header */}
-          <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-lg ${balance >= 0 ? 'bg-green-500/20' : 'bg-red-500/20'}`}>
+      <Card className="bg-gradient-to-br from-slate-800/90 via-slate-900/80 to-green-950/30 border-2 border-green-500/40 shadow-xl shadow-green-500/10">
+        <CardContent className="p-5 md:p-6 space-y-4">
+          {/* Balance Header - LARGER */}
+          <div className="flex items-center gap-4">
+            <div className={`p-3 rounded-xl ${balance >= 0 ? 'bg-green-500/25 ring-2 ring-green-500/30' : 'bg-red-500/25 ring-2 ring-red-500/30'}`}>
               {balance >= 0 ? (
-                <TrendingUp className="h-5 w-5 text-green-400" />
+                <TrendingUp className="h-7 w-7 md:h-8 md:w-8 text-green-400" />
               ) : (
-                <TrendingDown className="h-5 w-5 text-red-400" />
+                <TrendingDown className="h-7 w-7 md:h-8 md:w-8 text-red-400" />
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-slate-400">Banco de Horas</p>
-              <p className={`text-lg font-bold ${balance >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              <p className="text-sm md:text-base text-slate-300 font-medium">Banco de Horas</p>
+              <p className={`text-2xl md:text-3xl font-black ${balance >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                 {balance >= 0 ? '+' : ''}{balance.toFixed(1)}h
               </p>
             </div>
-            <div className="text-right">
-              <p className="text-xs text-slate-500">Valor</p>
-              <p className="text-sm font-semibold text-amber-400">R$ {totalValue.toFixed(2)}</p>
+            <div className="text-right bg-amber-500/15 px-4 py-2 rounded-xl border border-amber-500/30">
+              <p className="text-xs md:text-sm text-slate-400">Valor</p>
+              <p className="text-lg md:text-xl font-bold text-amber-400">R$ {totalValue.toFixed(2)}</p>
             </div>
           </div>
 
-          {/* Progress Bar */}
-          <div className="space-y-1">
-            <div className="flex items-center justify-between text-[10px]">
-              <span className="text-slate-500">{balance.toFixed(1)}/{bhLimit}h</span>
-              <span className={isNearLimit ? 'text-amber-400' : 'text-slate-500'}>
+          {/* Progress Bar - LARGER */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-slate-400 font-medium">{balance.toFixed(1)} / {bhLimit}h</span>
+              <span className={`font-bold ${isNearLimit ? 'text-amber-400' : isAtLimit ? 'text-red-400' : 'text-green-400'}`}>
                 {progressPercent.toFixed(0)}%
               </span>
             </div>
             <Progress 
               value={progressPercent} 
-              className={`h-1.5 ${isNearLimit ? '[&>div]:bg-amber-500' : ''}`}
+              className={`h-3 rounded-full ${isAtLimit ? '[&>div]:bg-red-500' : isNearLimit ? '[&>div]:bg-amber-500' : '[&>div]:bg-green-500'}`}
             />
           </div>
 
-          {/* Compact Fortnight Scale */}
-          <div className="pt-2 border-t border-slate-700/50">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-1.5">
-                <Shield className="h-3 w-3 text-amber-500" />
-                <span className="text-[10px] font-medium text-slate-400">Quinzenas</span>
+          {/* Compact Fortnight Scale - LARGER */}
+          <div className="pt-3 border-t-2 border-slate-700/60">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Shield className="h-4 w-4 text-amber-400" />
+                <span className="text-sm font-semibold text-slate-300">Quinzenas</span>
               </div>
-              <Badge className={`text-[9px] py-0 px-1.5 ${
+              <Badge className={`text-xs py-0.5 px-2 font-semibold ${
                 isFirstFortnight 
-                  ? 'bg-blue-500/20 text-blue-400 border-blue-500/30'
-                  : 'bg-purple-500/20 text-purple-400 border-purple-500/30'
+                  ? 'bg-blue-500/25 text-blue-300 border-blue-500/40'
+                  : 'bg-purple-500/25 text-purple-300 border-purple-500/40'
               }`}>
                 {isFirstFortnight ? '1ª' : '2ª'} Ativa
               </Badge>
             </div>
 
-            {/* Mini Scale Grid */}
-            <div className="grid grid-cols-2 gap-1.5">
+            {/* Mini Scale Grid - LARGER */}
+            <div className="grid grid-cols-2 gap-3">
               {/* First Fortnight Mini */}
-              <div className={`p-1.5 rounded border transition-all ${
+              <div className={`p-3 rounded-xl border-2 transition-all ${
                 isFirstFortnight 
-                  ? 'bg-blue-500/10 border-blue-500/40' 
-                  : 'bg-slate-700/20 border-slate-600/30 opacity-50'
+                  ? 'bg-blue-500/15 border-blue-500/50' 
+                  : 'bg-slate-700/30 border-slate-600/40 opacity-60'
               }`}>
-                <div className="flex items-center gap-1 mb-1">
+                <div className="flex items-center gap-1.5 mb-2">
                   {isFirstFortnight ? (
-                    <Unlock className="h-2.5 w-2.5 text-blue-400" />
+                    <Unlock className="h-4 w-4 text-blue-400" />
                   ) : (
-                    <Lock className="h-2.5 w-2.5 text-slate-500" />
+                    <Lock className="h-4 w-4 text-slate-500" />
                   )}
-                  <span className={`text-[9px] font-medium ${isFirstFortnight ? 'text-blue-400' : 'text-slate-500'}`}>
+                  <span className={`text-xs font-semibold ${isFirstFortnight ? 'text-blue-300' : 'text-slate-500'}`}>
                     1ª (1-15)
                   </span>
                 </div>
-                <div className="flex gap-px flex-wrap">
+                <div className="flex gap-1 flex-wrap">
                   {Array.from({ length: 15 }, (_, i) => {
                     const day = i + 1;
                     const isToday = todayDay === day && isFirstFortnight;
@@ -838,14 +838,14 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
                     return (
                       <div
                         key={day}
-                        className={`w-2 h-2 rounded-sm ${
+                        className={`w-3 h-3 md:w-3.5 md:h-3.5 rounded-sm transition-all ${
                           isToday 
-                            ? 'bg-blue-500 ring-1 ring-blue-300'
+                            ? 'bg-blue-500 ring-2 ring-blue-300 scale-110'
                             : hasBH 
-                              ? 'bg-green-500/60'
+                              ? 'bg-green-500/80'
                               : isFirstFortnight && day <= todayDay
-                                ? 'bg-amber-500/40'
-                                : 'bg-slate-600/30'
+                                ? 'bg-amber-500/50'
+                                : 'bg-slate-600/40'
                         }`}
                         title={`Dia ${day}${isToday ? ' (Hoje)' : ''}${hasBH ? ' - BH' : ''}`}
                       />
@@ -855,22 +855,22 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
               </div>
 
               {/* Second Fortnight Mini */}
-              <div className={`p-1.5 rounded border transition-all ${
+              <div className={`p-3 rounded-xl border-2 transition-all ${
                 !isFirstFortnight 
-                  ? 'bg-purple-500/10 border-purple-500/40' 
-                  : 'bg-slate-700/20 border-slate-600/30 opacity-50'
+                  ? 'bg-purple-500/15 border-purple-500/50' 
+                  : 'bg-slate-700/30 border-slate-600/40 opacity-60'
               }`}>
-                <div className="flex items-center gap-1 mb-1">
+                <div className="flex items-center gap-1.5 mb-2">
                   {!isFirstFortnight ? (
-                    <Unlock className="h-2.5 w-2.5 text-purple-400" />
+                    <Unlock className="h-4 w-4 text-purple-400" />
                   ) : (
-                    <Lock className="h-2.5 w-2.5 text-slate-500" />
+                    <Lock className="h-4 w-4 text-slate-500" />
                   )}
-                  <span className={`text-[9px] font-medium ${!isFirstFortnight ? 'text-purple-400' : 'text-slate-500'}`}>
+                  <span className={`text-xs font-semibold ${!isFirstFortnight ? 'text-purple-300' : 'text-slate-500'}`}>
                     2ª (16-{lastDayOfMonth})
                   </span>
                 </div>
-                <div className="flex gap-px flex-wrap">
+                <div className="flex gap-1 flex-wrap">
                   {Array.from({ length: lastDayOfMonth - 15 }, (_, i) => {
                     const day = i + 16;
                     const isToday = todayDay === day && !isFirstFortnight;
@@ -883,14 +883,14 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
                     return (
                       <div
                         key={day}
-                        className={`w-2 h-2 rounded-sm ${
+                        className={`w-3 h-3 md:w-3.5 md:h-3.5 rounded-sm transition-all ${
                           isToday 
-                            ? 'bg-purple-500 ring-1 ring-purple-300'
+                            ? 'bg-purple-500 ring-2 ring-purple-300 scale-110'
                             : hasBH 
-                              ? 'bg-green-500/60'
+                              ? 'bg-green-500/80'
                               : !isFirstFortnight && day <= todayDay
-                                ? 'bg-amber-500/40'
-                                : 'bg-slate-600/30'
+                                ? 'bg-amber-500/50'
+                                : 'bg-slate-600/40'
                         }`}
                         title={`Dia ${day}${isToday ? ' (Hoje)' : ''}${hasBH ? ' - BH' : ''}`}
                       />
@@ -900,19 +900,19 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
               </div>
             </div>
 
-            {/* Compact Legend */}
-            <div className="flex items-center justify-center gap-3 mt-1.5 text-[8px]">
-              <div className="flex items-center gap-0.5">
-                <div className="w-1.5 h-1.5 rounded-sm bg-green-500/60" />
-                <span className="text-slate-500">BH</span>
+            {/* Compact Legend - LARGER */}
+            <div className="flex items-center justify-center gap-4 mt-3 text-xs">
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-sm bg-green-500/80" />
+                <span className="text-slate-400 font-medium">BH</span>
               </div>
-              <div className="flex items-center gap-0.5">
-                <div className="w-1.5 h-1.5 rounded-sm bg-amber-500/40" />
-                <span className="text-slate-500">Sem</span>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-sm bg-amber-500/50" />
+                <span className="text-slate-400 font-medium">Sem</span>
               </div>
-              <div className="flex items-center gap-0.5">
-                <div className="w-1.5 h-1.5 rounded-sm bg-blue-500" />
-                <span className="text-slate-500">Hoje</span>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-sm bg-blue-500" />
+                <span className="text-slate-400 font-medium">Hoje</span>
               </div>
             </div>
           </div>
