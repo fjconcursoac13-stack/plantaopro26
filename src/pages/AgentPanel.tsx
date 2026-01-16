@@ -250,280 +250,172 @@ export default function AgentPanel() {
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
         <main className={`flex-1 p-4 md:p-8 lg:p-10 overflow-y-auto overflow-x-hidden pb-safe ${showLicenseWarning ? 'pt-28' : ''}`}>
           <div className="max-w-7xl mx-auto space-y-4 md:space-y-8 animate-fade-in">
-            {/* Compact Header Bar */}
-            <div className="bg-gradient-to-r from-slate-900/95 via-slate-800/95 to-slate-900/95 rounded-xl border border-amber-500/30 p-2 md:p-3 shadow-lg backdrop-blur-md">
-              <div className="flex items-center justify-between gap-2">
-                {/* Left: Navigation */}
-                <TooltipProvider delayDuration={300}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => navigate(-1)}
-                        className="border border-slate-600/50 hover:border-amber-500/50 hover:bg-amber-900/20 text-slate-300 hover:text-amber-400 h-8 px-2 md:px-3"
-                      >
-                        <ArrowRightLeft className="h-4 w-4 rotate-180" />
-                        <span className="ml-1 hidden sm:inline text-xs font-medium">Voltar</span>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white text-xs">
-                      <p>Retornar à página anterior</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+            {/* Professional Header Bar with Agent Info */}
+            <div className="bg-gradient-to-r from-slate-900/98 via-slate-800/95 to-slate-900/98 rounded-lg border border-amber-500/50 shadow-xl backdrop-blur-md overflow-hidden">
+              <div className="flex items-center gap-2 p-2">
+                {/* Left: Back Button */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate(-1)}
+                  className="border border-slate-600/50 hover:border-amber-500/50 hover:bg-amber-900/20 text-slate-300 hover:text-amber-400 h-9 px-2"
+                >
+                  <ArrowRightLeft className="h-4 w-4 rotate-180" />
+                </Button>
 
-                {/* Center: Title Badge */}
-                <div className="hidden md:block bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-full px-4 py-1 border border-amber-500/40">
-                  <span className="text-amber-400 font-bold text-xs tracking-wider uppercase">
-                    Painel do Agente
-                  </span>
+                {/* Center: Agent Profile - Compact */}
+                <div 
+                  className="flex items-center gap-2 flex-1 min-w-0 cursor-pointer hover:opacity-90 transition-opacity px-2 py-1 rounded-lg hover:bg-slate-700/30"
+                  onClick={() => navigate('/agent-profile')}
+                >
+                  <Avatar className="w-9 h-9 border-2 border-amber-500/60 shadow-md flex-shrink-0">
+                    {(agent as any).avatar_url && <AvatarImage src={(agent as any).avatar_url} alt={agent.name} />}
+                    <AvatarFallback className="bg-gradient-to-br from-amber-400 to-amber-600 text-sm font-black text-black">
+                      {agent.name.charAt(0).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0 flex-1 hidden sm:block">
+                    <h1 className="text-sm font-bold text-amber-200 truncate leading-tight">
+                      {agent.name}
+                    </h1>
+                    <div className="flex items-center gap-1 flex-wrap">
+                      {agent.team && (
+                        <span className="text-[10px] text-amber-400/80 font-medium">{agent.team}</span>
+                      )}
+                      {(agent as any).blood_type && (
+                        <span className="text-[10px] text-red-400/80 flex items-center gap-0.5">
+                          <Droplet className="h-2.5 w-2.5" />
+                          {(agent as any).blood_type}
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
                 {/* Right: Actions */}
-                <div className="flex items-center gap-1 md:gap-2">
-                  <TooltipProvider delayDuration={300}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setShowWelcomeDialog(true)}
-                          className="border border-amber-600/50 text-amber-400 hover:bg-amber-900/30 h-8 px-2"
-                        >
-                          <Gift className="h-4 w-4" />
-                          <span className="ml-1 text-[10px] font-bold bg-amber-500/30 px-1.5 py-0.5 rounded-full">
-                            {getRemainingTrialDays()}d
-                          </span>
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white text-xs">
-                        <p>Trial: {getRemainingTrialDays()} dias</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                  
-                  <TooltipProvider delayDuration={300}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => navigate('/')}
-                          className="border border-slate-500/50 hover:border-blue-500/50 hover:bg-blue-900/20 text-slate-300 hover:text-blue-400 h-8 px-2"
-                        >
-                          <Home className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white text-xs">
-                        <p>Início</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                  
-                  <TooltipProvider delayDuration={300}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={async () => {
-                            await supabase.auth.signOut();
-                            navigate('/');
-                          }}
-                          className="border border-red-600/50 text-red-400 hover:bg-red-900/30 h-8 px-2"
-                        >
-                          <LogOut className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white text-xs">
-                        <p>Sair</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              </div>
-            </div>
-
-            {/* Compact Agent Profile Card */}
-            <div className="bg-gradient-to-br from-slate-900/98 via-slate-800/95 to-amber-950/30 rounded-xl p-3 md:p-4 border-2 border-amber-500/40 shadow-lg backdrop-blur-md">
-              <div className="flex items-center justify-between gap-3">
-                <TooltipProvider delayDuration={300}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div 
-                        className="flex items-center gap-3 cursor-pointer hover:opacity-90 transition-opacity flex-1 min-w-0"
-                        onClick={() => navigate('/agent-profile')}
-                      >
-                        <Avatar className="w-12 h-12 md:w-14 md:h-14 border-2 border-amber-500/60 shadow-lg flex-shrink-0">
-                          {(agent as any).avatar_url && <AvatarImage src={(agent as any).avatar_url} alt={agent.name} />}
-                          <AvatarFallback className="bg-gradient-to-br from-amber-400 to-amber-600 text-lg md:text-xl font-black text-black">
-                            {agent.name.charAt(0).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="min-w-0 flex-1">
-                          <h1 className="text-lg md:text-xl font-bold text-amber-200 truncate">
-                            {agent.name}
-                          </h1>
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            {getRoleBadge((agent as any).role)}
-                            {agent.team && (
-                              <Badge className="bg-slate-700/80 text-amber-300 border border-amber-500/40 text-[10px] px-1.5 py-0.5">
-                                {agent.team}
-                              </Badge>
-                            )}
-                            {(agent as any).blood_type && (
-                              <Badge className="bg-red-500/20 text-red-300 border border-red-500/40 text-[10px] px-1.5 py-0.5 flex items-center gap-0.5">
-                                <Droplet className="h-2.5 w-2.5" />
-                                {(agent as any).blood_type}
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white text-xs">
-                      <p>Clique para editar perfil</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                
-                <div className="flex items-center gap-1.5 flex-shrink-0">
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  {getRoleBadge((agent as any).role)}
                   <AgentRoleSelector agentId={agent.id} currentRole={(agent as any).role || 'agent'} />
                   <NotificationsPanel agentId={agent.id} />
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowWelcomeDialog(true)}
+                    className="text-amber-400 hover:bg-amber-900/30 h-9 px-2"
+                  >
+                    <Gift className="h-4 w-4" />
+                    <span className="ml-1 text-[10px] font-bold bg-amber-500/30 px-1 py-0.5 rounded-full">
+                      {getRemainingTrialDays()}d
+                    </span>
+                  </Button>
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => navigate('/')}
+                    className="text-slate-300 hover:text-blue-400 hover:bg-blue-900/20 h-9 px-2"
+                  >
+                    <Home className="h-4 w-4" />
+                  </Button>
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={async () => {
+                      await supabase.auth.signOut();
+                      navigate('/');
+                    }}
+                    className="text-red-400 hover:bg-red-900/30 h-9 px-2"
+                  >
+                    <LogOut className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
             </div>
 
-            {/* Main Tabs - Compact Control Panel */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-              <TabsList className="bg-gradient-to-br from-slate-900/98 via-slate-800/95 to-slate-900/98 border-2 border-amber-500/40 p-2 md:p-3 h-auto grid grid-cols-5 lg:grid-cols-10 gap-1 md:gap-2 rounded-xl shadow-lg backdrop-blur-md">
-                  <TooltipProvider delayDuration={300}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <TabsTrigger value="equipe" className="flex flex-col items-center justify-center gap-0.5 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-lg rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/50 min-h-[48px] md:min-h-[56px]">
-                          <Users className="h-4 w-4 md:h-5 md:w-5" />
-                          <span>Equipe</span>
-                        </TabsTrigger>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white text-xs">
-                        <p>Membros da equipe</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+            {/* Main Tabs - Professional Control Panel */}
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-3">
+              <div className="bg-gradient-to-r from-slate-900/98 via-slate-800/95 to-slate-900/98 rounded-lg border border-slate-600/50 shadow-lg backdrop-blur-md p-1.5">
+                <div className="flex items-center gap-1 mb-1.5 px-2">
+                  <Shield className="h-3.5 w-3.5 text-amber-400" />
+                  <span className="text-[10px] font-bold text-amber-400 uppercase tracking-wider">Painel de Controle</span>
+                  <Zap className="h-3 w-3 text-amber-500/60" />
+                </div>
+                <TabsList className="bg-slate-800/50 border border-slate-700/50 p-1 h-auto grid grid-cols-5 lg:grid-cols-9 gap-1 rounded-lg">
+                  <TabsTrigger 
+                    value="equipe" 
+                    className="flex flex-col items-center justify-center gap-0.5 text-[9px] md:text-[10px] p-1.5 md:p-2 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-md rounded-md font-bold transition-all duration-150 hover:bg-slate-700/50 min-h-[40px] md:min-h-[44px]"
+                  >
+                    <Users className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                    <span>Equipe</span>
+                  </TabsTrigger>
                   
-                  <TooltipProvider delayDuration={300}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <TabsTrigger value="plantoes" className="flex flex-col items-center justify-center gap-0.5 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-lg rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/50 min-h-[48px] md:min-h-[56px]">
-                          <Calendar className="h-4 w-4 md:h-5 md:w-5" />
-                          <span>Plantões</span>
-                        </TabsTrigger>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white text-xs">
-                        <p>Escalas de serviço</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <TabsTrigger 
+                    value="plantoes" 
+                    className="flex flex-col items-center justify-center gap-0.5 text-[9px] md:text-[10px] p-1.5 md:p-2 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-md rounded-md font-bold transition-all duration-150 hover:bg-slate-700/50 min-h-[40px] md:min-h-[44px]"
+                  >
+                    <Calendar className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                    <span>Plantões</span>
+                  </TabsTrigger>
                   
-                  <TooltipProvider delayDuration={300}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <TabsTrigger value="bh" className="flex flex-col items-center justify-center gap-0.5 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-400 data-[state=active]:to-teal-500 data-[state=active]:text-black data-[state=active]:shadow-lg rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/50 min-h-[48px] md:min-h-[56px]">
-                          <Clock className="h-4 w-4 md:h-5 md:w-5" />
-                          <span>BH</span>
-                        </TabsTrigger>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white text-xs">
-                        <p>Banco de Horas</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <TabsTrigger 
+                    value="bh" 
+                    className="flex flex-col items-center justify-center gap-0.5 text-[9px] md:text-[10px] p-1.5 md:p-2 data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-400 data-[state=active]:to-teal-500 data-[state=active]:text-black data-[state=active]:shadow-md rounded-md font-bold transition-all duration-150 hover:bg-slate-700/50 min-h-[40px] md:min-h-[44px]"
+                  >
+                    <Clock className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                    <span>BH</span>
+                  </TabsTrigger>
                   
-                  <TooltipProvider delayDuration={300}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <TabsTrigger value="folgas" className="flex flex-col items-center justify-center gap-0.5 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:to-violet-500 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/50 min-h-[48px] md:min-h-[56px]">
-                          <CalendarOff className="h-4 w-4 md:h-5 md:w-5" />
-                          <span>Folgas</span>
-                        </TabsTrigger>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white text-xs">
-                        <p>Solicitar folgas</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <TabsTrigger 
+                    value="folgas" 
+                    className="flex flex-col items-center justify-center gap-0.5 text-[9px] md:text-[10px] p-1.5 md:p-2 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:to-violet-500 data-[state=active]:text-white data-[state=active]:shadow-md rounded-md font-bold transition-all duration-150 hover:bg-slate-700/50 min-h-[40px] md:min-h-[44px]"
+                  >
+                    <CalendarOff className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                    <span>Folgas</span>
+                  </TabsTrigger>
                   
-                  <TooltipProvider delayDuration={300}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <TabsTrigger value="agenda" className="flex flex-col items-center justify-center gap-0.5 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-cyan-400 data-[state=active]:to-blue-500 data-[state=active]:text-black data-[state=active]:shadow-lg rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/50 min-h-[48px] md:min-h-[56px]">
-                          <CalendarDays className="h-4 w-4 md:h-5 md:w-5" />
-                          <span>Agenda</span>
-                        </TabsTrigger>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white text-xs">
-                        <p>Eventos pessoais</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <TabsTrigger 
+                    value="agenda" 
+                    className="flex flex-col items-center justify-center gap-0.5 text-[9px] md:text-[10px] p-1.5 md:p-2 data-[state=active]:bg-gradient-to-br data-[state=active]:from-cyan-400 data-[state=active]:to-blue-500 data-[state=active]:text-black data-[state=active]:shadow-md rounded-md font-bold transition-all duration-150 hover:bg-slate-700/50 min-h-[40px] md:min-h-[44px]"
+                  >
+                    <CalendarDays className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                    <span>Agenda</span>
+                  </TabsTrigger>
                   
-                  <TooltipProvider delayDuration={300}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <TabsTrigger value="planejador" className="flex flex-col items-center justify-center gap-0.5 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-rose-400 data-[state=active]:to-red-500 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/50 min-h-[48px] md:min-h-[56px]">
-                          <Calculator className="h-4 w-4 md:h-5 md:w-5" />
-                          <span>Plan</span>
-                        </TabsTrigger>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white text-xs">
-                        <p>Planejador de escalas</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <TabsTrigger 
+                    value="planejador" 
+                    className="flex flex-col items-center justify-center gap-0.5 text-[9px] md:text-[10px] p-1.5 md:p-2 data-[state=active]:bg-gradient-to-br data-[state=active]:from-rose-400 data-[state=active]:to-red-500 data-[state=active]:text-white data-[state=active]:shadow-md rounded-md font-bold transition-all duration-150 hover:bg-slate-700/50 min-h-[40px] md:min-h-[44px]"
+                  >
+                    <Calculator className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                    <span>Plan</span>
+                  </TabsTrigger>
                   
-                  <TooltipProvider delayDuration={300}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <TabsTrigger value="permutas" className="flex flex-col items-center justify-center gap-0.5 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-lg rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/50 min-h-[48px] md:min-h-[56px]">
-                          <ArrowRightLeft className="h-4 w-4 md:h-5 md:w-5" />
-                          <span>Troca</span>
-                        </TabsTrigger>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white text-xs">
-                        <p>Troca de plantão</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <TabsTrigger 
+                    value="permutas" 
+                    className="flex flex-col items-center justify-center gap-0.5 text-[9px] md:text-[10px] p-1.5 md:p-2 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-md rounded-md font-bold transition-all duration-150 hover:bg-slate-700/50 min-h-[40px] md:min-h-[44px]"
+                  >
+                    <ArrowRightLeft className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                    <span>Troca</span>
+                  </TabsTrigger>
                   
-                  <TooltipProvider delayDuration={300}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <TabsTrigger value="chat" className="flex flex-col items-center justify-center gap-0.5 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-400 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/50 min-h-[48px] md:min-h-[56px]">
-                          <MessageCircle className="h-4 w-4 md:h-5 md:w-5" />
-                          <span>Chat</span>
-                        </TabsTrigger>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white text-xs">
-                        <p>Comunicação</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <TabsTrigger 
+                    value="chat" 
+                    className="flex flex-col items-center justify-center gap-0.5 text-[9px] md:text-[10px] p-1.5 md:p-2 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-400 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-md rounded-md font-bold transition-all duration-150 hover:bg-slate-700/50 min-h-[40px] md:min-h-[44px]"
+                  >
+                    <MessageCircle className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                    <span>Chat</span>
+                  </TabsTrigger>
                   
-                  <TooltipProvider delayDuration={300}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <TabsTrigger value="config" className="flex flex-col items-center justify-center gap-0.5 text-[10px] md:text-xs p-2 md:p-3 data-[state=active]:bg-gradient-to-br data-[state=active]:from-slate-400 data-[state=active]:to-slate-600 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-lg font-bold transition-all duration-200 hover:bg-slate-700/50 min-h-[48px] md:min-h-[56px]">
-                          <Settings className="h-4 w-4 md:h-5 md:w-5" />
-                          <span>Config</span>
-                        </TabsTrigger>
-                      </TooltipTrigger>
-                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white text-xs">
-                        <p>Configurações</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <TabsTrigger 
+                    value="config" 
+                    className="flex flex-col items-center justify-center gap-0.5 text-[9px] md:text-[10px] p-1.5 md:p-2 data-[state=active]:bg-gradient-to-br data-[state=active]:from-slate-400 data-[state=active]:to-slate-600 data-[state=active]:text-white data-[state=active]:shadow-md rounded-md font-bold transition-all duration-150 hover:bg-slate-700/50 min-h-[40px] md:min-h-[44px]"
+                  >
+                    <Settings className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                    <span>Config</span>
+                  </TabsTrigger>
                 </TabsList>
+              </div>
               {/* Profile Completion Alert */}
               <ProfileCompletionAlert agentId={agent.id} agentName={agent.name} />
 
