@@ -6,11 +6,11 @@ import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
 import { 
   Clock, Timer, Play, Loader2, AlertCircle, 
-  Bell, BellOff, Calendar, ArrowRight, Zap, Shield
+  Bell, BellOff, Calendar, ArrowRight, Zap, Shield, AlertTriangle
 } from 'lucide-react';
 import { 
   format, differenceInHours, differenceInMinutes, differenceInSeconds, 
-  addHours, isWithinInterval, parseISO, subDays, differenceInDays
+  addHours, isWithinInterval, parseISO, subDays, differenceInDays, isSameDay, addDays
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
@@ -44,6 +44,13 @@ export function ProfessionalShiftTimer({ agentId, compact = false }: Professiona
   const [currentTime, setCurrentTime] = useState(new Date());
   
   const { isSupported: pushSupported, isEnabled: pushEnabled, requestPermission } = usePushNotifications();
+
+  // Check if shift is coming soon (within 24 hours)
+  const isShiftSoon = useCallback((shiftDate: string): boolean => {
+    const today = new Date();
+    const shiftDay = parseISO(shiftDate);
+    return isSameDay(today, shiftDay) || isSameDay(addDays(today, 1), shiftDay);
+  }, []);
 
   // Update current time every second
   useEffect(() => {
@@ -244,9 +251,19 @@ export function ProfessionalShiftTimer({ agentId, compact = false }: Professiona
       <Card className="card-night-amber bg-gradient-to-br from-[hsl(222,60%,3%)] via-[hsl(222,55%,5%)] to-[hsl(38,40%,8%)] border-3 border-amber-500/50 overflow-hidden transition-all duration-300 hover:border-amber-400/70 group">
         <CardContent className="p-4">
           <div className="flex items-center gap-4">
-            <div className={`p-4 rounded-2xl transition-all duration-300 group-hover:scale-110 ${isOnDuty ? 'bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 ring-2 ring-emerald-500/50 shadow-lg shadow-emerald-500/30 animate-pulse' : 'bg-slate-700/60'}`}>
+            <div className={`relative p-4 rounded-2xl transition-all duration-300 group-hover:scale-110 ${
+              isOnDuty 
+                ? timeRemaining.hours < 2 
+                  ? 'bg-gradient-to-br from-amber-500/30 to-amber-600/20 ring-2 ring-amber-500/50 shadow-lg shadow-amber-500/30 pulse-critical-amber'
+                  : 'bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 ring-2 ring-emerald-500/50 shadow-lg shadow-emerald-500/30 pulse-critical-green' 
+                : nextShift && isShiftSoon(nextShift.shift_date)
+                  ? 'bg-gradient-to-br from-amber-500/30 to-amber-600/20 ring-2 ring-amber-500/50 shadow-lg shadow-amber-500/30 pulse-critical-amber'
+                  : 'bg-slate-700/60'
+            }`}>
               {isOnDuty ? (
-                <Play className="h-7 w-7 text-emerald-400 drop-shadow-lg" />
+                <Play className={`h-7 w-7 drop-shadow-lg ${timeRemaining.hours < 2 ? 'text-amber-400 pulse-icon-critical' : 'text-emerald-400'}`} />
+              ) : nextShift && isShiftSoon(nextShift.shift_date) ? (
+                <AlertTriangle className="h-7 w-7 text-amber-400 pulse-icon-critical" />
               ) : (
                 <Clock className="h-7 w-7 text-slate-400" />
               )}
@@ -254,13 +271,15 @@ export function ProfessionalShiftTimer({ agentId, compact = false }: Professiona
             <div className="flex-1 min-w-0">
               <p className="text-sm text-slate-400 uppercase tracking-wider font-bold">Plantão</p>
               {isOnDuty ? (
-                <p className="text-2xl md:text-3xl font-black text-emerald-400 font-mono leading-tight drop-shadow-lg">
+                <p className={`text-2xl md:text-3xl font-black font-mono leading-tight drop-shadow-lg ${
+                  timeRemaining.hours < 2 ? 'text-amber-400 pulse-text-critical' : 'text-emerald-400'
+                }`}>
                   {formatUnit(timeRemaining.hours)}:{formatUnit(timeRemaining.minutes)}:{formatUnit(timeRemaining.seconds)}
                 </p>
               ) : nextShift ? (
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-5 w-5 text-amber-400" />
-                  <p className="text-lg md:text-xl font-bold text-slate-200 leading-tight">
+                <div className={`flex items-center gap-2 ${isShiftSoon(nextShift.shift_date) ? 'pulse-critical-amber rounded-lg px-2 py-1 -mx-2' : ''}`}>
+                  <Calendar className={`h-5 w-5 ${isShiftSoon(nextShift.shift_date) ? 'text-amber-400 pulse-icon-critical' : 'text-amber-400'}`} />
+                  <p className={`text-lg md:text-xl font-bold leading-tight ${isShiftSoon(nextShift.shift_date) ? 'text-amber-400 pulse-text-critical' : 'text-slate-200'}`}>
                     {format(parseISO(nextShift.shift_date), "dd/MM", { locale: ptBR })} • {nextShift.start_time}
                   </p>
                 </div>
@@ -269,9 +288,13 @@ export function ProfessionalShiftTimer({ agentId, compact = false }: Professiona
               )}
             </div>
             {isOnDuty && (
-              <div className="text-right bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 px-4 py-2 rounded-2xl border-2 border-emerald-500/40 shadow-lg shadow-emerald-500/20">
+              <div className={`text-right px-4 py-2 rounded-2xl border-2 shadow-lg ${
+                timeRemaining.hours < 2 
+                  ? 'bg-gradient-to-br from-amber-500/20 to-amber-600/10 border-amber-500/40 shadow-amber-500/20 pulse-critical-amber'
+                  : 'bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 border-emerald-500/40 shadow-emerald-500/20'
+              }`}>
                 <p className="text-xs text-slate-400 font-medium uppercase">Progresso</p>
-                <p className="text-xl font-black text-emerald-400">{progress.toFixed(0)}%</p>
+                <p className={`text-xl font-black ${timeRemaining.hours < 2 ? 'text-amber-400 pulse-text-critical' : 'text-emerald-400'}`}>{progress.toFixed(0)}%</p>
               </div>
             )}
           </div>
