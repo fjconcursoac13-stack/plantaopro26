@@ -739,9 +739,9 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
 
   if (isLoading) {
     return (
-      <Card className={`bg-slate-800/50 border-slate-700 ${compact ? 'col-span-1' : ''}`}>
-        <CardContent className="flex items-center justify-center py-8">
-          <Loader2 className="h-6 w-6 animate-spin text-amber-500" />
+      <Card className={`bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-green-900/20 border-3 border-green-500/40 shadow-lg shadow-green-500/10 ${compact ? 'col-span-1' : ''}`}>
+        <CardContent className="flex items-center justify-center py-10">
+          <Loader2 className="h-10 w-10 animate-spin text-green-400" />
         </CardContent>
       </Card>
     );
@@ -754,26 +754,29 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
     const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
 
     return (
-      <Card className="bg-gradient-to-br from-slate-800/90 via-slate-900/80 to-green-950/30 border-2 border-green-500/40 shadow-xl shadow-green-500/10">
+      <Card className="bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-green-900/20 border-3 border-green-500/40 shadow-lg shadow-green-500/10 transition-all duration-300 hover:border-green-400/50 hover:shadow-green-500/20 hover:scale-[1.01] group">
         <CardContent className="p-5 md:p-6 space-y-4">
-          {/* Balance Header - LARGER */}
+          {/* Balance Header - LARGER with GLOW */}
           <div className="flex items-center gap-4">
-            <div className={`p-3 rounded-xl ${balance >= 0 ? 'bg-green-500/25 ring-2 ring-green-500/30' : 'bg-red-500/25 ring-2 ring-red-500/30'}`}>
+            <div className={`p-4 rounded-2xl transition-all duration-300 group-hover:scale-110 ${balance >= 0 ? 'bg-gradient-to-br from-green-500/30 to-green-600/20 ring-2 ring-green-500/40 shadow-lg shadow-green-500/30' : 'bg-gradient-to-br from-red-500/30 to-red-600/20 ring-2 ring-red-500/40 shadow-lg shadow-red-500/30'}`}>
               {balance >= 0 ? (
-                <TrendingUp className="h-7 w-7 md:h-8 md:w-8 text-green-400" />
+                <TrendingUp className="h-8 w-8 md:h-10 md:w-10 text-green-400 drop-shadow-lg" />
               ) : (
-                <TrendingDown className="h-7 w-7 md:h-8 md:w-8 text-red-400" />
+                <TrendingDown className="h-8 w-8 md:h-10 md:w-10 text-red-400 drop-shadow-lg" />
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm md:text-base text-slate-300 font-medium">Banco de Horas</p>
-              <p className={`text-2xl md:text-3xl font-black ${balance >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              <p className="text-sm md:text-base text-slate-300 font-semibold uppercase tracking-wide">Banco de Horas</p>
+              <p className={`text-3xl md:text-4xl font-black drop-shadow-lg ${balance >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                 {balance >= 0 ? '+' : ''}{balance.toFixed(1)}h
               </p>
             </div>
-            <div className="text-right bg-amber-500/15 px-4 py-2 rounded-xl border border-amber-500/30">
-              <p className="text-xs md:text-sm text-slate-400">Valor</p>
-              <p className="text-lg md:text-xl font-bold text-amber-400">R$ {totalValue.toFixed(2)}</p>
+            <div className="text-right bg-gradient-to-br from-amber-500/20 to-amber-600/10 px-5 py-3 rounded-2xl border-2 border-amber-500/40 shadow-lg shadow-amber-500/20 transition-all duration-300 group-hover:border-amber-400/60">
+              <div className="flex items-center gap-2 mb-1">
+                <DollarSign className="h-5 w-5 text-amber-400" />
+                <p className="text-sm text-slate-400 font-medium">Valor</p>
+              </div>
+              <p className="text-xl md:text-2xl font-black text-amber-400 drop-shadow-lg">R$ {totalValue.toFixed(2)}</p>
             </div>
           </div>
 

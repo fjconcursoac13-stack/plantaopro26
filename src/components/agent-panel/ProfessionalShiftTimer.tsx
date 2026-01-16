@@ -241,35 +241,44 @@ export function ProfessionalShiftTimer({ agentId, compact = false }: Professiona
   // COMPACT VERSION - Para a linha de stats
   if (compact) {
     return (
-      <Card className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 border-2 border-slate-700/60 shadow-xl overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:border-amber-500/30">
+      <Card className="bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-amber-900/20 border-3 border-amber-500/40 shadow-lg shadow-amber-500/10 overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-amber-500/20 hover:border-amber-400/50 group">
         <CardContent className="p-4">
-          <div className="flex items-center gap-3">
-            <div className={`p-3 rounded-xl ${isOnDuty ? 'bg-emerald-500/25 ring-2 ring-emerald-500/50 shadow-lg shadow-emerald-500/20' : 'bg-slate-700/60'}`}>
+          <div className="flex items-center gap-4">
+            <div className={`p-4 rounded-2xl transition-all duration-300 group-hover:scale-110 ${isOnDuty ? 'bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 ring-2 ring-emerald-500/50 shadow-lg shadow-emerald-500/30 animate-pulse' : 'bg-slate-700/60'}`}>
               {isOnDuty ? (
-                <Play className="h-5 w-5 text-emerald-400" />
+                <Play className="h-7 w-7 text-emerald-400 drop-shadow-lg" />
               ) : (
-                <Clock className="h-5 w-5 text-slate-400" />
+                <Clock className="h-7 w-7 text-slate-400" />
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold">Plantão</p>
+              <p className="text-sm text-slate-400 uppercase tracking-wider font-bold">Plantão</p>
               {isOnDuty ? (
-                <p className="text-xl font-black text-emerald-400 font-mono leading-tight">
+                <p className="text-2xl md:text-3xl font-black text-emerald-400 font-mono leading-tight drop-shadow-lg">
                   {formatUnit(timeRemaining.hours)}:{formatUnit(timeRemaining.minutes)}:{formatUnit(timeRemaining.seconds)}
                 </p>
               ) : nextShift ? (
-                <p className="text-base font-bold text-slate-200 leading-tight">
-                  {format(parseISO(nextShift.shift_date), "dd/MM", { locale: ptBR })} • {nextShift.start_time}
-                </p>
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-amber-400" />
+                  <p className="text-lg md:text-xl font-bold text-slate-200 leading-tight">
+                    {format(parseISO(nextShift.shift_date), "dd/MM", { locale: ptBR })} • {nextShift.start_time}
+                  </p>
+                </div>
               ) : (
-                <p className="text-sm text-slate-500 leading-tight">Sem escalas</p>
+                <p className="text-base text-slate-500 leading-tight">Sem escalas</p>
               )}
             </div>
+            {isOnDuty && (
+              <div className="text-right bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 px-4 py-2 rounded-2xl border-2 border-emerald-500/40 shadow-lg shadow-emerald-500/20">
+                <p className="text-xs text-slate-400 font-medium uppercase">Progresso</p>
+                <p className="text-xl font-black text-emerald-400">{progress.toFixed(0)}%</p>
+              </div>
+            )}
           </div>
           {isOnDuty && (
-            <div className="mt-3 h-2 bg-slate-700/80 rounded-full overflow-hidden border border-slate-600/50">
+            <div className="mt-4 h-3 bg-slate-700/80 rounded-full overflow-hidden border-2 border-slate-600/50">
               <div 
-                className="h-full bg-gradient-to-r from-amber-500 via-amber-400 to-emerald-500 transition-all duration-1000 rounded-full shadow-lg"
+                className="h-full bg-gradient-to-r from-amber-500 via-amber-400 to-emerald-500 transition-all duration-1000 rounded-full shadow-lg shadow-amber-500/30"
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -281,21 +290,21 @@ export function ProfessionalShiftTimer({ agentId, compact = false }: Professiona
 
   // FULL VERSION - Timer completo e sofisticado
   return (
-    <Card className="bg-gradient-to-br from-slate-800/95 via-slate-850/95 to-slate-900/95 border-2 border-slate-700/60 shadow-2xl overflow-hidden transition-all duration-300 hover:shadow-amber-500/10">
+    <Card className="bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-amber-900/20 border-3 border-amber-500/40 shadow-lg shadow-amber-500/10 overflow-hidden transition-all duration-300 hover:shadow-amber-500/20 hover:border-amber-400/50 group">
       <CardContent className="p-0">
         {isOnDuty && currentShift ? (
           <div className="space-y-0">
             {/* Header com status */}
-            <div className="bg-gradient-to-r from-emerald-600/30 via-emerald-500/15 to-transparent p-4 border-b-2 border-emerald-500/30">
+            <div className="bg-gradient-to-r from-emerald-600/40 via-emerald-500/20 to-transparent p-5 border-b-3 border-emerald-500/40">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="relative">
-                    <Shield className="h-7 w-7 text-emerald-400 drop-shadow-lg" />
-                    <span className="absolute -top-1 -right-1 h-3 w-3 bg-emerald-400 rounded-full animate-pulse shadow-lg shadow-emerald-400/50" />
+                <div className="flex items-center gap-4">
+                  <div className="relative p-2 rounded-xl bg-emerald-500/30 shadow-lg shadow-emerald-500/30">
+                    <Shield className="h-8 w-8 text-emerald-400 drop-shadow-lg" />
+                    <span className="absolute -top-1 -right-1 h-4 w-4 bg-emerald-400 rounded-full animate-pulse shadow-lg shadow-emerald-400/50" />
                   </div>
-                  <span className="text-sm font-black text-emerald-400 uppercase tracking-wider">Em Serviço</span>
+                  <span className="text-base font-black text-emerald-400 uppercase tracking-wider">Em Serviço</span>
                 </div>
-                <Badge className="bg-emerald-500/25 text-emerald-400 border-2 border-emerald-500/50 text-xs px-3 py-1 font-bold shadow-lg shadow-emerald-500/20">
+                <Badge className="bg-gradient-to-r from-emerald-500/30 to-emerald-600/20 text-emerald-400 border-2 border-emerald-500/50 text-sm px-4 py-1.5 font-bold shadow-lg shadow-emerald-500/20">
                   24H
                 </Badge>
               </div>
@@ -322,25 +331,25 @@ export function ProfessionalShiftTimer({ agentId, compact = false }: Professiona
             </div>
 
             {/* Timer principal - Tempo decorrido */}
-            <div className="p-5 space-y-4">
+            <div className="p-6 space-y-5">
               <div className="text-center">
-                <p className="text-xs text-amber-400 uppercase tracking-[0.2em] font-bold mb-3">
+                <p className="text-sm text-amber-400 uppercase tracking-[0.25em] font-bold mb-4">
                   Tempo em Serviço
                 </p>
-                <div className="flex items-center justify-center gap-2">
-                  <div className="bg-gradient-to-b from-amber-500/25 to-amber-600/15 rounded-xl px-4 py-2.5 border-2 border-amber-500/40 shadow-lg shadow-amber-500/20">
-                    <span className="font-mono text-3xl font-black text-amber-400">{formatUnit(timeElapsed.hours)}</span>
+                <div className="flex items-center justify-center gap-3">
+                  <div className="bg-gradient-to-b from-amber-500/30 to-amber-600/15 rounded-2xl px-5 py-3 border-3 border-amber-500/50 shadow-xl shadow-amber-500/30">
+                    <span className="font-mono text-4xl md:text-5xl font-black text-amber-400 drop-shadow-lg">{formatUnit(timeElapsed.hours)}</span>
                   </div>
-                  <span className="text-2xl font-black text-amber-400 animate-pulse">:</span>
-                  <div className="bg-gradient-to-b from-amber-500/25 to-amber-600/15 rounded-xl px-4 py-2.5 border-2 border-amber-500/40 shadow-lg shadow-amber-500/20">
-                    <span className="font-mono text-3xl font-black text-amber-400">{formatUnit(timeElapsed.minutes)}</span>
+                  <span className="text-3xl font-black text-amber-400 animate-pulse">:</span>
+                  <div className="bg-gradient-to-b from-amber-500/30 to-amber-600/15 rounded-2xl px-5 py-3 border-3 border-amber-500/50 shadow-xl shadow-amber-500/30">
+                    <span className="font-mono text-4xl md:text-5xl font-black text-amber-400 drop-shadow-lg">{formatUnit(timeElapsed.minutes)}</span>
                   </div>
-                  <span className="text-2xl font-black text-amber-400 animate-pulse">:</span>
-                  <div className="bg-gradient-to-b from-amber-500/25 to-amber-600/15 rounded-xl px-4 py-2.5 border-2 border-amber-500/40 shadow-lg shadow-amber-500/20">
-                    <span className="font-mono text-3xl font-black text-amber-400">{formatUnit(timeElapsed.seconds)}</span>
+                  <span className="text-3xl font-black text-amber-400 animate-pulse">:</span>
+                  <div className="bg-gradient-to-b from-amber-500/30 to-amber-600/15 rounded-2xl px-5 py-3 border-3 border-amber-500/50 shadow-xl shadow-amber-500/30">
+                    <span className="font-mono text-4xl md:text-5xl font-black text-amber-400 drop-shadow-lg">{formatUnit(timeElapsed.seconds)}</span>
                   </div>
                 </div>
-                <div className="flex justify-center gap-8 mt-2 text-xs text-slate-400 uppercase font-semibold">
+                <div className="flex justify-center gap-12 mt-3 text-sm text-slate-400 uppercase font-bold tracking-wider">
                   <span>hrs</span>
                   <span>min</span>
                   <span>seg</span>
@@ -349,27 +358,29 @@ export function ProfessionalShiftTimer({ agentId, compact = false }: Professiona
 
               {/* Progress bar elegante */}
               <div className="relative">
-                <div className="h-3 bg-slate-800/80 rounded-full overflow-hidden border-2 border-slate-700/60">
+                <div className="h-4 bg-slate-800/80 rounded-full overflow-hidden border-3 border-slate-700/60">
                   <div 
-                    className="h-full bg-gradient-to-r from-amber-500 via-amber-400 to-emerald-500 transition-all duration-1000 rounded-full shadow-lg"
+                    className="h-full bg-gradient-to-r from-amber-500 via-amber-400 to-emerald-500 transition-all duration-1000 rounded-full shadow-lg shadow-amber-500/30"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
-                <div className="flex items-center justify-between mt-2 text-xs">
-                  <span className="text-slate-400 font-medium">{currentShift.start_time}</span>
-                  <span className="text-amber-400 font-black text-sm">{progress.toFixed(0)}%</span>
-                  <span className="text-slate-400 font-medium">{currentShift.start_time}</span>
+                <div className="flex items-center justify-between mt-3 text-sm">
+                  <span className="text-slate-400 font-semibold">{currentShift.start_time}</span>
+                  <span className="text-amber-400 font-black text-lg">{progress.toFixed(0)}%</span>
+                  <span className="text-slate-400 font-semibold">{currentShift.start_time}</span>
                 </div>
               </div>
 
               {/* Tempo restante */}
-              <div className="bg-slate-800/60 rounded-xl p-4 border-2 border-slate-700/50 shadow-lg">
+              <div className="bg-gradient-to-br from-slate-800/80 to-emerald-900/20 rounded-2xl p-5 border-3 border-emerald-500/30 shadow-xl shadow-emerald-500/10">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Timer className="h-5 w-5 text-emerald-400" />
-                    <span className="text-sm text-slate-300 uppercase font-semibold">Restante</span>
+                  <div className="flex items-center gap-4">
+                    <div className="p-2 rounded-xl bg-emerald-500/20">
+                      <Timer className="h-7 w-7 text-emerald-400 drop-shadow-lg" />
+                    </div>
+                    <span className="text-base text-slate-300 uppercase font-bold tracking-wide">Restante</span>
                   </div>
-                  <span className="font-mono text-lg font-black text-emerald-400">
+                  <span className="font-mono text-2xl font-black text-emerald-400 drop-shadow-lg">
                     {formatUnit(timeRemaining.hours)}:{formatUnit(timeRemaining.minutes)}:{formatUnit(timeRemaining.seconds)}
                   </span>
                 </div>
