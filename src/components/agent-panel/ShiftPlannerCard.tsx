@@ -373,12 +373,16 @@ const ShiftPlannerCard = ({ agentId }: ShiftPlannerCardProps) => {
   };
 
   return (
-    <Card className="bg-slate-800/50 border-slate-700">
-      <CardHeader>
+    <Card className="bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-amber-900/20 border-3 border-amber-500/40 shadow-lg shadow-amber-500/10 transition-all duration-300 hover:border-amber-400/50 hover:shadow-amber-500/20 hover:scale-[1.01] group">
+      <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Calculator className="h-5 w-5 text-amber-500" />
-            Planejador de Plantão
+          <CardTitle className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-amber-500/20 group-hover:bg-amber-500/30 transition-colors">
+              <Calculator className="h-6 w-6 text-amber-400" />
+            </div>
+            <span className="text-xl font-bold bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-transparent">
+              Planejador de Plantão
+            </span>
           </CardTitle>
           
           {/* Saved Configs Dropdown */}
@@ -387,11 +391,11 @@ const ShiftPlannerCard = ({ agentId }: ShiftPlannerCardProps) => {
               const config = savedConfigs.find(c => c.id === id);
               if (config) loadConfig(config);
             }}>
-              <SelectTrigger className="w-48 bg-slate-700 border-slate-600">
-                <FolderOpen className="h-4 w-4 mr-2 text-amber-500" />
+              <SelectTrigger className="w-48 bg-slate-700/80 border-amber-500/30 hover:border-amber-400/50 transition-colors">
+                <FolderOpen className="h-4 w-4 mr-2 text-amber-400" />
                 <SelectValue placeholder="Carregar config..." />
               </SelectTrigger>
-              <SelectContent className="bg-slate-800 border-slate-700">
+              <SelectContent className="bg-slate-800 border-amber-500/30">
                 {savedConfigs.map((config) => (
                   <div key={config.id} className="flex items-center justify-between pr-2">
                     <SelectItem value={config.id} className="flex-1">
@@ -411,17 +415,17 @@ const ShiftPlannerCard = ({ agentId }: ShiftPlannerCardProps) => {
       </CardHeader>
       <CardContent>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 bg-slate-700/50">
-            <TabsTrigger value="vigilance" className="flex items-center gap-2 data-[state=active]:bg-amber-500 data-[state=active]:text-black">
-              <Eye className="h-4 w-4" />
+          <TabsList className="grid w-full grid-cols-3 bg-slate-700/50 border border-amber-500/20 p-1">
+            <TabsTrigger value="vigilance" className="flex items-center gap-2 text-base data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-black data-[state=active]:font-semibold transition-all">
+              <Eye className="h-5 w-5" />
               <span className="hidden sm:inline">Vigilância</span>
             </TabsTrigger>
-            <TabsTrigger value="rounds" className="flex items-center gap-2 data-[state=active]:bg-amber-500 data-[state=active]:text-black">
-              <Route className="h-4 w-4" />
+            <TabsTrigger value="rounds" className="flex items-center gap-2 text-base data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-black data-[state=active]:font-semibold transition-all">
+              <Route className="h-5 w-5" />
               <span className="hidden sm:inline">Rondas</span>
             </TabsTrigger>
-            <TabsTrigger value="rest" className="flex items-center gap-2 data-[state=active]:bg-amber-500 data-[state=active]:text-black">
-              <Moon className="h-4 w-4" />
+            <TabsTrigger value="rest" className="flex items-center gap-2 text-base data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-amber-600 data-[state=active]:text-black data-[state=active]:font-semibold transition-all">
+              <Moon className="h-5 w-5" />
               <span className="hidden sm:inline">Descanso</span>
             </TabsTrigger>
           </TabsList>
