@@ -799,62 +799,75 @@ export default function Index() {
         {/* Themed Animated Background with Rotating Team Images */}
         <ThemedHomeBackground />
 
-      {/* Security Status Bar - Minimal */}
-      <div className="bg-slate-900/95 backdrop-blur-sm border-b border-primary/20 py-1.5 px-3 relative z-20 shrink-0">
+      {/* Security Status Bar - Professional & Larger */}
+      <div className="bg-gradient-to-r from-slate-900/98 via-slate-800/95 to-slate-900/98 backdrop-blur-md border-b-2 border-primary/30 py-2.5 sm:py-3 px-4 sm:px-6 relative z-20 shrink-0 shadow-lg shadow-black/20">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5">
+          {/* Left: Status Indicator */}
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/15 border border-green-500/40">
               <div className="relative">
-                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse shadow-lg shadow-green-500/50" />
+                <div className="absolute inset-0 w-2.5 h-2.5 rounded-full bg-green-400 animate-ping opacity-75" />
               </div>
-              <span className="text-[8px] sm:text-[9px] font-mono text-green-400 tracking-wider font-semibold">
-                ONLINE
+              <span className="text-xs sm:text-sm font-bold text-green-400 tracking-wider">
+                SISTEMA ATIVO
               </span>
             </div>
+            <div className="hidden sm:flex items-center gap-2 text-slate-400">
+              <Shield className="h-4 w-4 text-primary" />
+              <span className="text-xs font-medium">Conexão Segura</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
+          
+          {/* Right: Theme Button & Clock */}
+          <div className="flex items-center gap-3 sm:gap-4">
             <button
               onClick={() => {
                 playSound('click');
                 setShowThemeSelector(true);
               }}
-              className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-primary/10 border border-primary/30 hover:bg-primary/20 transition-all"
-              title="Alterar tema"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-primary/20 to-primary/10 border-2 border-primary/40 hover:border-primary/60 hover:from-primary/30 hover:to-primary/20 transition-all duration-300 group shadow-lg shadow-primary/10"
+              title="Alterar tema visual"
             >
-              <Palette className="h-3 w-3 text-primary" />
+              <Palette className="h-4 w-4 sm:h-5 sm:w-5 text-primary group-hover:scale-110 transition-transform" />
+              <span className="hidden sm:inline text-sm font-semibold text-primary">Tema</span>
             </button>
-            <div className="text-[10px] font-mono text-primary font-bold">
-              {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+            
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/60 border border-slate-700/50">
+              <Clock className="h-4 w-4 text-primary" />
+              <span className="text-sm sm:text-base font-mono font-bold text-primary tracking-wide">
+                {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+              </span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Hero Section - Enhanced title with effects */}
-      <header className="py-3 sm:py-4 md:py-6 px-4 relative z-10 shrink-0">
-        <div className="max-w-4xl mx-auto text-center flex flex-col items-center gap-3 sm:gap-4">
+      <header className="py-4 sm:py-6 md:py-8 px-4 relative z-10 shrink-0">
+        <div className="max-w-4xl mx-auto text-center flex flex-col items-center gap-4 sm:gap-5">
           {/* Badge with glow */}
           <div className={cn(
-            "relative w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full border-2 border-primary/50 flex items-center justify-center",
+            "relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full border-3 border-primary/60 flex items-center justify-center shadow-xl",
             themeConfig.colors.isLight 
               ? "bg-gradient-to-br from-white via-gray-50 to-gray-100"
               : "bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900"
           )}>
             {(() => {
               const MainIcon = themeAssets.mainIcon;
-              return <MainIcon className="h-6 w-6 sm:h-8 sm:w-8 md:h-10 md:w-10 text-primary" />;
+              return <MainIcon className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-primary drop-shadow-lg" />;
             })()}
             {/* Animated ring */}
             <div className="absolute inset-0 rounded-full border-2 border-primary/30 animate-ping" style={{ animationDuration: '2s' }} />
-            <div className="absolute -inset-2 rounded-full bg-primary/10 blur-xl animate-pulse" />
+            <div className="absolute -inset-3 rounded-full bg-primary/15 blur-xl animate-pulse" />
           </div>
           
           {/* Title with effects */}
           <div className="relative">
             {/* Glow behind title */}
-            <div className="absolute inset-0 blur-2xl bg-primary/20 rounded-full" />
+            <div className="absolute inset-0 blur-3xl bg-primary/25 rounded-full" />
             
-            <h1 className="relative text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight">
+            <h1 className="relative text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight">
               <span 
                 className="bg-gradient-to-r from-foreground via-foreground to-foreground/80 bg-clip-text text-transparent"
                 style={{ textShadow: '0 0 40px hsl(var(--primary) / 0.3)' }}
@@ -873,10 +886,10 @@ export default function Index() {
             </h1>
             
             {/* Subtitle with tactical feel */}
-            <p className="mt-1 sm:mt-2 text-[10px] sm:text-xs md:text-sm font-bold text-muted-foreground tracking-[0.3em] uppercase flex items-center justify-center gap-2">
-              <Zap className="h-3 w-3 text-primary" />
+            <p className="mt-2 sm:mt-3 text-xs sm:text-sm md:text-base font-bold text-muted-foreground tracking-[0.25em] uppercase flex items-center justify-center gap-3">
+              <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
               <span>{themeAssets.subtitle}</span>
-              <Radio className="h-2.5 w-2.5 text-green-500 animate-pulse" />
+              <Radio className="h-3 w-3 sm:h-4 sm:w-4 text-green-500 animate-pulse" />
             </p>
           </div>
         </div>
