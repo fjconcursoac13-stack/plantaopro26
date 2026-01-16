@@ -1036,3 +1036,20 @@
     margin-top: env(safe-area-inset-top, 0px);
   }
 }
+
+/* BH Critical States - Subtle glow instead of flicker */
+.bh-critical-red {
+  box-shadow: 0 0 20px hsl(0 72% 51% / 0.4);
+}
+
+.bh-critical-amber {
+  box-shadow: 0 0 20px hsl(38 92% 50% / 0.4);
+}
+
+.bh-icon-critical {
+  filter: drop-shadow(0 0 6px currentColor);
+}
+
+.bh-text-glow {
+  text-shadow: 0 0 10px currentColor;
+}

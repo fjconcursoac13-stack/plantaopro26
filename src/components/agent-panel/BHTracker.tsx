@@ -756,32 +756,32 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
     return (
       <Card className="card-night-green bg-gradient-to-br from-[hsl(222,60%,3%)] via-[hsl(222,55%,5%)] to-[hsl(142,40%,8%)] border-3 border-green-500/50 transition-all duration-300 hover:border-green-400/70 group">
         <CardContent className="p-5 md:p-6 space-y-4">
-          {/* Balance Header - LARGER with GLOW and PULSING for critical states */}
+          {/* Balance Header - LARGER with GLOW (no flickering) */}
           <div className="flex items-center gap-4">
             <div className={`relative p-4 rounded-2xl transition-all duration-300 group-hover:scale-110 ${
               balance < 0 
-                ? 'bg-gradient-to-br from-red-500/30 to-red-600/20 ring-2 ring-red-500/40 shadow-lg shadow-red-500/30 pulse-critical-red' 
+                ? 'bg-gradient-to-br from-red-500/30 to-red-600/20 ring-2 ring-red-500/40 shadow-lg shadow-red-500/30 bh-critical-red' 
                 : isAtLimit 
-                  ? 'bg-gradient-to-br from-red-500/30 to-red-600/20 ring-2 ring-red-500/40 shadow-lg shadow-red-500/30 pulse-critical-red'
+                  ? 'bg-gradient-to-br from-red-500/30 to-red-600/20 ring-2 ring-red-500/40 shadow-lg shadow-red-500/30 bh-critical-red'
                   : isNearLimit
-                    ? 'bg-gradient-to-br from-amber-500/30 to-amber-600/20 ring-2 ring-amber-500/40 shadow-lg shadow-amber-500/30 pulse-critical-amber'
+                    ? 'bg-gradient-to-br from-amber-500/30 to-amber-600/20 ring-2 ring-amber-500/40 shadow-lg shadow-amber-500/30 bh-critical-amber'
                     : 'bg-gradient-to-br from-green-500/30 to-green-600/20 ring-2 ring-green-500/40 shadow-lg shadow-green-500/30'
             }`}>
               {balance >= 0 ? (
-                <TrendingUp className={`h-8 w-8 md:h-10 md:w-10 drop-shadow-lg ${isAtLimit ? 'text-red-400 pulse-icon-critical' : isNearLimit ? 'text-amber-400 pulse-icon-critical' : 'text-green-400'}`} />
+                <TrendingUp className={`h-8 w-8 md:h-10 md:w-10 drop-shadow-lg ${isAtLimit ? 'text-red-400 bh-icon-critical' : isNearLimit ? 'text-amber-400 bh-icon-critical' : 'text-green-400'}`} />
               ) : (
-                <TrendingDown className="h-8 w-8 md:h-10 md:w-10 text-red-400 drop-shadow-lg pulse-icon-critical" />
+                <TrendingDown className="h-8 w-8 md:h-10 md:w-10 text-red-400 drop-shadow-lg bh-icon-critical" />
               )}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm md:text-base text-slate-300 font-semibold uppercase tracking-wide">Banco de Horas</p>
               <p className={`text-3xl md:text-4xl font-black drop-shadow-lg ${
                 balance < 0 
-                  ? 'text-red-400 pulse-text-critical' 
+                  ? 'text-red-400 bh-text-glow' 
                   : isAtLimit 
-                    ? 'text-red-400 pulse-text-critical'
+                    ? 'text-red-400 bh-text-glow'
                     : isNearLimit 
-                      ? 'text-amber-400 pulse-text-critical'
+                      ? 'text-amber-400 bh-text-glow'
                       : 'text-green-400'
               }`}>
                 {balance >= 0 ? '+' : ''}{balance.toFixed(1)}h
@@ -789,9 +789,9 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
             </div>
             <div className={`text-right px-5 py-3 rounded-2xl border-2 shadow-lg transition-all duration-300 group-hover:border-amber-400/60 ${
               isAtLimit 
-                ? 'bg-gradient-to-br from-red-500/20 to-red-600/10 border-red-500/40 shadow-red-500/20 pulse-critical-red'
+                ? 'bg-gradient-to-br from-red-500/20 to-red-600/10 border-red-500/40 shadow-red-500/20 bh-critical-red'
                 : isNearLimit
-                  ? 'bg-gradient-to-br from-amber-500/20 to-amber-600/10 border-amber-500/40 shadow-amber-500/20 pulse-critical-amber'
+                  ? 'bg-gradient-to-br from-amber-500/20 to-amber-600/10 border-amber-500/40 shadow-amber-500/20 bh-critical-amber'
                   : 'bg-gradient-to-br from-amber-500/20 to-amber-600/10 border-amber-500/40 shadow-amber-500/20'
             }`}>
               <div className="flex items-center gap-2 mb-1">
@@ -802,17 +802,17 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
             </div>
           </div>
 
-          {/* Progress Bar - LARGER with pulsing for critical */}
+          {/* Progress Bar - LARGER (no flicker animation) */}
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <span className="text-slate-400 font-medium">{balance.toFixed(1)} / {bhLimit}h</span>
-              <span className={`font-bold ${isNearLimit ? 'text-amber-400 pulse-text-critical' : isAtLimit ? 'text-red-400 pulse-text-critical' : 'text-green-400'}`}>
+              <span className={`font-bold ${isNearLimit ? 'text-amber-400 bh-text-glow' : isAtLimit ? 'text-red-400 bh-text-glow' : 'text-green-400'}`}>
                 {progressPercent.toFixed(0)}%
               </span>
             </div>
             <Progress 
               value={progressPercent} 
-              className={`h-3 rounded-full ${isAtLimit ? '[&>div]:bg-red-500 pulse-critical-red' : isNearLimit ? '[&>div]:bg-amber-500 pulse-critical-amber' : '[&>div]:bg-green-500'}`}
+              className={`h-3 rounded-full ${isAtLimit ? '[&>div]:bg-red-500' : isNearLimit ? '[&>div]:bg-amber-500' : '[&>div]:bg-green-500'}`}
             />
           </div>
 
