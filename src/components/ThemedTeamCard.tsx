@@ -127,13 +127,13 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
           }}
         />
         
-        {/* Main Card - Fixed minimum height to ensure uniform visibility */}
+        {/* Main Card - Optimized for mobile portrait visibility */}
         <div 
           className={cn(
-            "relative overflow-hidden rounded-xl md:rounded-2xl",
+            "relative overflow-hidden rounded-lg sm:rounded-xl md:rounded-2xl",
             "border-2 md:border-3 transition-all duration-300 group-hover:shadow-2xl",
-            // Force consistent height across all cards - h-full fills parent
-            "w-full h-full min-h-[200px] sm:min-h-[240px] md:min-h-[300px] lg:min-h-[360px] xl:min-h-[420px] 2xl:min-h-[480px]"
+            // Optimized heights for mobile portrait - shorter on small screens
+            "w-full min-h-[140px] h-[calc(35vh-2rem)] sm:min-h-[200px] sm:h-auto md:min-h-[280px] lg:min-h-[340px] xl:min-h-[400px] 2xl:min-h-[460px]"
           )}
           style={{ 
             borderColor: teamColors[team as keyof typeof teamColors]?.primary || '#fff',
@@ -145,12 +145,12 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
             style={{ 
               backgroundImage: `url(${teamPosters[team as keyof typeof teamPosters]})`,
               backgroundSize: 'cover',
-              backgroundPosition: 'center',
+              backgroundPosition: 'center top',
               backgroundRepeat: 'no-repeat',
             }}
           />
           {/* Dark overlay for readability - consistent gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10 group-hover:from-black/85 group-hover:via-black/30 group-hover:to-black/5 transition-all duration-300" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/20 group-hover:from-black/85 group-hover:via-black/40 group-hover:to-black/10 transition-all duration-300" />
           
           {/* Top gradient stripe with team color */}
           <div 
@@ -171,32 +171,32 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
             <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-green-500 animate-pulse" />
           </div>
           
-          {/* Content - Bottom aligned, consistent layout */}
-          <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4 md:p-5 lg:p-6 z-10">
+          {/* Content - Bottom aligned, compact on mobile */}
+          <div className="absolute inset-x-0 bottom-0 p-2 sm:p-4 md:p-5 lg:p-6 z-10">
             <div className="flex flex-col items-center">
-              {/* Icon with team color - consistent sizing */}
+              {/* Icon with team color - smaller on mobile */}
               <div 
-                className="w-12 h-12 sm:w-14 sm:h-14 md:w-18 md:h-18 lg:w-22 lg:h-22 xl:w-24 xl:h-24 rounded-full flex items-center justify-center mb-2 md:mb-3 shadow-xl group-hover:scale-110 transition-transform duration-300 border-2 md:border-3 border-white/40"
+                className="w-10 h-10 sm:w-14 sm:h-14 md:w-18 md:h-18 lg:w-22 lg:h-22 xl:w-24 xl:h-24 rounded-full flex items-center justify-center mb-1.5 sm:mb-3 shadow-xl group-hover:scale-110 transition-transform duration-300 border-2 md:border-3 border-white/40"
                 style={{ 
                   backgroundColor: teamColors[team as keyof typeof teamColors]?.primary,
-                  boxShadow: `0 0 30px ${teamColors[team as keyof typeof teamColors]?.glow}, 0 0 60px ${teamColors[team as keyof typeof teamColors]?.glow}40`,
+                  boxShadow: `0 0 20px ${teamColors[team as keyof typeof teamColors]?.glow}, 0 0 40px ${teamColors[team as keyof typeof teamColors]?.glow}40`,
                 }}
               >
-                <Icon className="h-6 w-6 sm:h-7 sm:w-7 md:h-9 md:w-9 lg:h-11 lg:w-11 xl:h-12 xl:w-12 text-white drop-shadow-lg" />
+                <Icon className="h-5 w-5 sm:h-7 sm:w-7 md:h-9 md:w-9 lg:h-11 lg:w-11 xl:h-12 xl:w-12 text-white drop-shadow-lg" />
               </div>
               
-              {/* Team name - Always visible, consistent styling */}
-              <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-3">
-                <Star className="h-3 w-3 md:h-4 md:w-4 text-white/80 group-hover:animate-pulse shrink-0" />
+              {/* Team name - Always visible, compact on mobile */}
+              <div className="flex items-center gap-1 sm:gap-2 mb-1.5 sm:mb-3">
+                <Star className="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-4 md:w-4 text-white/80 group-hover:animate-pulse shrink-0" />
                 <h3 
-                  className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-black tracking-[0.1em] sm:tracking-[0.15em] text-white drop-shadow-lg"
+                  className="text-base sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-black tracking-[0.08em] sm:tracking-[0.15em] text-white drop-shadow-lg"
                   style={{ 
-                    textShadow: `0 2px 10px ${teamColors[team as keyof typeof teamColors]?.glow}, 0 0 30px ${teamColors[team as keyof typeof teamColors]?.glow}`,
+                    textShadow: `0 2px 8px ${teamColors[team as keyof typeof teamColors]?.glow}, 0 0 20px ${teamColors[team as keyof typeof teamColors]?.glow}`,
                   }}
                 >
                   {team}
                 </h3>
-                <Star className="h-3 w-3 md:h-4 md:w-4 text-white/80 group-hover:animate-pulse shrink-0" />
+                <Star className="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-4 md:w-4 text-white/80 group-hover:animate-pulse shrink-0" />
               </div>
               
               {/* Description - Hidden on mobile, visible on larger screens */}
@@ -204,15 +204,15 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
                 {descriptions.description}
               </p>
               
-              {/* Access button - Consistent styling */}
+              {/* Access button - Compact on mobile */}
               <div 
-                className="flex items-center justify-center gap-1.5 md:gap-2 px-4 py-2 sm:px-5 sm:py-2.5 md:px-6 md:py-3 rounded-lg md:rounded-xl bg-black/70 backdrop-blur-sm border-2 transition-all duration-300 group-hover:bg-black/90 group-hover:scale-105"
+                className="flex items-center justify-center gap-1 sm:gap-2 px-3 py-1.5 sm:px-5 sm:py-2.5 md:px-6 md:py-3 rounded-md sm:rounded-lg md:rounded-xl bg-black/70 backdrop-blur-sm border transition-all duration-300 group-hover:bg-black/90 group-hover:scale-105"
                 style={{ 
                   borderColor: teamColors[team as keyof typeof teamColors]?.primary,
                 }}
               >
-                <Radio className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-green-400 animate-pulse shrink-0" />
-                <span className="text-xs sm:text-sm md:text-base font-bold text-white tracking-wider uppercase">
+                <Radio className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-green-400 animate-pulse shrink-0" />
+                <span className="text-[10px] sm:text-sm md:text-base font-bold text-white tracking-wider uppercase">
                   ACESSAR
                 </span>
               </div>
