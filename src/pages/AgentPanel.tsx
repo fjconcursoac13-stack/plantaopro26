@@ -354,45 +354,58 @@ export default function AgentPanel() {
               <BHTracker agentId={agent.id} compact />
             </div>
 
-            {/* Main Tabs - Maior e mais visível */}
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-5 md:space-y-8">
-              <TabsList className="bg-gradient-to-r from-slate-800/80 via-slate-900/90 to-slate-800/80 border-2 border-slate-600/60 p-2 h-auto flex flex-wrap gap-2 rounded-2xl shadow-xl backdrop-blur-sm">
-                <TabsTrigger value="equipe" className="flex items-center gap-2 text-sm md:text-base px-4 py-2.5 md:px-5 md:py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-400 data-[state=active]:to-amber-500 data-[state=active]:text-black data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/30 rounded-xl font-semibold transition-all duration-200">
-                  <Users className="h-5 w-5 md:h-6 md:w-6" />
-                  <span className="hidden sm:inline">Equipe</span>
-                </TabsTrigger>
-                <TabsTrigger value="plantoes" className="flex items-center gap-2 text-sm md:text-base px-4 py-2.5 md:px-5 md:py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-400 data-[state=active]:to-amber-500 data-[state=active]:text-black data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/30 rounded-xl font-semibold transition-all duration-200">
-                  <Calendar className="h-5 w-5 md:h-6 md:w-6" />
-                  <span className="hidden sm:inline">Plantões</span>
-                </TabsTrigger>
-                <TabsTrigger value="bh" className="flex items-center gap-2 text-sm md:text-base px-4 py-2.5 md:px-5 md:py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-400 data-[state=active]:to-green-500 data-[state=active]:text-black data-[state=active]:shadow-lg data-[state=active]:shadow-green-500/30 rounded-xl font-semibold transition-all duration-200">
-                  <Clock className="h-5 w-5 md:h-6 md:w-6" />
-                  <span className="font-bold">BH</span>
-                </TabsTrigger>
-                <TabsTrigger value="folgas" className="flex items-center gap-2 text-sm md:text-base px-4 py-2.5 md:px-5 md:py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-400 data-[state=active]:to-amber-500 data-[state=active]:text-black data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/30 rounded-xl font-semibold transition-all duration-200">
-                  <CalendarOff className="h-5 w-5 md:h-6 md:w-6" />
-                  <span className="hidden sm:inline">Folgas</span>
-                </TabsTrigger>
-                <TabsTrigger value="agenda" className="flex items-center gap-2 text-sm md:text-base px-4 py-2.5 md:px-5 md:py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-400 data-[state=active]:to-amber-500 data-[state=active]:text-black data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/30 rounded-xl font-semibold transition-all duration-200">
-                  <CalendarDays className="h-5 w-5 md:h-6 md:w-6" />
-                  <span className="hidden sm:inline">Agenda</span>
-                </TabsTrigger>
-                <TabsTrigger value="planejador" className="flex items-center gap-2 text-sm md:text-base px-4 py-2.5 md:px-5 md:py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-400 data-[state=active]:to-amber-500 data-[state=active]:text-black data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/30 rounded-xl font-semibold transition-all duration-200">
-                  <Calculator className="h-5 w-5 md:h-6 md:w-6" />
-                  <span className="hidden sm:inline">Plan</span>
-                </TabsTrigger>
-                <TabsTrigger value="permutas" className="flex items-center gap-2 text-sm md:text-base px-4 py-2.5 md:px-5 md:py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-400 data-[state=active]:to-amber-500 data-[state=active]:text-black data-[state=active]:shadow-lg data-[state=active]:shadow-amber-500/30 rounded-xl font-semibold transition-all duration-200">
-                  <ArrowRightLeft className="h-5 w-5 md:h-6 md:w-6" />
-                  <span className="hidden sm:inline">Troca</span>
-                </TabsTrigger>
-                <TabsTrigger value="chat" className="flex items-center gap-2 text-sm md:text-base px-4 py-2.5 md:px-5 md:py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-400 data-[state=active]:to-blue-500 data-[state=active]:text-black data-[state=active]:shadow-lg data-[state=active]:shadow-blue-500/30 rounded-xl font-semibold transition-all duration-200">
-                  <MessageCircle className="h-5 w-5 md:h-6 md:w-6" />
-                  <span className="hidden sm:inline">Chat</span>
-                </TabsTrigger>
-                <TabsTrigger value="config" className="flex items-center gap-2 text-sm md:text-base px-4 py-2.5 md:px-5 md:py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-slate-400 data-[state=active]:to-slate-500 data-[state=active]:text-black data-[state=active]:shadow-lg rounded-xl font-semibold transition-all duration-200">
-                  <Settings className="h-5 w-5 md:h-6 md:w-6" />
-                </TabsTrigger>
-              </TabsList>
+            {/* Main Tabs - Painel principal profissional e destacado */}
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6 md:space-y-10">
+              {/* Tab Container com destaque profissional */}
+              <div className="relative">
+                {/* Glow Effect Background */}
+                <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 via-transparent to-amber-500/10 rounded-3xl blur-xl" />
+                
+                <TabsList className="relative bg-gradient-to-br from-slate-900/95 via-slate-800/95 to-slate-900/95 border-3 border-amber-500/40 p-3 md:p-4 h-auto flex flex-wrap gap-2.5 md:gap-3 rounded-2xl shadow-2xl shadow-black/50 backdrop-blur-md">
+                  {/* Header Label */}
+                  <div className="absolute -top-3 left-4 md:left-6">
+                    <span className="bg-gradient-to-r from-amber-400 to-amber-500 text-black text-[10px] md:text-xs font-bold px-3 py-1 rounded-full shadow-lg uppercase tracking-wider">
+                      Painel de Controle
+                    </span>
+                  </div>
+                  
+                  <TabsTrigger value="equipe" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:via-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-amber-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-amber-300/50">
+                    <Users className="h-5 w-5 md:h-6 md:w-6" />
+                    <span className="hidden sm:inline">Equipe</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="plantoes" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:via-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-amber-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-amber-300/50">
+                    <Calendar className="h-5 w-5 md:h-6 md:w-6" />
+                    <span className="hidden sm:inline">Plantões</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="bh" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-400 data-[state=active]:via-green-500 data-[state=active]:to-teal-500 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-green-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-green-300/50">
+                    <Clock className="h-5 w-5 md:h-6 md:w-6" />
+                    <span className="font-extrabold">BH</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="folgas" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:via-purple-500 data-[state=active]:to-violet-500 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:shadow-purple-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-purple-300/50">
+                    <CalendarOff className="h-5 w-5 md:h-6 md:w-6" />
+                    <span className="hidden sm:inline">Folgas</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="agenda" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-cyan-400 data-[state=active]:via-cyan-500 data-[state=active]:to-blue-500 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-cyan-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-cyan-300/50">
+                    <CalendarDays className="h-5 w-5 md:h-6 md:w-6" />
+                    <span className="hidden sm:inline">Agenda</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="planejador" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-rose-400 data-[state=active]:via-pink-500 data-[state=active]:to-red-500 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:shadow-rose-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-rose-300/50">
+                    <Calculator className="h-5 w-5 md:h-6 md:w-6" />
+                    <span className="hidden sm:inline">Plan</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="permutas" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:via-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-amber-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-amber-300/50">
+                    <ArrowRightLeft className="h-5 w-5 md:h-6 md:w-6" />
+                    <span className="hidden sm:inline">Troca</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="chat" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-400 data-[state=active]:via-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:shadow-blue-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-blue-300/50">
+                    <MessageCircle className="h-5 w-5 md:h-6 md:w-6" />
+                    <span className="hidden sm:inline">Chat</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="config" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-slate-400 data-[state=active]:via-slate-500 data-[state=active]:to-zinc-500 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:shadow-slate-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-slate-400/50">
+                    <Settings className="h-5 w-5 md:h-6 md:w-6" />
+                  </TabsTrigger>
+                </TabsList>
+              </div>
 
               <TabsContent value="equipe" className="space-y-5 md:space-y-6">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 md:gap-6">

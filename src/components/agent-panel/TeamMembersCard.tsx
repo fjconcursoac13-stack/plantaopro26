@@ -184,23 +184,30 @@ export function TeamMembersCard({ unitId, team, currentAgentId }: TeamMembersCar
 
   return (
     <>
-      <Card className="bg-card border-border">
+      <Card className="relative bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-amber-900/20 border-3 border-amber-500/40 shadow-2xl shadow-amber-900/20 overflow-hidden transition-all duration-300 hover:shadow-amber-500/20 hover:border-amber-400/50 hover:scale-[1.01] group">
+        {/* Glow Effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-transparent to-amber-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        
         <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-3 relative">
             <CollapsibleTrigger asChild>
-              <button className="flex items-center justify-between w-full text-left group">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <Users className="h-5 w-5 text-primary" />
-                  <span>Equipe {team}</span>
-                  <Badge variant="outline" className="ml-2 text-xs">
+              <button className="flex items-center justify-between w-full text-left group/btn">
+                <CardTitle className="flex items-center gap-3 text-xl md:text-2xl">
+                  <div className="p-2.5 rounded-xl bg-gradient-to-br from-amber-500/30 to-orange-500/20 border border-amber-500/40">
+                    <Users className="h-6 w-6 md:h-7 md:w-7 text-amber-400" />
+                  </div>
+                  <span className="font-bold bg-gradient-to-r from-amber-200 to-orange-300 bg-clip-text text-transparent">
+                    Equipe {team}
+                  </span>
+                  <Badge className="ml-2 text-sm bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border-amber-500/40 px-3 py-1">
                     {members.length}
                   </Badge>
                 </CardTitle>
-                <div className="p-1.5 rounded-md bg-muted/50 group-hover:bg-muted transition-colors">
+                <div className="p-2 rounded-xl bg-slate-800/80 border border-amber-500/30 group-hover/btn:bg-amber-500/20 group-hover/btn:border-amber-400/50 transition-all duration-200">
                   {isExpanded ? (
-                    <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                    <ChevronUp className="h-5 w-5 text-amber-400" />
                   ) : (
-                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                    <ChevronDown className="h-5 w-5 text-amber-400" />
                   )}
                 </div>
               </button>
@@ -240,11 +247,11 @@ export function TeamMembersCard({ unitId, team, currentAgentId }: TeamMembersCar
                       <button
                         key={member.id}
                         onClick={() => handleMemberClick(member)}
-                        className={`relative w-full text-left rounded-lg border p-2.5 transition-all hover:scale-[1.01] active:scale-[0.99] ${
+                        className={`relative w-full text-left rounded-xl border-2 p-3.5 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg ${
                           isCurrentAgent
-                            ? 'bg-gradient-to-r from-primary/20 to-primary/5 border-primary/50 shadow-sm shadow-primary/10'
-                            : 'bg-muted/30 border-border hover:border-muted-foreground hover:bg-muted/50'
-                        } ${hasBirthday ? 'ring-2 ring-pink-500/50' : ''}`}
+                            ? 'bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-transparent border-amber-500/50 shadow-md shadow-amber-500/10 hover:shadow-amber-500/20'
+                            : 'bg-slate-800/60 border-slate-600/50 hover:border-amber-400/50 hover:bg-slate-700/60 hover:shadow-amber-500/10'
+                        } ${hasBirthday ? 'ring-2 ring-pink-500/50 ring-offset-1 ring-offset-slate-900' : ''}`}
                       >
                         {/* Birthday indicator */}
                         {hasBirthday && (

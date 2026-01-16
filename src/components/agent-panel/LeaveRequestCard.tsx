@@ -229,23 +229,30 @@ export function LeaveRequestCard({ agentId, agentTeam, agentUnitId }: LeaveReque
   const approvedLeaves = leaves.filter(l => l.status === 'approved');
 
   return (
-    <Card className="bg-slate-800/50 border-slate-700">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <CalendarOff className="h-5 w-5 text-amber-500" />
-          <span>Folgas Programadas</span>
+    <Card className="relative bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-purple-900/30 border-3 border-purple-500/40 shadow-2xl shadow-purple-900/30 overflow-hidden transition-all duration-300 hover:shadow-purple-500/20 hover:border-purple-400/50 hover:scale-[1.01] group">
+      {/* Glow Effect */}
+      <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 via-transparent to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      
+      <CardHeader className="pb-4 relative">
+        <CardTitle className="flex items-center gap-3 text-xl md:text-2xl">
+          <div className="p-2.5 rounded-xl bg-gradient-to-br from-purple-500/30 to-violet-500/20 border border-purple-500/40">
+            <CalendarOff className="h-6 w-6 md:h-7 md:w-7 text-purple-400" />
+          </div>
+          <span className="font-bold bg-gradient-to-r from-purple-200 to-violet-300 bg-clip-text text-transparent">
+            Folgas Programadas
+          </span>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-5 relative">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 bg-slate-700/50">
-            <TabsTrigger value="minhas" className="data-[state=active]:bg-amber-500/20 data-[state=active]:text-amber-400">
-              <User className="h-4 w-4 mr-2" />
-              Minhas Folgas
+          <TabsList className="grid w-full grid-cols-2 bg-slate-800/80 border-2 border-purple-500/30 rounded-xl p-1.5 h-auto">
+            <TabsTrigger value="minhas" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-violet-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-purple-500/30 rounded-lg py-2.5 px-4 font-semibold transition-all duration-200">
+              <User className="h-4 w-4 md:h-5 md:w-5 mr-2" />
+              <span className="text-sm md:text-base">Minhas Folgas</span>
             </TabsTrigger>
-            <TabsTrigger value="equipe" className="data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-400">
-              <Users className="h-4 w-4 mr-2" />
-              Equipe
+            <TabsTrigger value="equipe" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-lg data-[state=active]:shadow-blue-500/30 rounded-lg py-2.5 px-4 font-semibold transition-all duration-200">
+              <Users className="h-4 w-4 md:h-5 md:w-5 mr-2" />
+              <span className="text-sm md:text-base">Equipe</span>
             </TabsTrigger>
           </TabsList>
 
