@@ -29,6 +29,8 @@ interface OnlineUser {
   name: string;
   team: string | null;
   online_at: string;
+  avatar_url?: string | null;
+  role?: string | null;
 }
 
 interface ChatPanelProps {
@@ -37,6 +39,7 @@ interface ChatPanelProps {
   team: string | null;
   agentName: string;
   agentRole?: string | null;
+  agentAvatarUrl?: string | null;
 }
 
 interface ChatRoom {
@@ -105,7 +108,7 @@ const chatRoomConfig: Record<ChatType, {
   },
 };
 
-export function ChatPanel({ agentId, unitId, team, agentName, agentRole }: ChatPanelProps) {
+export function ChatPanel({ agentId, unitId, team, agentName, agentRole, agentAvatarUrl }: ChatPanelProps) {
   const [activeRoom, setActiveRoom] = useState<ChatRoom | null>(null);
   const [rooms, setRooms] = useState<ChatRoom[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -171,6 +174,8 @@ export function ChatPanel({ agentId, unitId, team, agentName, agentRole }: ChatP
                 name: presence.name,
                 team: presence.team,
                 online_at: presence.online_at,
+                avatar_url: presence.avatar_url,
+                role: presence.role,
               });
             }
           });
@@ -199,6 +204,8 @@ export function ChatPanel({ agentId, unitId, team, agentName, agentRole }: ChatP
             name: agentName,
             team: team,
             online_at: new Date().toISOString(),
+            avatar_url: agentAvatarUrl,
+            role: agentRole,
           });
         }
       });
@@ -550,51 +557,104 @@ export function ChatPanel({ agentId, unitId, team, agentName, agentRole }: ChatP
             </Badge>
           </CardTitle>
           
-          {/* Online Users Indicator */}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-700/50 rounded-full cursor-default">
-                  <Circle className="h-2 w-2 fill-green-500 text-green-500 animate-pulse" />
-                  <span className="text-xs text-slate-300">
-                    {onlineUsers.length + 1} online
-                  </span>
-                  {onlineUsers.length > 0 && (
-                    <div className="flex -space-x-2">
-                      {onlineUsers.slice(0, 3).map((user) => (
-                        <Avatar key={user.id} className="h-5 w-5 border border-slate-600">
-                          <AvatarFallback className="text-[8px] bg-slate-600">
-                            {user.name.charAt(0).toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                      ))}
-                      {onlineUsers.length > 3 && (
-                        <div className="h-5 w-5 rounded-full bg-slate-600 flex items-center justify-center text-[8px] text-slate-300 border border-slate-500">
-                          +{onlineUsers.length - 3}
-                        </div>
-                      )}
+          {/* Online Users Panel */}
+          <div className="flex items-center gap-2">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/40 rounded-full cursor-default hover:border-green-400/60 transition-colors">
+                    <div className="relative">
+                      <Circle className="h-2.5 w-2.5 fill-green-500 text-green-500" />
+                      <Circle className="absolute inset-0 h-2.5 w-2.5 fill-green-500 text-green-500 animate-ping opacity-50" />
                     </div>
-                  )}
-                </div>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="bg-slate-800 border-slate-700">
-                <div className="space-y-1">
-                  <p className="text-xs font-medium text-amber-400">Usuários online:</p>
-                  <p className="text-xs text-green-400">• Você ({agentName})</p>
-                  {onlineUsers.map((user) => (
-                    <p key={user.id} className="text-xs text-slate-300">
-                      • {user.name} {user.team && `(${user.team})`}
+                    <span className="text-xs font-medium text-green-300">
+                      {onlineUsers.length + 1} online
+                    </span>
+                    {onlineUsers.length > 0 && (
+                      <div className="flex -space-x-2 ml-1">
+                        {onlineUsers.slice(0, 4).map((user) => (
+                          <Avatar key={user.id} className="h-6 w-6 border-2 border-slate-800 ring-1 ring-green-500/30">
+                            {user.avatar_url ? (
+                              <img src={user.avatar_url} alt={user.name} className="object-cover" />
+                            ) : (
+                              <AvatarFallback className="text-[9px] font-bold bg-gradient-to-br from-green-500 to-emerald-600 text-white">
+                                {user.name.charAt(0).toUpperCase()}
+                              </AvatarFallback>
+                            )}
+                          </Avatar>
+                        ))}
+                        {onlineUsers.length > 4 && (
+                          <div className="h-6 w-6 rounded-full bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center text-[9px] font-bold text-white border-2 border-slate-800">
+                            +{onlineUsers.length - 4}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" align="end" className="bg-slate-800 border-slate-700 p-0 w-64">
+                  <div className="p-3 border-b border-slate-700">
+                    <p className="text-sm font-semibold text-emerald-400 flex items-center gap-2">
+                      <Circle className="h-2 w-2 fill-green-500 text-green-500" />
+                      Usuários Online ({onlineUsers.length + 1})
                     </p>
-                  ))}
-                  {onlineUsers.length === 0 && (
-                    <p className="text-xs text-slate-400 italic">Nenhum outro usuário online</p>
-                  )}
-                </div>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+                  </div>
+                  <div className="p-2 max-h-[200px] overflow-y-auto space-y-1">
+                    {/* Current User */}
+                    <div className="flex items-center gap-2 p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/30">
+                      <Avatar className="h-8 w-8 border-2 border-emerald-500/50">
+                        {agentAvatarUrl ? (
+                          <img src={agentAvatarUrl} alt={agentName} className="object-cover" />
+                        ) : (
+                          <AvatarFallback className="text-xs font-bold bg-gradient-to-br from-emerald-500 to-green-600 text-white">
+                            {agentName.charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        )}
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-emerald-300 truncate">{agentName}</p>
+                        <p className="text-[10px] text-emerald-400/70">Você • {team || 'Sem equipe'}</p>
+                      </div>
+                      <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-[9px]">EU</Badge>
+                    </div>
+                    
+                    {/* Other Online Users */}
+                    {onlineUsers.map((user) => (
+                      <div key={user.id} className="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-700/50 transition-colors">
+                        <div className="relative">
+                          <Avatar className="h-8 w-8 border border-slate-600">
+                            {user.avatar_url ? (
+                              <img src={user.avatar_url} alt={user.name} className="object-cover" />
+                            ) : (
+                              <AvatarFallback className="text-xs font-bold bg-gradient-to-br from-slate-500 to-slate-600 text-white">
+                                {user.name.charAt(0).toUpperCase()}
+                              </AvatarFallback>
+                            )}
+                          </Avatar>
+                          <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-green-500 border-2 border-slate-800" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-slate-200 truncate">{user.name}</p>
+                          <p className="text-[10px] text-slate-400">
+                            {user.team || 'Sem equipe'}
+                            {user.role && ` • ${getRoleLabel(user.role)}`}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                    
+                    {onlineUsers.length === 0 && (
+                      <div className="text-center py-4 text-slate-400">
+                        <p className="text-xs italic">Nenhum outro usuário online</p>
+                        <p className="text-[10px] mt-1 text-slate-500">Seja o primeiro a iniciar uma conversa!</p>
+                      </div>
+                    )}
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
         </div>
-        
         {/* Room Selection - Organized buttons */}
         <div className="mt-3 flex flex-wrap gap-2">
           {availableTypes.map((type) => {
