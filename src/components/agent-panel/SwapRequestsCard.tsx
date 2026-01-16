@@ -207,9 +207,9 @@ export function SwapRequestsCard({ agentId, unitId, team }: SwapRequestsCardProp
 
   if (isLoading) {
     return (
-      <Card className="bg-slate-800/50 border-slate-700">
+      <Card className="relative bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-orange-900/20 border-3 border-orange-500/40 shadow-2xl shadow-orange-900/20">
         <CardContent className="flex items-center justify-center py-8">
-          <Loader2 className="h-6 w-6 animate-spin text-amber-500" />
+          <Loader2 className="h-6 w-6 animate-spin text-orange-500" />
         </CardContent>
       </Card>
     );
@@ -221,20 +221,29 @@ export function SwapRequestsCard({ agentId, unitId, team }: SwapRequestsCardProp
   const myRequests = swapRequests.filter(r => r.requester_id === agentId);
 
   return (
-    <Card className="bg-slate-800/50 border-slate-700">
-      <CardHeader className="pb-3">
+    <Card className="relative bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-orange-900/20 border-3 border-orange-500/40 shadow-2xl shadow-orange-900/20 overflow-hidden transition-all duration-300 hover:shadow-orange-500/20 hover:border-orange-400/50 hover:scale-[1.01] group">
+      {/* Glow Effect */}
+      <div className="absolute inset-0 bg-gradient-to-r from-orange-500/5 via-transparent to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      
+      <CardHeader className="pb-4 relative">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <ArrowRightLeft className="h-5 w-5 text-amber-500" />
-            <span>Permutas de Plantão</span>
+          <CardTitle className="flex items-center gap-3 text-xl md:text-2xl">
+            <div className="p-2.5 rounded-xl bg-gradient-to-br from-orange-500/30 to-amber-500/20 border border-orange-500/40">
+              <ArrowRightLeft className="h-6 w-6 md:h-7 md:w-7 text-orange-400" />
+            </div>
+            <span className="font-bold bg-gradient-to-r from-orange-200 to-amber-300 bg-clip-text text-transparent">
+              Permutas de Plantão
+            </span>
             {pendingForMe.length > 0 && (
-              <Badge className="bg-red-500 text-white">{pendingForMe.length}</Badge>
+              <Badge className="bg-gradient-to-r from-red-500 to-rose-500 text-white border-0 shadow-lg shadow-red-500/30 animate-pulse px-3 py-1">
+                {pendingForMe.length}
+              </Badge>
             )}
           </CardTitle>
           <Dialog open={showNewRequest} onOpenChange={setShowNewRequest}>
             <DialogTrigger asChild>
-              <Button variant="outline" size="sm" className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10">
-                <Plus className="h-4 w-4 mr-1" />
+              <Button variant="outline" size="sm" className="border-2 border-orange-500/50 text-orange-300 bg-orange-500/10 hover:bg-orange-500/20 hover:border-orange-400/70 transition-all duration-200 font-semibold">
+                <Plus className="h-4 w-4 mr-1.5" />
                 Nova Permuta
               </Button>
             </DialogTrigger>
