@@ -250,43 +250,65 @@ export default function AgentPanel() {
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
         <main className={`flex-1 p-4 md:p-8 lg:p-10 overflow-y-auto overflow-x-hidden pb-safe ${showLicenseWarning ? 'pt-28' : ''}`}>
           <div className="max-w-7xl mx-auto space-y-4 md:space-y-8 animate-fade-in">
-            {/* Professional Header Bar with Agent Info */}
+            {/* Professional Header Bar */}
             <div className="bg-gradient-to-r from-slate-900/98 via-slate-800/95 to-slate-900/98 rounded-xl border-2 border-amber-500/40 shadow-2xl backdrop-blur-md overflow-hidden">
-              <div className="flex items-center gap-3 p-3 md:p-4">
-                {/* Agent Profile - Main Focus */}
+              <div className="flex items-center justify-between p-2 md:p-3">
+                {/* Left: Agent Avatar + Info */}
                 <div 
-                  className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer hover:opacity-90 transition-all duration-200 p-2 rounded-xl hover:bg-slate-700/40 group"
+                  className="flex items-center gap-2 md:gap-3 cursor-pointer hover:opacity-90 transition-all duration-200 p-1.5 md:p-2 rounded-xl hover:bg-slate-700/40 group"
                   onClick={() => navigate('/agent-profile')}
                 >
-                  <Avatar className="w-14 h-14 md:w-16 md:h-16 border-3 border-amber-500/70 shadow-lg flex-shrink-0 ring-2 ring-amber-400/20 group-hover:ring-amber-400/40 transition-all">
+                  <Avatar className="w-11 h-11 md:w-14 md:h-14 border-2 border-amber-500/70 shadow-lg flex-shrink-0 ring-2 ring-amber-400/20 group-hover:ring-amber-400/50 transition-all">
                     {(agent as any).avatar_url && <AvatarImage src={(agent as any).avatar_url} alt={agent.name} className="object-cover" />}
-                    <AvatarFallback className="bg-gradient-to-br from-amber-400 via-amber-500 to-orange-600 text-xl md:text-2xl font-black text-black">
+                    <AvatarFallback className="bg-gradient-to-br from-amber-400 via-amber-500 to-orange-600 text-lg md:text-xl font-black text-black">
                       {agent.name.charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="min-w-0 flex-1">
-                    <h1 className="text-base md:text-lg font-bold text-amber-100 truncate leading-tight">
-                      {agent.name}
+                  <div className="hidden sm:block min-w-0">
+                    <h1 className="text-sm md:text-base font-bold text-amber-100 truncate leading-tight max-w-[120px] md:max-w-[180px]">
+                      {agent.name.split(' ')[0]}
                     </h1>
-                    <div className="flex items-center gap-2 flex-wrap mt-0.5">
+                    <div className="flex items-center gap-1.5 mt-0.5">
                       {agent.team && (
-                        <Badge variant="outline" className="text-[10px] md:text-xs border-amber-500/50 text-amber-400 bg-amber-500/10 px-2 py-0">
+                        <Badge variant="outline" className="text-[9px] md:text-[10px] border-amber-500/50 text-amber-400 bg-amber-500/10 px-1.5 py-0 h-4">
                           {agent.team}
                         </Badge>
                       )}
                       {(agent as any).blood_type && (
-                        <span className="text-[10px] md:text-xs text-red-400/90 flex items-center gap-0.5 bg-red-500/10 px-1.5 py-0.5 rounded">
-                          <Droplet className="h-3 w-3" />
+                        <span className="text-[9px] md:text-[10px] text-red-400/90 flex items-center gap-0.5 bg-red-500/10 px-1 py-0.5 rounded">
+                          <Droplet className="h-2.5 w-2.5" />
                           {(agent as any).blood_type}
                         </span>
                       )}
-                      {getRoleBadge((agent as any).role)}
                     </div>
                   </div>
                 </div>
 
-                {/* Right: Actions - Compact */}
-                <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
+                {/* Center: Status Indicators */}
+                <div className="flex items-center gap-2 md:gap-3">
+                  {/* Online Status */}
+                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-green-500/15 border border-green-500/40">
+                    <div className="relative">
+                      <div className="w-2 h-2 rounded-full bg-green-500" />
+                      <div className="absolute inset-0 w-2 h-2 rounded-full bg-green-400 animate-ping opacity-60" />
+                    </div>
+                    <span className="text-[9px] md:text-[10px] font-bold text-green-400 uppercase tracking-wide hidden md:inline">Online</span>
+                  </div>
+                  
+                  {/* Role Badge */}
+                  <div className="hidden sm:block">
+                    {getRoleBadge((agent as any).role)}
+                  </div>
+                  
+                  {/* Trial Badge */}
+                  <div className="hidden lg:flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30">
+                    <Gift className="h-3 w-3 text-amber-400" />
+                    <span className="text-[9px] font-bold text-amber-400">{getRemainingTrialDays()}d</span>
+                  </div>
+                </div>
+
+                {/* Right: Action Buttons */}
+                <div className="flex items-center gap-1 md:gap-1.5">
                   <AgentRoleSelector agentId={agent.id} currentRole={(agent as any).role || 'agent'} />
                   <NotificationsPanel agentId={agent.id} />
                   
@@ -294,12 +316,12 @@ export default function AgentPanel() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
-                          variant="outline"
+                          variant="ghost"
                           size="icon"
                           onClick={() => setShowWelcomeDialog(true)}
-                          className="border-amber-500/50 hover:border-amber-400 hover:bg-amber-900/30 text-amber-400 h-10 w-10 md:h-11 md:w-11"
+                          className="text-amber-400 hover:bg-amber-500/20 h-9 w-9 md:h-10 md:w-10 lg:hidden"
                         >
-                          <Gift className="h-4 w-4 md:h-5 md:w-5" />
+                          <Gift className="h-4 w-4" />
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
@@ -312,12 +334,12 @@ export default function AgentPanel() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
-                          variant="outline"
+                          variant="ghost"
                           size="icon"
                           onClick={() => navigate('/')}
-                          className="border-blue-500/50 hover:border-blue-400 hover:bg-blue-900/30 text-blue-400 h-10 w-10 md:h-11 md:w-11"
+                          className="text-blue-400 hover:bg-blue-500/20 h-9 w-9 md:h-10 md:w-10"
                         >
-                          <Home className="h-4 w-4 md:h-5 md:w-5" />
+                          <Home className="h-4 w-4" />
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
@@ -330,15 +352,15 @@ export default function AgentPanel() {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
-                          variant="outline"
+                          variant="ghost"
                           size="icon"
                           onClick={async () => {
                             await supabase.auth.signOut();
                             navigate('/');
                           }}
-                          className="border-red-500/50 hover:border-red-400 hover:bg-red-900/30 text-red-400 h-10 w-10 md:h-11 md:w-11"
+                          className="text-red-400 hover:bg-red-500/20 h-9 w-9 md:h-10 md:w-10"
                         >
-                          <LogOut className="h-4 w-4 md:h-5 md:w-5" />
+                          <LogOut className="h-4 w-4" />
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
