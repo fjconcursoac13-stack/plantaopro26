@@ -909,16 +909,10 @@ export default function Index() {
         <div className="w-full text-center mb-2 sm:mb-3 animate-fade-in" style={{ animationDelay: '200ms' }}>
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-none">
             <span 
-              className="bg-gradient-to-r from-white via-slate-100 to-white bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(255,255,255,0.4)] animate-[glow_3s_ease-in-out_infinite]"
-              style={{ textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}
-            >
-              PLANTÃO
-            </span>
-            <span 
-              className="ml-2 bg-gradient-to-r from-primary via-amber-400 to-primary bg-clip-text text-transparent drop-shadow-[0_0_25px_hsl(var(--primary)/0.6)] animate-[pulse-glow_2s_ease-in-out_infinite]"
+              className="bg-gradient-to-r from-amber-300 via-primary to-amber-500 bg-clip-text text-transparent drop-shadow-[0_0_25px_hsl(var(--primary)/0.6)] animate-[pulse-glow_2s_ease-in-out_infinite]"
               style={{ textShadow: '0 2px 15px hsl(var(--primary)/0.5)' }}
             >
-              PRO
+              PlantãoPro
             </span>
           </h1>
           <p className="text-[10px] sm:text-xs text-muted-foreground/80 tracking-[0.3em] uppercase mt-1 animate-fade-in" style={{ animationDelay: '400ms' }}>
