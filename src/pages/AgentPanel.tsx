@@ -626,6 +626,7 @@ export default function AgentPanel() {
                   team={agent.team}
                   agentName={agent.name}
                   agentRole={(agent as any).role}
+                  agentAvatarUrl={(agent as any).avatar_url}
                 />
               </TabsContent>
 
