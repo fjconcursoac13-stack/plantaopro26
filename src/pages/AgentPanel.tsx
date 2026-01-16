@@ -392,7 +392,7 @@ export default function AgentPanel() {
                   </TooltipProvider>
                   
                   <TooltipProvider>
-                    <Tooltip>
+                    <Tooltip delayDuration={200}>
                       <TooltipTrigger asChild>
                         <Button
                           variant="ghost"
@@ -401,13 +401,19 @@ export default function AgentPanel() {
                             await supabase.auth.signOut();
                             navigate('/');
                           }}
-                          className="text-red-400 hover:bg-red-500/20 h-9 w-9 md:h-10 md:w-10"
+                          className="text-red-400 hover:bg-red-500/20 hover:text-red-300 h-9 w-9 md:h-10 md:w-10 transition-all duration-200 hover:scale-105"
                         >
-                          <LogOut className="h-4 w-4" />
+                          <LogOut className="h-4 w-4 md:h-5 md:w-5" />
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Sair</p>
+                      <TooltipContent 
+                        side="bottom" 
+                        className="bg-red-600 text-white border-red-500 px-3 py-2 font-semibold shadow-lg shadow-red-500/30"
+                      >
+                        <div className="flex items-center gap-2">
+                          <LogOut className="h-3.5 w-3.5" />
+                          <span>Sair do Sistema</span>
+                        </div>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
