@@ -548,6 +548,94 @@
   }
 }
 
+/* Critical Data Pulsing Animations */
+@keyframes pulse-critical-red {
+  0%, 100% {
+    box-shadow: 0 0 8px hsl(0 72% 51% / 0.4), 0 0 20px hsl(0 72% 51% / 0.2);
+    border-color: hsl(0 72% 51% / 0.6);
+  }
+  50% {
+    box-shadow: 0 0 20px hsl(0 72% 51% / 0.7), 0 0 40px hsl(0 72% 51% / 0.4);
+    border-color: hsl(0 72% 60% / 0.9);
+  }
+}
+
+@keyframes pulse-critical-amber {
+  0%, 100% {
+    box-shadow: 0 0 8px hsl(38 92% 50% / 0.4), 0 0 20px hsl(38 92% 50% / 0.2);
+    border-color: hsl(38 92% 50% / 0.6);
+  }
+  50% {
+    box-shadow: 0 0 20px hsl(38 92% 50% / 0.7), 0 0 40px hsl(38 92% 50% / 0.4);
+    border-color: hsl(38 92% 60% / 0.9);
+  }
+}
+
+@keyframes pulse-critical-green {
+  0%, 100% {
+    box-shadow: 0 0 8px hsl(142 76% 36% / 0.4), 0 0 20px hsl(142 76% 36% / 0.2);
+    border-color: hsl(142 76% 36% / 0.6);
+  }
+  50% {
+    box-shadow: 0 0 20px hsl(142 76% 40% / 0.7), 0 0 40px hsl(142 76% 40% / 0.4);
+    border-color: hsl(142 76% 45% / 0.9);
+  }
+}
+
+@keyframes pulse-text-critical {
+  0%, 100% {
+    opacity: 1;
+    text-shadow: 0 0 8px currentColor;
+  }
+  50% {
+    opacity: 0.85;
+    text-shadow: 0 0 20px currentColor, 0 0 30px currentColor;
+  }
+}
+
+@keyframes pulse-icon-critical {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 6px currentColor);
+  }
+  50% {
+    transform: scale(1.15);
+    filter: drop-shadow(0 0 12px currentColor) drop-shadow(0 0 20px currentColor);
+  }
+}
+
+@keyframes ring-pulse-out {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+.pulse-critical-red {
+  animation: pulse-critical-red 1.5s ease-in-out infinite;
+}
+
+.pulse-critical-amber {
+  animation: pulse-critical-amber 1.5s ease-in-out infinite;
+}
+
+.pulse-critical-green {
+  animation: pulse-critical-green 2s ease-in-out infinite;
+}
+
+.pulse-text-critical {
+  animation: pulse-text-critical 1.5s ease-in-out infinite;
+}
+
+.pulse-icon-critical {
+  animation: pulse-icon-critical 1.5s ease-in-out infinite;
+}
+
+
 @keyframes shimmer {
   0% {
     transform: translateX(-100%);
