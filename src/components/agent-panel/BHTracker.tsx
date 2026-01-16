@@ -932,122 +932,146 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
         <div className="space-y-2">
           <div className="flex items-center gap-2 mb-2">
             <Shield className="h-4 w-4 text-amber-500" />
-            <span className="text-sm font-medium text-slate-300">Escala de Quinzenas</span>
+            <span className="text-sm font-medium text-slate-300">Dias com BH Registrado</span>
           </div>
           
-          {/* Visual Scale */}
+          {/* Visual Scale - Only days with BH */}
           <div className="grid grid-cols-2 gap-2">
-            {/* First Fortnight */}
-            <div className={`p-3 rounded-lg border-2 transition-all ${
-              fortnightInfo.label === '1ª Quinzena' 
-                ? 'bg-blue-500/20 border-blue-500/50 ring-2 ring-blue-500/30' 
-                : 'bg-slate-700/30 border-slate-600/50 opacity-60'
-            }`}>
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-1.5 min-w-0">
-                  {fortnightInfo.label === '1ª Quinzena' ? (
-                    <Unlock className="h-3.5 w-3.5 text-blue-400 shrink-0" />
+            {/* First Fortnight - Only programmed days */}
+            {(() => {
+              const today = new Date();
+              const firstFortnightDays = bhDates
+                .filter(d => 
+                  d.getDate() <= 15 && 
+                  d.getMonth() === today.getMonth() && 
+                  d.getFullYear() === today.getFullYear()
+                )
+                .map(d => d.getDate())
+                .sort((a, b) => a - b);
+              
+              return (
+                <div className={`p-3 rounded-lg border-2 transition-all ${
+                  fortnightInfo.label === '1ª Quinzena' 
+                    ? 'bg-blue-500/20 border-blue-500/50 ring-2 ring-blue-500/30' 
+                    : 'bg-slate-700/30 border-slate-600/50 opacity-60'
+                }`}>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      {fortnightInfo.label === '1ª Quinzena' ? (
+                        <Unlock className="h-3.5 w-3.5 text-blue-400 shrink-0" />
+                      ) : (
+                        <Lock className="h-3.5 w-3.5 text-slate-500 shrink-0" />
+                      )}
+                      <span className={`text-xs font-semibold truncate ${
+                        fortnightInfo.label === '1ª Quinzena' ? 'text-blue-400' : 'text-slate-500'
+                      }`}>
+                        1ª Quinz.
+                      </span>
+                    </div>
+                    {fortnightInfo.label === '1ª Quinzena' && (
+                      <Badge className="text-[9px] bg-blue-500/30 text-blue-300 border-blue-500/50 px-1.5 py-0 shrink-0">
+                        Ativa
+                      </Badge>
+                    )}
+                  </div>
+                  
+                  {firstFortnightDays.length > 0 ? (
+                    <div className="flex flex-wrap gap-1 justify-center">
+                      {firstFortnightDays.map(day => {
+                        const isToday = today.getDate() === day && fortnightInfo.label === '1ª Quinzena';
+                        return (
+                          <div
+                            key={day}
+                            className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                              isToday 
+                                ? 'bg-blue-500 text-white ring-1 ring-blue-300'
+                                : 'bg-green-500/50 text-green-200'
+                            }`}
+                            title={`Dia ${day}${isToday ? ' (Hoje)' : ''} - BH registrado`}
+                          >
+                            {day}
+                          </div>
+                        );
+                      })}
+                    </div>
                   ) : (
-                    <Lock className="h-3.5 w-3.5 text-slate-500 shrink-0" />
+                    <p className="text-[10px] text-center text-slate-500 italic">Sem registros</p>
                   )}
-                  <span className={`text-xs font-semibold truncate ${
-                    fortnightInfo.label === '1ª Quinzena' ? 'text-blue-400' : 'text-slate-500'
-                  }`}>
-                    1ª Quinz.
-                  </span>
+                  
+                  <p className="text-[10px] text-center mt-1.5 text-slate-500">
+                    {firstFortnightDays.length} dia{firstFortnightDays.length !== 1 ? 's' : ''}
+                  </p>
                 </div>
-                {fortnightInfo.label === '1ª Quinzena' && (
-                  <Badge className="text-[9px] bg-blue-500/30 text-blue-300 border-blue-500/50 px-1.5 py-0 shrink-0">
-                    Ativa
-                  </Badge>
-                )}
-              </div>
-              <div className="grid grid-cols-8 gap-0.5 justify-items-center">
-                {Array.from({ length: 15 }, (_, i) => {
-                  const day = i + 1;
-                  const today = new Date();
-                  const isToday = today.getDate() === day && fortnightInfo.label === '1ª Quinzena';
-                  const hasBH = bhDates.some(d => 
-                    d.getDate() === day && 
-                    d.getMonth() === today.getMonth() && 
-                    d.getFullYear() === today.getFullYear() &&
-                    day <= 15
-                  );
-                  return (
-                    <div
-                      key={day}
-                      className={`w-3 h-3 rounded-sm text-[8px] flex items-center justify-center font-bold transition-colors ${
-                        isToday 
-                          ? 'bg-blue-500 text-white ring-1 ring-blue-300'
-                          : hasBH 
-                            ? 'bg-green-500/50 text-green-200'
-                            : fortnightInfo.label === '1ª Quinzena' && day <= today.getDate()
-                              ? 'bg-amber-500/30 text-amber-300'
-                              : 'bg-slate-600/30 text-slate-500'
-                      }`}
-                      title={`Dia ${day}${isToday ? ' (Hoje)' : ''}${hasBH ? ' - BH registrado' : ''}`}
-                    />
-                  );
-                })}
-              </div>
-              <p className="text-[10px] text-center mt-1.5 text-slate-500">1 a 15</p>
-            </div>
+              );
+            })()}
 
-            {/* Second Fortnight */}
-            <div className={`p-3 rounded-lg border-2 transition-all ${
-              fortnightInfo.label === '2ª Quinzena' 
-                ? 'bg-purple-500/20 border-purple-500/50 ring-2 ring-purple-500/30' 
-                : 'bg-slate-700/30 border-slate-600/50 opacity-60'
-            }`}>
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-1.5 min-w-0">
-                  {fortnightInfo.label === '2ª Quinzena' ? (
-                    <Unlock className="h-3.5 w-3.5 text-purple-400 shrink-0" />
+            {/* Second Fortnight - Only programmed days */}
+            {(() => {
+              const today = new Date();
+              const secondFortnightDays = bhDates
+                .filter(d => 
+                  d.getDate() >= 16 && 
+                  d.getMonth() === today.getMonth() && 
+                  d.getFullYear() === today.getFullYear()
+                )
+                .map(d => d.getDate())
+                .sort((a, b) => a - b);
+              
+              return (
+                <div className={`p-3 rounded-lg border-2 transition-all ${
+                  fortnightInfo.label === '2ª Quinzena' 
+                    ? 'bg-purple-500/20 border-purple-500/50 ring-2 ring-purple-500/30' 
+                    : 'bg-slate-700/30 border-slate-600/50 opacity-60'
+                }`}>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      {fortnightInfo.label === '2ª Quinzena' ? (
+                        <Unlock className="h-3.5 w-3.5 text-purple-400 shrink-0" />
+                      ) : (
+                        <Lock className="h-3.5 w-3.5 text-slate-500 shrink-0" />
+                      )}
+                      <span className={`text-xs font-semibold truncate ${
+                        fortnightInfo.label === '2ª Quinzena' ? 'text-purple-400' : 'text-slate-500'
+                      }`}>
+                        2ª Quinz.
+                      </span>
+                    </div>
+                    {fortnightInfo.label === '2ª Quinzena' && (
+                      <Badge className="text-[9px] bg-purple-500/30 text-purple-300 border-purple-500/50 px-1.5 py-0 shrink-0">
+                        Ativa
+                      </Badge>
+                    )}
+                  </div>
+                  
+                  {secondFortnightDays.length > 0 ? (
+                    <div className="flex flex-wrap gap-1 justify-center">
+                      {secondFortnightDays.map(day => {
+                        const isToday = today.getDate() === day && fortnightInfo.label === '2ª Quinzena';
+                        return (
+                          <div
+                            key={day}
+                            className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                              isToday 
+                                ? 'bg-purple-500 text-white ring-1 ring-purple-300'
+                                : 'bg-green-500/50 text-green-200'
+                            }`}
+                            title={`Dia ${day}${isToday ? ' (Hoje)' : ''} - BH registrado`}
+                          >
+                            {day}
+                          </div>
+                        );
+                      })}
+                    </div>
                   ) : (
-                    <Lock className="h-3.5 w-3.5 text-slate-500 shrink-0" />
+                    <p className="text-[10px] text-center text-slate-500 italic">Sem registros</p>
                   )}
-                  <span className={`text-xs font-semibold truncate ${
-                    fortnightInfo.label === '2ª Quinzena' ? 'text-purple-400' : 'text-slate-500'
-                  }`}>
-                    2ª Quinz.
-                  </span>
+                  
+                  <p className="text-[10px] text-center mt-1.5 text-slate-500">
+                    {secondFortnightDays.length} dia{secondFortnightDays.length !== 1 ? 's' : ''}
+                  </p>
                 </div>
-                {fortnightInfo.label === '2ª Quinzena' && (
-                  <Badge className="text-[9px] bg-purple-500/30 text-purple-300 border-purple-500/50 px-1.5 py-0 shrink-0">
-                    Ativa
-                  </Badge>
-                )}
-              </div>
-              <div className="grid grid-cols-8 gap-0.5 justify-items-center">
-                {Array.from({ length: fortnightInfo.endDay - 15 }, (_, i) => {
-                  const day = i + 16;
-                  const today = new Date();
-                  const isToday = today.getDate() === day && fortnightInfo.label === '2ª Quinzena';
-                  const hasBH = bhDates.some(d => 
-                    d.getDate() === day && 
-                    d.getMonth() === today.getMonth() && 
-                    d.getFullYear() === today.getFullYear() &&
-                    day >= 16
-                  );
-                  return (
-                    <div
-                      key={day}
-                      className={`w-3 h-3 rounded-sm text-[8px] flex items-center justify-center font-bold transition-colors ${
-                        isToday 
-                          ? 'bg-purple-500 text-white ring-1 ring-purple-300'
-                          : hasBH 
-                            ? 'bg-green-500/50 text-green-200'
-                            : fortnightInfo.label === '2ª Quinzena' && day <= today.getDate()
-                              ? 'bg-amber-500/30 text-amber-300'
-                              : 'bg-slate-600/30 text-slate-500'
-                      }`}
-                      title={`Dia ${day}${isToday ? ' (Hoje)' : ''}${hasBH ? ' - BH registrado' : ''}`}
-                    />
-                  );
-                })}
-              </div>
-              <p className="text-[10px] text-center mt-1.5 text-slate-500">16 a {fortnightInfo.endDay}</p>
-            </div>
+              );
+            })()}
           </div>
 
           {/* Scale Legend */}
