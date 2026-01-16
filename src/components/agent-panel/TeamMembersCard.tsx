@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Users, Crown, Shield, User, Loader2, Droplet, Phone, Cake, ChevronDown, ChevronUp, Info } from 'lucide-react';
-import { format, isToday, isSameDay, addDays, parseISO } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { Users, Crown, Shield, User, Loader2, Droplet, Phone, Cake, ChevronDown, ChevronUp, Settings } from 'lucide-react';
+import { isSameDay, addDays, parseISO } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
 import { TeamMemberDialog } from './TeamMemberDialog';
+import { TeamUnlinkDialog } from '@/components/agents/TeamUnlinkDialog';
+import { TransferRequestDialog } from '@/components/agents/TransferRequestDialog';
 
 interface TeamMember {
   id: string;
@@ -26,19 +27,31 @@ interface TeamMember {
   email: string | null;
 }
 
+interface Agent {
+  id: string;
+  name: string;
+  unit_id: string | null;
+  team: string | null;
+  unit: { id: string; name: string; municipality: string } | null;
+}
+
 interface TeamMembersCardProps {
   unitId: string | null;
   team: string | null;
   currentAgentId: string;
+  currentAgentName?: string;
+  unitName?: string;
 }
 
-export function TeamMembersCard({ unitId, team, currentAgentId }: TeamMembersCardProps) {
+export function TeamMembersCard({ unitId, team, currentAgentId, currentAgentName, unitName }: TeamMembersCardProps) {
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [birthdayAlerts, setBirthdayAlerts] = useState<string[]>([]);
   const [isExpanded, setIsExpanded] = useState(true);
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null);
   const [showMemberDialog, setShowMemberDialog] = useState(false);
+  const [showTeamManagement, setShowTeamManagement] = useState(false);
+  const [showTransferDialog, setShowTransferDialog] = useState(false);
 
   useEffect(() => {
     if (unitId && team) {
@@ -83,9 +96,9 @@ export function TeamMembersCard({ unitId, team, currentAgentId }: TeamMembersCar
         const thisYearBirthday = new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate());
         
         if (isSameDay(thisYearBirthday, today)) {
-          alerts.push(`🎂 Hoje é aniversário de ${member.name}!`);
+          alerts.push(`🎂 ${member.name.split(' ')[0]} faz aniversário hoje!`);
         } else if (isSameDay(thisYearBirthday, tomorrow)) {
-          alerts.push(`🎈 Amanhã é aniversário de ${member.name}!`);
+          alerts.push(`🎈 ${member.name.split(' ')[0]} faz aniversário amanhã!`);
         }
       } catch (e) {
         // Invalid date
@@ -112,11 +125,11 @@ export function TeamMembersCard({ unitId, team, currentAgentId }: TeamMembersCar
   const getRoleIcon = (role: string | null) => {
     switch (role) {
       case 'team_leader':
-        return <Crown className="h-4 w-4 text-amber-500" />;
+        return <Crown className="h-3 w-3 text-amber-500" />;
       case 'support':
-        return <Shield className="h-4 w-4 text-blue-500" />;
+        return <Shield className="h-3 w-3 text-blue-500" />;
       default:
-        return <User className="h-4 w-4 text-muted-foreground" />;
+        return <User className="h-3 w-3 text-slate-400" />;
     }
   };
 
@@ -128,17 +141,6 @@ export function TeamMembersCard({ unitId, team, currentAgentId }: TeamMembersCar
         return 'Apoio';
       default:
         return 'Agente';
-    }
-  };
-
-  const getRoleBadgeClass = (role: string | null) => {
-    switch (role) {
-      case 'team_leader':
-        return 'bg-gradient-to-r from-amber-500 to-amber-600 text-black border-amber-400';
-      case 'support':
-        return 'bg-gradient-to-r from-blue-500 to-blue-600 text-white border-blue-400';
-      default:
-        return 'bg-muted text-muted-foreground border-border';
     }
   };
 
@@ -172,12 +174,20 @@ export function TeamMembersCard({ unitId, team, currentAgentId }: TeamMembersCar
     setShowMemberDialog(true);
   };
 
+  const currentAgent: Agent = {
+    id: currentAgentId,
+    name: currentAgentName || '',
+    unit_id: unitId,
+    team: team,
+    unit: unitId ? { id: unitId, name: unitName || '', municipality: '' } : null
+  };
+
   if (!team) {
     return (
       <Card className="bg-card border-border">
-        <CardContent className="p-6 text-center">
-          <Users className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-          <p className="text-muted-foreground">Você não está vinculado a nenhuma equipe.</p>
+        <CardContent className="p-4 text-center">
+          <Users className="h-10 w-10 text-muted-foreground mx-auto mb-2" />
+          <p className="text-sm text-muted-foreground">Sem equipe vinculada.</p>
         </CardContent>
       </Card>
     );
@@ -185,168 +195,154 @@ export function TeamMembersCard({ unitId, team, currentAgentId }: TeamMembersCar
 
   return (
     <>
-      <Card className="card-night-amber bg-gradient-to-br from-[hsl(222,60%,3%)] via-[hsl(222,55%,5%)] to-[hsl(38,40%,8%)] border-3 border-amber-500/50 overflow-hidden transition-all duration-300 hover:border-amber-400/70 group relative">
-        {/* Glow Effect */}
-        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-transparent to-amber-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+      <Card className="card-night-amber bg-gradient-to-br from-[hsl(222,60%,3%)] via-[hsl(222,55%,5%)] to-[hsl(38,40%,8%)] border-2 border-amber-500/40 overflow-hidden transition-all duration-300 hover:border-amber-400/60 group relative">
+        {/* Subtle Glow Effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/3 via-transparent to-amber-500/3 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         
         <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
-          <CardHeader className="pb-3 relative">
-            <CollapsibleTrigger asChild>
-              <button className="flex items-center justify-between w-full text-left group/btn">
-                <CardTitle className="flex items-center gap-3 text-xl md:text-2xl">
-                  <TooltipProvider delayDuration={300}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className="p-2.5 rounded-xl bg-gradient-to-br from-amber-500/30 to-orange-500/20 border border-amber-500/40 cursor-help">
-                          <Users className="h-6 w-6 md:h-7 md:w-7 text-amber-400" />
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent side="right" className="bg-slate-800 border-slate-600 text-white">
-                        <p>Lista de colegas da sua equipe</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                  <span className="font-bold bg-gradient-to-r from-amber-200 to-orange-300 bg-clip-text text-transparent">
-                    Equipe {team}
-                  </span>
-                  <TooltipProvider delayDuration={300}>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Badge className="ml-2 text-sm bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border-amber-500/40 px-3 py-1 cursor-help">
-                          {members.length}
-                        </Badge>
-                      </TooltipTrigger>
-                      <TooltipContent side="right" className="bg-slate-800 border-slate-600 text-white">
-                        <p>Total de {members.length} membros ativos</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </CardTitle>
-                <TooltipProvider delayDuration={300}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="p-2 rounded-xl bg-slate-800/80 border border-amber-500/30 group-hover/btn:bg-amber-500/20 group-hover/btn:border-amber-400/50 transition-all duration-200">
-                        {isExpanded ? (
-                          <ChevronUp className="h-5 w-5 text-amber-400" />
-                        ) : (
-                          <ChevronDown className="h-5 w-5 text-amber-400" />
-                        )}
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent side="left" className="bg-slate-800 border-slate-600 text-white">
-                      <p>{isExpanded ? 'Recolher lista' : 'Expandir lista'}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </button>
-            </CollapsibleTrigger>
+          <CardHeader className="pb-2 pt-3 px-3 relative">
+            <div className="flex items-center justify-between">
+              <CollapsibleTrigger asChild>
+                <button className="flex items-center gap-2 text-left group/btn flex-1 min-w-0">
+                  <div className="p-1.5 rounded-lg bg-gradient-to-br from-amber-500/25 to-orange-500/15 border border-amber-500/30 shrink-0">
+                    <Users className="h-4 w-4 text-amber-400" />
+                  </div>
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <span className="font-bold text-base bg-gradient-to-r from-amber-200 to-orange-300 bg-clip-text text-transparent truncate">
+                      Equipe {team}
+                    </span>
+                    <Badge className="text-[10px] bg-amber-500/15 text-amber-300 border-amber-500/30 px-1.5 py-0 shrink-0">
+                      {members.length}
+                    </Badge>
+                  </div>
+                  <div className="p-1.5 rounded-lg bg-slate-800/60 border border-amber-500/20 group-hover/btn:bg-amber-500/15 transition-all duration-200 shrink-0">
+                    {isExpanded ? (
+                      <ChevronUp className="h-3.5 w-3.5 text-amber-400" />
+                    ) : (
+                      <ChevronDown className="h-3.5 w-3.5 text-amber-400" />
+                    )}
+                  </div>
+                </button>
+              </CollapsibleTrigger>
+              
+              {/* Team Management Button */}
+              <TooltipProvider delayDuration={200}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowTeamManagement(true)}
+                      className="ml-2 h-7 w-7 p-0 text-slate-400 hover:text-amber-400 hover:bg-amber-500/15 shrink-0"
+                    >
+                      <Settings className="h-3.5 w-3.5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white text-xs">
+                    Gerenciar vinculação à equipe
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
           </CardHeader>
 
           <CollapsibleContent>
-            <CardContent className="pt-2">
-              {/* Birthday Alerts */}
+            <CardContent className="pt-1 px-3 pb-3">
+              {/* Birthday Alerts - Compact */}
               {birthdayAlerts.length > 0 && (
-                <div className="mb-3 p-2 bg-gradient-to-r from-pink-500/20 to-purple-500/20 rounded-lg border border-pink-500/30">
-                  <div className="flex items-center gap-2">
-                    <Cake className="h-4 w-4 text-pink-400" />
+                <div className="mb-2 p-2 bg-gradient-to-r from-pink-500/15 to-purple-500/15 rounded-lg border border-pink-500/25">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <Cake className="h-3 w-3 text-pink-400 shrink-0" />
                     {birthdayAlerts.map((alert, index) => (
-                      <span key={index} className="text-xs text-pink-300">{alert}</span>
+                      <span key={index} className="text-[10px] text-pink-300">{alert}</span>
                     ))}
                   </div>
                 </div>
               )}
 
               {isLoading ? (
-                <div className="flex items-center justify-center py-6">
-                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                <div className="flex items-center justify-center py-4">
+                  <Loader2 className="h-5 w-5 animate-spin text-amber-500" />
                 </div>
               ) : members.length === 0 ? (
-                <div className="text-center py-6">
-                  <Users className="h-10 w-10 text-muted-foreground mx-auto mb-2" />
-                  <p className="text-sm text-muted-foreground">Nenhum membro encontrado.</p>
+                <div className="text-center py-4">
+                  <Users className="h-8 w-8 text-muted-foreground mx-auto mb-1" />
+                  <p className="text-xs text-muted-foreground">Nenhum membro encontrado.</p>
                 </div>
               ) : (
-                <div className="space-y-2">
+                <div className="grid grid-cols-1 gap-1.5">
                   {sortedMembers.map((member) => {
                     const isCurrentAgent = member.id === currentAgentId;
                     const hasBirthday = isBirthdayToday(member.birth_date);
                     
                     return (
-                      <TooltipProvider delayDuration={400} key={member.id}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button
-                              onClick={() => handleMemberClick(member)}
-                              className={`relative w-full text-left rounded-xl border-2 p-3.5 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg ${
-                                isCurrentAgent
-                                  ? 'bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-transparent border-amber-500/50 shadow-md shadow-amber-500/10 hover:shadow-amber-500/20'
-                                  : 'bg-slate-800/60 border-slate-600/50 hover:border-amber-400/50 hover:bg-slate-700/60 hover:shadow-amber-500/10'
-                              } ${hasBirthday ? 'ring-2 ring-pink-500/50 ring-offset-1 ring-offset-slate-900' : ''}`}
-                            >
-                              {/* Birthday indicator */}
-                              {hasBirthday && (
-                                <div className="absolute -top-1.5 -right-1.5 bg-pink-500 text-white text-[9px] px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
-                                  <Cake className="h-2.5 w-2.5" />
-                                </div>
+                      <button
+                        key={member.id}
+                        onClick={() => handleMemberClick(member)}
+                        className={`relative w-full text-left rounded-lg border p-2 transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] ${
+                          isCurrentAgent
+                            ? 'bg-gradient-to-r from-amber-500/15 to-transparent border-amber-500/40'
+                            : 'bg-slate-800/40 border-slate-600/40 hover:border-amber-400/40 hover:bg-slate-700/40'
+                        } ${hasBirthday ? 'ring-1 ring-pink-500/40' : ''}`}
+                      >
+                        {/* Birthday indicator */}
+                        {hasBirthday && (
+                          <div className="absolute -top-1 -right-1 bg-pink-500 text-white text-[8px] px-1 py-0.5 rounded-full">
+                            <Cake className="h-2 w-2" />
+                          </div>
+                        )}
+                        
+                        <div className="flex items-center gap-2">
+                          {/* Compact Avatar */}
+                          <Avatar className={`h-8 w-8 border shrink-0 ${
+                            member.role === 'team_leader' ? 'border-amber-500' :
+                            member.role === 'support' ? 'border-blue-500' : 'border-slate-600'
+                          }`}>
+                            {member.avatar_url && <AvatarImage src={member.avatar_url} alt={member.name} />}
+                            <AvatarFallback className="bg-slate-700 text-slate-300 text-xs">
+                              {member.name.charAt(0).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-1">
+                              <span className={`font-medium text-sm truncate ${
+                                isCurrentAgent ? 'text-amber-300' : 'text-slate-200'
+                              }`}>
+                                {member.name.split(' ').slice(0, 2).join(' ')}
+                              </span>
+                              {isCurrentAgent && (
+                                <Badge className="bg-amber-500/20 text-amber-300 border-0 text-[8px] px-1 py-0">Você</Badge>
                               )}
-                              
-                              <div className="flex items-center gap-2.5">
-                                {/* Compact Avatar */}
-                                <Avatar className={`h-10 w-10 border-2 shrink-0 ${
-                                  member.role === 'team_leader' ? 'border-amber-500' :
-                                  member.role === 'support' ? 'border-blue-500' : 'border-border'
-                                }`}>
-                                  {member.avatar_url && <AvatarImage src={member.avatar_url} alt={member.name} />}
-                                  <AvatarFallback className="bg-muted text-foreground font-semibold text-sm">
-                                    {member.name.charAt(0).toUpperCase()}
-                                  </AvatarFallback>
-                                </Avatar>
-                                
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-center gap-1.5">
-                                    <span className={`font-semibold text-sm truncate ${
-                                      isCurrentAgent ? 'text-primary' : 'text-foreground'
-                                    }`}>
-                                      {member.name.split(' ').slice(0, 2).join(' ')}
-                                    </span>
-                                    {isCurrentAgent && (
-                                      <Badge className="bg-primary text-primary-foreground text-[9px] px-1 py-0">Você</Badge>
-                                    )}
-                                  </div>
-                                  
-                                  {/* Compact info row */}
-                                  <div className="flex items-center gap-2 mt-0.5">
-                                    {getRoleIcon(member.role)}
-                                    <span className="text-[10px] text-muted-foreground">{getRoleLabel(member.role)}</span>
-                                    {member.blood_type && (
-                                      <span className="flex items-center gap-0.5 text-[10px] text-red-400">
-                                        <Droplet className="h-2.5 w-2.5" />
-                                        {member.blood_type}
-                                      </span>
-                                    )}
-                                    {member.phone && (
-                                      <Phone className="h-2.5 w-2.5 text-green-500" />
-                                    )}
-                                  </div>
-                                </div>
-                                
-                                <ChevronDown className="h-4 w-4 text-muted-foreground rotate-[-90deg]" />
-                              </div>
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipContent side="right" className="bg-slate-800 border-slate-600 text-white">
-                            <p>Clique para ver detalhes de {member.name.split(' ')[0]}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                            </div>
+                            
+                            {/* Compact info row */}
+                            <div className="flex items-center gap-1.5 mt-0.5">
+                              {getRoleIcon(member.role)}
+                              <span className="text-[9px] text-slate-400">{getRoleLabel(member.role)}</span>
+                              {member.blood_type && (
+                                <span className="flex items-center gap-0.5 text-[9px] text-red-400">
+                                  <Droplet className="h-2 w-2" />
+                                  {member.blood_type}
+                                </span>
+                              )}
+                              {member.phone && (
+                                <Phone className="h-2 w-2 text-green-500" />
+                              )}
+                            </div>
+                          </div>
+                          
+                          <ChevronDown className="h-3 w-3 text-slate-500 rotate-[-90deg] shrink-0" />
+                        </div>
+                      </button>
                     );
                   })}
                 </div>
               )}
               
               {/* Compact info footer */}
-              <p className="mt-3 text-[10px] text-muted-foreground text-center">
-                Toque em um membro para ver detalhes
+              <p className="mt-2 text-[9px] text-slate-500 text-center">
+                Toque para ver detalhes do colega
               </p>
             </CardContent>
           </CollapsibleContent>
@@ -359,6 +355,31 @@ export function TeamMembersCard({ unitId, team, currentAgentId }: TeamMembersCar
         open={showMemberDialog}
         onOpenChange={setShowMemberDialog}
         isCurrentUser={selectedMember?.id === currentAgentId}
+      />
+
+      {/* Team Management Dialog */}
+      <TeamUnlinkDialog
+        open={showTeamManagement}
+        onOpenChange={setShowTeamManagement}
+        agentId={currentAgentId}
+        agentName={currentAgentName || ''}
+        currentTeam={team}
+        currentUnitName={unitName || null}
+        onSuccess={() => {}}
+        onRequestTransfer={() => {
+          setShowTeamManagement(false);
+          setShowTransferDialog(true);
+        }}
+      />
+
+      {/* Transfer Request Dialog */}
+      <TransferRequestDialog
+        open={showTransferDialog}
+        onOpenChange={setShowTransferDialog}
+        agent={currentAgent}
+        onSuccess={() => {
+          setShowTransferDialog(false);
+        }}
       />
     </>
   );
