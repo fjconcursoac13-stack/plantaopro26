@@ -7,11 +7,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { toast } from 'sonner';
-import { ArrowRightLeft, Plus, Loader2, Check, X, Clock, User, FileText, Download, ArrowLeft } from 'lucide-react';
-import { format, parseISO } from 'date-fns';
+import { ArrowRightLeft, Plus, Loader2, Check, X, Clock, User, FileText, Download, ArrowLeft, CalendarDays, Sparkles, Edit2 } from 'lucide-react';
+import { format, parseISO, addDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
+import { cn } from '@/lib/utils';
 
 interface SwapRequestsCardProps {
   agentId: string;
@@ -49,6 +52,16 @@ interface TeamAgent {
   phone: string | null;
 }
 
+// Template reasons for swap requests
+const REASON_TEMPLATES = [
+  { id: 'personal', label: '📋 Compromisso pessoal', text: 'Solicito permuta devido a compromisso pessoal inadiável na data do meu plantão.' },
+  { id: 'medical', label: '🏥 Consulta médica', text: 'Solicito permuta para realizar consulta médica/exame agendado previamente.' },
+  { id: 'family', label: '👨‍👩‍👧 Motivo familiar', text: 'Solicito permuta por motivo familiar que requer minha presença.' },
+  { id: 'academic', label: '📚 Compromisso acadêmico', text: 'Solicito permuta devido a compromisso acadêmico (prova, aula, apresentação).' },
+  { id: 'travel', label: '✈️ Viagem', text: 'Solicito permuta pois estarei em viagem na data do plantão.' },
+  { id: 'other', label: '📝 Outro motivo', text: '' },
+];
+
 export function SwapRequestsCard({ agentId, unitId, team }: SwapRequestsCardProps) {
   const [swapRequests, setSwapRequests] = useState<SwapRequest[]>([]);
   const [myShifts, setMyShifts] = useState<AgentShift[]>([]);
@@ -56,11 +69,16 @@ export function SwapRequestsCard({ agentId, unitId, team }: SwapRequestsCardProp
   const [isLoading, setIsLoading] = useState(true);
   const [showNewRequest, setShowNewRequest] = useState(false);
   const [showExportDialog, setShowExportDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [editingRequest, setEditingRequest] = useState<SwapRequest | null>(null);
   const [selectedShift, setSelectedShift] = useState('');
   const [selectedAgent, setSelectedAgent] = useState('');
   const [reason, setReason] = useState('');
+  const [selectedTemplate, setSelectedTemplate] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [customDate, setCustomDate] = useState<Date | undefined>();
+  const [showDatePicker, setShowDatePicker] = useState(false);
   
   const { showNotification, playTacticalSound } = usePushNotifications();
 
@@ -92,7 +110,7 @@ export function SwapRequestsCard({ agentId, unitId, team }: SwapRequestsCardProp
         .eq('agent_id', agentId)
         .gte('shift_date', today)
         .order('shift_date')
-        .limit(20);
+        .limit(30);
 
       if (shiftsError) throw shiftsError;
       setMyShifts((shifts || []) as AgentShift[]);
@@ -134,7 +152,6 @@ export function SwapRequestsCard({ agentId, unitId, team }: SwapRequestsCardProp
           filter: `requester_id=eq.${agentId}`,
         },
         (payload) => {
-          console.log('Swap request change (requester):', payload);
           handleRealtimeUpdate(payload);
         }
       )
@@ -147,7 +164,6 @@ export function SwapRequestsCard({ agentId, unitId, team }: SwapRequestsCardProp
           filter: `target_id=eq.${agentId}`,
         },
         (payload) => {
-          console.log('Swap request change (target):', payload);
           handleRealtimeUpdate(payload);
         }
       )
@@ -162,7 +178,6 @@ export function SwapRequestsCard({ agentId, unitId, team }: SwapRequestsCardProp
     const { eventType, new: newRecord, old: oldRecord } = payload;
 
     if (eventType === 'INSERT') {
-      // New swap request - notify if we're the target
       if (newRecord.target_id === agentId) {
         playTacticalSound?.('notification');
         showNotification?.({
@@ -174,7 +189,6 @@ export function SwapRequestsCard({ agentId, unitId, team }: SwapRequestsCardProp
       }
       fetchData();
     } else if (eventType === 'UPDATE') {
-      // Status changed - notify if we're the requester
       if (newRecord.requester_id === agentId && oldRecord?.status !== newRecord.status) {
         if (newRecord.status === 'accepted') {
           playTacticalSound?.('success');
@@ -200,6 +214,14 @@ export function SwapRequestsCard({ agentId, unitId, team }: SwapRequestsCardProp
     }
   };
 
+  const handleTemplateSelect = (templateId: string) => {
+    setSelectedTemplate(templateId);
+    const template = REASON_TEMPLATES.find(t => t.id === templateId);
+    if (template) {
+      setReason(template.text);
+    }
+  };
+
   const createSwapRequest = async () => {
     if (!selectedShift || !selectedAgent) {
       toast.error('Selecione o plantão e o agente');
@@ -209,7 +231,6 @@ export function SwapRequestsCard({ agentId, unitId, team }: SwapRequestsCardProp
     try {
       setIsSubmitting(true);
 
-      // Create swap request
       const { error: swapError } = await (supabase as any)
         .from('shift_swaps')
         .insert({
@@ -223,7 +244,7 @@ export function SwapRequestsCard({ agentId, unitId, team }: SwapRequestsCardProp
       if (swapError) throw swapError;
 
       // Create notification for target agent
-      const { error: notifError } = await (supabase as any)
+      await (supabase as any)
         .from('notifications')
         .insert({
           agent_id: selectedAgent,
@@ -232,13 +253,8 @@ export function SwapRequestsCard({ agentId, unitId, team }: SwapRequestsCardProp
           content: reason || 'Você recebeu uma solicitação de permuta de plantão'
         });
 
-      if (notifError) console.error('Error creating notification:', notifError);
-
       toast.success('Solicitação de permuta enviada!');
-      setShowNewRequest(false);
-      setSelectedShift('');
-      setSelectedAgent('');
-      setReason('');
+      resetForm();
       fetchData();
     } catch (error) {
       console.error('Error creating swap request:', error);
@@ -246,6 +262,52 @@ export function SwapRequestsCard({ agentId, unitId, team }: SwapRequestsCardProp
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const updateSwapRequest = async () => {
+    if (!editingRequest) return;
+
+    try {
+      setIsSubmitting(true);
+
+      const { error } = await (supabase as any)
+        .from('shift_swaps')
+        .update({
+          reason: reason,
+          requester_shift_id: selectedShift || editingRequest.requester_shift_id,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', editingRequest.id);
+
+      if (error) throw error;
+
+      toast.success('Permuta atualizada com sucesso!');
+      setShowEditDialog(false);
+      setEditingRequest(null);
+      resetForm();
+      fetchData();
+    } catch (error) {
+      console.error('Error updating swap request:', error);
+      toast.error('Erro ao atualizar permuta');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const resetForm = () => {
+    setShowNewRequest(false);
+    setSelectedShift('');
+    setSelectedAgent('');
+    setReason('');
+    setSelectedTemplate('');
+    setCustomDate(undefined);
+  };
+
+  const openEditDialog = (request: SwapRequest) => {
+    setEditingRequest(request);
+    setReason(request.reason || '');
+    setSelectedShift(request.requester_shift_id);
+    setShowEditDialog(true);
   };
 
   const respondToRequest = async (requestId: string, status: 'accepted' | 'rejected') => {
@@ -257,7 +319,6 @@ export function SwapRequestsCard({ agentId, unitId, team }: SwapRequestsCardProp
 
       if (error) throw error;
 
-      // Find the request to notify the requester
       const request = swapRequests.find(r => r.id === requestId);
       if (request) {
         await (supabase as any)
@@ -283,18 +344,15 @@ export function SwapRequestsCard({ agentId, unitId, team }: SwapRequestsCardProp
   const exportSwapDocument = async () => {
     setIsExporting(true);
     try {
-      // Fetch current agent data
       const { data: currentAgent } = await supabase
         .from('agents')
         .select('name, matricula, phone, email, team')
         .eq('id', agentId)
         .single();
 
-      // Get accepted swaps for document
       const acceptedSwaps = swapRequests.filter(r => r.status === 'accepted');
-
-      // Generate document content
       const now = new Date();
+
       const docContent = `
 DOCUMENTO DE PERMUTA DE PLANTÃO
 ================================
@@ -343,7 +401,6 @@ Documento gerado automaticamente pelo PlantãoPro
 © ${now.getFullYear()} - Desenvolvido por FRANC D'NIS
 `.trim();
 
-      // Create blob and download
       const blob = new Blob([docContent], { type: 'text/plain;charset=utf-8' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
@@ -387,14 +444,11 @@ Documento gerado automaticamente pelo PlantãoPro
     );
   }
 
-  const pendingForMe = swapRequests.filter(
-    r => r.target_id === agentId && r.status === 'pending'
-  );
+  const pendingForMe = swapRequests.filter(r => r.target_id === agentId && r.status === 'pending');
   const myRequests = swapRequests.filter(r => r.requester_id === agentId);
 
   return (
     <Card className="card-night-orange bg-gradient-to-br from-[hsl(222,60%,3%)] via-[hsl(222,55%,5%)] to-[hsl(25,40%,8%)] border-3 border-orange-500/50 overflow-hidden transition-all duration-300 hover:border-orange-400/70 group relative">
-      {/* Glow Effect */}
       <div className="absolute inset-0 bg-gradient-to-r from-orange-500/5 via-transparent to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       
       <CardHeader className="pb-4 relative">
@@ -438,7 +492,6 @@ Documento gerado automaticamente pelo PlantãoPro
                       <li>Seus dados pessoais (nome, matrícula, contato)</li>
                       <li>Permutas aceitas com detalhes completos</li>
                       <li>Histórico de todas as solicitações</li>
-                      <li>Data e hora de geração</li>
                     </ul>
                   </div>
                   
@@ -454,68 +507,54 @@ Documento gerado automaticamente pelo PlantãoPro
                   </div>
                 </div>
                 <DialogFooter className="gap-2 pt-4">
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowExportDialog(false)}
-                    className="border-slate-600 text-slate-300 hover:bg-slate-700"
-                  >
+                  <Button variant="outline" onClick={() => setShowExportDialog(false)} className="border-slate-600 text-slate-300">
                     <ArrowLeft className="h-4 w-4 mr-1.5" />
                     Voltar
                   </Button>
-                  <Button
-                    onClick={exportSwapDocument}
-                    disabled={isExporting}
-                    className="bg-orange-500 hover:bg-orange-600 text-white"
-                  >
-                    {isExporting ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Gerando...
-                      </>
-                    ) : (
-                      <>
-                        <Download className="h-4 w-4 mr-1.5" />
-                        Baixar Documento
-                      </>
-                    )}
+                  <Button onClick={exportSwapDocument} disabled={isExporting} className="bg-orange-500 hover:bg-orange-600 text-white">
+                    {isExporting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-1.5" />}
+                    Baixar
                   </Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
 
             {/* New Request Dialog */}
-            <Dialog open={showNewRequest} onOpenChange={setShowNewRequest}>
+            <Dialog open={showNewRequest} onOpenChange={(open) => { if (!open) resetForm(); setShowNewRequest(open); }}>
               <DialogTrigger asChild>
                 <Button variant="outline" size="sm" className="border-2 border-orange-500/50 text-orange-300 bg-orange-500/10 hover:bg-orange-500/20 hover:border-orange-400/70 transition-all duration-200 font-semibold">
                   <Plus className="h-4 w-4 mr-1.5" />
                   Nova Permuta
                 </Button>
               </DialogTrigger>
-              <DialogContent className="bg-slate-800 border-slate-700 max-w-md">
+              <DialogContent className="bg-slate-800 border-slate-700 max-w-md max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle className="flex items-center gap-2 text-white">
                     <ArrowRightLeft className="h-5 w-5 text-orange-400" />
                     Solicitar Permuta
                   </DialogTitle>
                   <DialogDescription className="text-slate-400">
-                    Selecione o plantão e o colega para solicitar a permuta.
+                    Selecione o plantão, colega e descreva o motivo.
                   </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4 pt-4">
+                  {/* Shift Selection */}
                   <div className="space-y-2">
-                    <Label className="text-slate-300">Meu Plantão</Label>
+                    <Label className="text-slate-300 flex items-center gap-2">
+                      <CalendarDays className="h-4 w-4 text-amber-400" />
+                      Meu Plantão
+                    </Label>
                     <Select value={selectedShift} onValueChange={setSelectedShift}>
                       <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
                         <SelectValue placeholder="Selecione o plantão" />
                       </SelectTrigger>
-                      <SelectContent className="bg-slate-700 border-slate-600">
+                      <SelectContent className="bg-slate-700 border-slate-600 max-h-[200px]">
                         {myShifts.length === 0 ? (
                           <SelectItem value="none" disabled>Nenhum plantão disponível</SelectItem>
                         ) : (
                           myShifts.map((shift) => (
                             <SelectItem key={shift.id} value={shift.id}>
-                              {format(parseISO(shift.shift_date), "dd/MM/yyyy (EEEE)", { locale: ptBR })}
-                              {' '}• {shift.start_time} às {shift.end_time}
+                              {format(parseISO(shift.shift_date), "dd/MM/yyyy (EEE)", { locale: ptBR })} • {shift.start_time}
                             </SelectItem>
                           ))
                         )}
@@ -523,13 +562,17 @@ Documento gerado automaticamente pelo PlantãoPro
                     </Select>
                   </div>
 
+                  {/* Agent Selection */}
                   <div className="space-y-2">
-                    <Label className="text-slate-300">Permutar com</Label>
+                    <Label className="text-slate-300 flex items-center gap-2">
+                      <User className="h-4 w-4 text-blue-400" />
+                      Permutar com
+                    </Label>
                     <Select value={selectedAgent} onValueChange={setSelectedAgent}>
                       <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
                         <SelectValue placeholder="Selecione o agente" />
                       </SelectTrigger>
-                      <SelectContent className="bg-slate-700 border-slate-600">
+                      <SelectContent className="bg-slate-700 border-slate-600 max-h-[200px]">
                         {teamAgents.length === 0 ? (
                           <SelectItem value="none" disabled>Nenhum agente disponível</SelectItem>
                         ) : (
@@ -543,24 +586,44 @@ Documento gerado automaticamente pelo PlantãoPro
                     </Select>
                   </div>
 
+                  {/* Reason Templates */}
                   <div className="space-y-2">
-                    <Label className="text-slate-300">Motivo (opcional)</Label>
+                    <Label className="text-slate-300 flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 text-purple-400" />
+                      Modelo de Motivo
+                    </Label>
+                    <Select value={selectedTemplate} onValueChange={handleTemplateSelect}>
+                      <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                        <SelectValue placeholder="Escolha um modelo (opcional)" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-700 border-slate-600">
+                        {REASON_TEMPLATES.map((template) => (
+                          <SelectItem key={template.id} value={template.id}>
+                            {template.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Reason Text */}
+                  <div className="space-y-2">
+                    <Label className="text-slate-300">Motivo da Permuta</Label>
                     <Textarea
                       value={reason}
                       onChange={(e) => setReason(e.target.value)}
                       placeholder="Descreva o motivo da permuta..."
-                      className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-500 resize-none"
-                      rows={3}
+                      className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-500 resize-none min-h-[100px]"
+                      rows={4}
                     />
+                    <p className="text-xs text-slate-500">
+                      Você pode editar o texto gerado ou escrever seu próprio motivo.
+                    </p>
                   </div>
                 </div>
 
                 <DialogFooter className="gap-2 pt-4">
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowNewRequest(false)}
-                    className="border-slate-600 text-slate-300 hover:bg-slate-700"
-                  >
+                  <Button variant="outline" onClick={resetForm} className="border-slate-600 text-slate-300">
                     <ArrowLeft className="h-4 w-4 mr-1.5" />
                     Voltar
                   </Button>
@@ -569,14 +632,8 @@ Documento gerado automaticamente pelo PlantãoPro
                     disabled={!selectedShift || !selectedAgent || isSubmitting}
                     className="bg-amber-500 hover:bg-amber-600 text-black"
                   >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Enviando...
-                      </>
-                    ) : (
-                      'Solicitar Permuta'
-                    )}
+                    {isSubmitting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+                    Solicitar Permuta
                   </Button>
                 </DialogFooter>
               </DialogContent>
@@ -584,6 +641,7 @@ Documento gerado automaticamente pelo PlantãoPro
           </div>
         </div>
       </CardHeader>
+      
       <CardContent className="space-y-4">
         {/* Pending requests for me */}
         {pendingForMe.length > 0 && (
@@ -594,10 +652,7 @@ Documento gerado automaticamente pelo PlantãoPro
             </h4>
             <div className="space-y-2">
               {pendingForMe.map((request) => (
-                <div
-                  key={request.id}
-                  className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg"
-                >
+                <div key={request.id} className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-white">
@@ -607,27 +662,16 @@ Documento gerado automaticamente pelo PlantãoPro
                         Plantão: {request.requester_shift?.shift_date && 
                           format(parseISO(request.requester_shift.shift_date), "dd/MM/yyyy (EEE)", { locale: ptBR })
                         }
-                        {request.requester_shift?.start_time && ` • ${request.requester_shift.start_time}`}
                       </p>
                       {request.reason && (
-                        <p className="text-xs text-slate-300 mt-1 italic">"{request.reason}"</p>
+                        <p className="text-xs text-slate-300 mt-1 italic line-clamp-2">"{request.reason}"</p>
                       )}
                     </div>
                     <div className="flex gap-1 shrink-0">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => respondToRequest(request.id, 'accepted')}
-                        className="h-8 w-8 p-0 text-green-400 hover:text-green-300 hover:bg-green-500/10"
-                      >
+                      <Button size="sm" variant="ghost" onClick={() => respondToRequest(request.id, 'accepted')} className="h-8 w-8 p-0 text-green-400 hover:text-green-300 hover:bg-green-500/10">
                         <Check className="h-4 w-4" />
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => respondToRequest(request.id, 'rejected')}
-                        className="h-8 w-8 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/10"
-                      >
+                      <Button size="sm" variant="ghost" onClick={() => respondToRequest(request.id, 'rejected')} className="h-8 w-8 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/10">
                         <X className="h-4 w-4" />
                       </Button>
                     </div>
@@ -648,10 +692,7 @@ Documento gerado automaticamente pelo PlantãoPro
           ) : (
             <div className="space-y-2 max-h-[200px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent">
               {myRequests.map((request) => (
-                <div
-                  key={request.id}
-                  className="p-3 bg-slate-700/30 rounded-lg flex items-center justify-between gap-2"
-                >
+                <div key={request.id} className="p-3 bg-slate-700/30 rounded-lg flex items-center justify-between gap-2">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <User className="h-4 w-4 text-slate-400 shrink-0" />
@@ -663,13 +704,92 @@ Documento gerado automaticamente pelo PlantãoPro
                       }
                     </p>
                   </div>
-                  {getStatusBadge(request.status)}
+                  <div className="flex items-center gap-2 shrink-0">
+                    {request.status === 'pending' && (
+                      <Button size="sm" variant="ghost" onClick={() => openEditDialog(request)} className="h-7 w-7 p-0 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10">
+                        <Edit2 className="h-3.5 w-3.5" />
+                      </Button>
+                    )}
+                    {getStatusBadge(request.status)}
+                  </div>
                 </div>
               ))}
             </div>
           )}
         </div>
       </CardContent>
+
+      {/* Edit Dialog */}
+      <Dialog open={showEditDialog} onOpenChange={(open) => { if (!open) { setEditingRequest(null); resetForm(); } setShowEditDialog(open); }}>
+        <DialogContent className="bg-slate-800 border-slate-700 max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-white">
+              <Edit2 className="h-5 w-5 text-blue-400" />
+              Editar Permuta
+            </DialogTitle>
+            <DialogDescription className="text-slate-400">
+              Altere o plantão ou motivo da solicitação.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            {/* Change Shift */}
+            <div className="space-y-2">
+              <Label className="text-slate-300">Alterar Plantão</Label>
+              <Select value={selectedShift} onValueChange={setSelectedShift}>
+                <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                  <SelectValue placeholder="Selecione outro plantão (opcional)" />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-700 border-slate-600 max-h-[200px]">
+                  {myShifts.map((shift) => (
+                    <SelectItem key={shift.id} value={shift.id}>
+                      {format(parseISO(shift.shift_date), "dd/MM/yyyy (EEE)", { locale: ptBR })} • {shift.start_time}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Reason Templates */}
+            <div className="space-y-2">
+              <Label className="text-slate-300">Modelo de Motivo</Label>
+              <Select value={selectedTemplate} onValueChange={handleTemplateSelect}>
+                <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                  <SelectValue placeholder="Escolha um modelo" />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-700 border-slate-600">
+                  {REASON_TEMPLATES.map((template) => (
+                    <SelectItem key={template.id} value={template.id}>
+                      {template.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Reason */}
+            <div className="space-y-2">
+              <Label className="text-slate-300">Motivo</Label>
+              <Textarea
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                placeholder="Descreva o motivo..."
+                className="bg-slate-700 border-slate-600 text-white resize-none"
+                rows={4}
+              />
+            </div>
+          </div>
+          <DialogFooter className="gap-2 pt-4">
+            <Button variant="outline" onClick={() => setShowEditDialog(false)} className="border-slate-600 text-slate-300">
+              <ArrowLeft className="h-4 w-4 mr-1.5" />
+              Voltar
+            </Button>
+            <Button onClick={updateSwapRequest} disabled={isSubmitting} className="bg-blue-500 hover:bg-blue-600 text-white">
+              {isSubmitting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+              Salvar Alterações
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }

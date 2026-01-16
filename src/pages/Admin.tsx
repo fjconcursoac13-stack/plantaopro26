@@ -54,7 +54,7 @@ import { AgentBHManagement } from '@/components/admin/AgentBHManagement';
 import { toast } from 'sonner';
 import { HardDrive, Zap } from 'lucide-react';
 import { TransferApprovalPanel } from '@/components/agents/TransferApprovalPanel';
-
+import { SwapManagementPanel } from '@/components/admin/SwapManagementPanel';
 interface UserWithRole {
   id: string;
   email: string;
@@ -461,6 +461,10 @@ export default function Admin() {
                   <ArrowRightLeft className="h-4 w-4 mr-2" />
                   Transferências
                 </TabsTrigger>
+                <TabsTrigger value="swaps" className="data-[state=active]:bg-slate-700">
+                  <ArrowRightLeft className="h-4 w-4 mr-2" />
+                  Permutas
+                </TabsTrigger>
               </TabsList>
 
               {/* Units Tab */}
@@ -792,6 +796,11 @@ export default function Admin() {
               <TabsContent value="transfers" className="space-y-4">
                 <TransferApprovalPanel />
                 <TransferApprovalPanel showHistory />
+              </TabsContent>
+
+              {/* Swaps Tab */}
+              <TabsContent value="swaps" className="space-y-4">
+                <SwapManagementPanel onDataChange={fetchData} />
               </TabsContent>
             </Tabs>
             
