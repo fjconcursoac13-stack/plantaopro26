@@ -823,54 +823,57 @@ export default function Index() {
         {/* Themed Animated Background with Rotating Team Images */}
         <ThemedHomeBackground />
 
-      {/* Compact Status Bar */}
-      <div className="bg-slate-900/95 backdrop-blur-sm border-b border-primary/20 py-1.5 px-3 sm:px-4 relative z-20 shrink-0">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          {/* Left: Status */}
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-500/15 border border-green-500/30">
-              <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-[10px] sm:text-xs font-bold text-green-400">ATIVO</span>
+      {/* Header with Title and Status */}
+      <div className="bg-gradient-to-r from-slate-900/98 via-slate-800/95 to-slate-900/98 backdrop-blur-md border-b border-primary/30 py-2 px-3 sm:px-4 relative z-20 shrink-0">
+        <div className="max-w-6xl mx-auto">
+          {/* Main Row: Logo, Title, Actions */}
+          <div className="flex items-center justify-between gap-2">
+            {/* Left: Logo + Title */}
+            <div className="flex items-center gap-2">
+              <div className={cn(
+                "w-9 h-9 sm:w-11 sm:h-11 rounded-full border-2 border-primary/60 flex items-center justify-center shadow-lg",
+                themeConfig.colors.isLight ? "bg-white/95" : "bg-slate-800/95"
+              )}>
+                {(() => {
+                  const MainIcon = themeAssets.mainIcon;
+                  return <MainIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />;
+                })()}
+              </div>
+              <div>
+                <h1 className="text-base sm:text-xl font-black leading-none tracking-tight">
+                  <span className="text-foreground">PLANTÃO</span>
+                  <span className="text-primary ml-1">PRO</span>
+                </h1>
+                <p className="text-[8px] sm:text-[9px] text-muted-foreground tracking-widest uppercase">{themeAssets.subtitle}</p>
+              </div>
             </div>
-          </div>
-          
-          {/* Center: Logo compacto */}
-          <div className="flex items-center gap-2">
-            <div className={cn(
-              "w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-primary/50 flex items-center justify-center",
-              themeConfig.colors.isLight ? "bg-white/90" : "bg-slate-800/90"
-            )}>
-              {(() => {
-                const MainIcon = themeAssets.mainIcon;
-                return <MainIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />;
-              })()}
+            
+            {/* Center: Status Badge - Hidden on very small screens */}
+            <div className="hidden xs:flex items-center">
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-500/15 border border-green-500/40 shadow-sm">
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                <span className="text-[10px] sm:text-xs font-bold text-green-400 uppercase tracking-wide">Sistema Ativo</span>
+              </div>
             </div>
-            <div className="hidden sm:block">
-              <h1 className="text-lg sm:text-xl font-black leading-none">
-                <span className="text-foreground">PLANTÃO</span>
-                <span className="text-primary ml-1">PRO</span>
-              </h1>
-              <p className="text-[9px] text-muted-foreground tracking-widest uppercase">{themeAssets.subtitle}</p>
-            </div>
-          </div>
-          
-          {/* Right: Theme & Clock */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => {
-                playSound('click');
-                setShowThemeSelector(true);
-              }}
-              className="p-1.5 rounded-lg bg-primary/10 border border-primary/30 hover:bg-primary/20 transition-colors"
-              title="Tema"
-            >
-              <Palette className="h-4 w-4 text-primary" />
-            </button>
-            <div className="flex items-center gap-1 px-2 py-1 rounded bg-slate-800/50 border border-slate-700/40">
-              <Clock className="h-3 w-3 text-primary" />
-              <span className="text-xs font-mono font-bold text-primary">
-                {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-              </span>
+            
+            {/* Right: Theme & Clock */}
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <button
+                onClick={() => {
+                  playSound('click');
+                  setShowThemeSelector(true);
+                }}
+                className="p-1.5 sm:p-2 rounded-lg bg-primary/10 border border-primary/40 hover:bg-primary/20 transition-colors shadow-sm"
+                title="Tema"
+              >
+                <Palette className="h-4 w-4 text-primary" />
+              </button>
+              <div className="flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-800/60 border border-slate-600/40 shadow-sm">
+                <Clock className="h-3 w-3 text-primary" />
+                <span className="text-xs font-mono font-bold text-primary">
+                  {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              </div>
             </div>
           </div>
         </div>
