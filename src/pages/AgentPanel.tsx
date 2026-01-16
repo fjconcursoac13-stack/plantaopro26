@@ -659,6 +659,20 @@ export default function AgentPanel() {
       </div>
     </ThemedPanelBackground>
 
+    {/* Fixed Exit Button - Always Visible at Bottom */}
+    <div className="fixed bottom-4 right-4 z-50">
+      <Button
+        onClick={async () => {
+          await supabase.auth.signOut();
+          navigate('/');
+        }}
+        className="flex items-center gap-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white border-2 border-red-400/50 h-12 px-5 rounded-xl shadow-2xl shadow-red-500/40 transition-all duration-200 hover:scale-105 animate-pulse hover:animate-none"
+      >
+        <LogOut className="h-5 w-5" />
+        <span className="text-sm font-bold tracking-wide uppercase">Sair</span>
+      </Button>
+    </div>
+
     {/* Welcome Trial Dialog */}
     {showWelcomeDialog && agent && (
       <WelcomeTrialDialog 
