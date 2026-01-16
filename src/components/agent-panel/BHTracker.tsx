@@ -754,192 +754,71 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
     const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
 
     return (
-      <Card className="card-night-green bg-gradient-to-br from-[hsl(222,60%,3%)] via-[hsl(222,55%,5%)] to-[hsl(142,40%,8%)] border-3 border-green-500/50 transition-all duration-300 hover:border-green-400/70 group">
-        <CardContent className="p-5 md:p-6 space-y-4">
-          {/* Balance Header - LARGER with GLOW (no flickering) */}
-          <div className="flex items-center gap-4">
-            <div className={`relative p-4 rounded-2xl transition-all duration-300 group-hover:scale-110 ${
+      <Card className="card-night-green bg-gradient-to-br from-[hsl(222,60%,4%)] via-[hsl(222,55%,6%)] to-[hsl(142,40%,8%)] border-2 border-green-500/40 transition-all duration-300 hover:border-green-400/60">
+        <CardContent className="p-3 md:p-4 space-y-3">
+          {/* Balance Header - Compact */}
+          <div className="flex items-center gap-3">
+            <div className={`relative p-2.5 md:p-3 rounded-xl transition-all duration-300 ${
               balance < 0 
-                ? 'bg-gradient-to-br from-red-500/30 to-red-600/20 ring-2 ring-red-500/40 shadow-lg shadow-red-500/30 bh-critical-red' 
+                ? 'bg-red-500/20 ring-2 ring-red-500/40' 
                 : isAtLimit 
-                  ? 'bg-gradient-to-br from-red-500/30 to-red-600/20 ring-2 ring-red-500/40 shadow-lg shadow-red-500/30 bh-critical-red'
+                  ? 'bg-red-500/20 ring-2 ring-red-500/40'
                   : isNearLimit
-                    ? 'bg-gradient-to-br from-amber-500/30 to-amber-600/20 ring-2 ring-amber-500/40 shadow-lg shadow-amber-500/30 bh-critical-amber'
-                    : 'bg-gradient-to-br from-green-500/30 to-green-600/20 ring-2 ring-green-500/40 shadow-lg shadow-green-500/30'
+                    ? 'bg-amber-500/20 ring-2 ring-amber-500/40'
+                    : 'bg-green-500/20 ring-2 ring-green-500/40'
             }`}>
               {balance >= 0 ? (
-                <TrendingUp className={`h-8 w-8 md:h-10 md:w-10 drop-shadow-lg ${isAtLimit ? 'text-red-400 bh-icon-critical' : isNearLimit ? 'text-amber-400 bh-icon-critical' : 'text-green-400'}`} />
+                <TrendingUp className={`h-5 w-5 md:h-6 md:w-6 ${isAtLimit ? 'text-red-400' : isNearLimit ? 'text-amber-400' : 'text-green-400'}`} />
               ) : (
-                <TrendingDown className="h-8 w-8 md:h-10 md:w-10 text-red-400 drop-shadow-lg bh-icon-critical" />
+                <TrendingDown className="h-5 w-5 md:h-6 md:w-6 text-red-400" />
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm md:text-base text-slate-300 font-semibold uppercase tracking-wide">Banco de Horas</p>
-              <p className={`text-3xl md:text-4xl font-black drop-shadow-lg ${
-                balance < 0 
-                  ? 'text-red-400 bh-text-glow' 
-                  : isAtLimit 
-                    ? 'text-red-400 bh-text-glow'
-                    : isNearLimit 
-                      ? 'text-amber-400 bh-text-glow'
-                      : 'text-green-400'
+              <p className="text-[10px] md:text-xs text-slate-300 font-semibold uppercase tracking-wide">Banco de Horas</p>
+              <p className={`text-xl md:text-2xl font-black ${
+                balance < 0 ? 'text-red-400' : isAtLimit ? 'text-red-400' : isNearLimit ? 'text-amber-400' : 'text-green-400'
               }`}>
                 {balance >= 0 ? '+' : ''}{balance.toFixed(1)}h
               </p>
             </div>
-            <div className={`text-right px-5 py-3 rounded-2xl border-2 shadow-lg transition-all duration-300 group-hover:border-amber-400/60 ${
-              isAtLimit 
-                ? 'bg-gradient-to-br from-red-500/20 to-red-600/10 border-red-500/40 shadow-red-500/20 bh-critical-red'
-                : isNearLimit
-                  ? 'bg-gradient-to-br from-amber-500/20 to-amber-600/10 border-amber-500/40 shadow-amber-500/20 bh-critical-amber'
-                  : 'bg-gradient-to-br from-amber-500/20 to-amber-600/10 border-amber-500/40 shadow-amber-500/20'
+            <div className={`text-right px-3 py-1.5 rounded-xl border ${
+              isAtLimit ? 'bg-red-500/15 border-red-500/30' : isNearLimit ? 'bg-amber-500/15 border-amber-500/30' : 'bg-amber-500/15 border-amber-500/30'
             }`}>
-              <div className="flex items-center gap-2 mb-1">
-                <DollarSign className={`h-5 w-5 ${isAtLimit ? 'text-red-400' : 'text-amber-400'}`} />
-                <p className="text-sm text-slate-400 font-medium">Valor</p>
+              <div className="flex items-center gap-1 mb-0.5">
+                <DollarSign className={`h-3.5 w-3.5 ${isAtLimit ? 'text-red-400' : 'text-amber-400'}`} />
+                <p className="text-[10px] text-slate-400 font-medium">Valor</p>
               </div>
-              <p className={`text-xl md:text-2xl font-black drop-shadow-lg ${isAtLimit ? 'text-red-400' : 'text-amber-400'}`}>R$ {totalValue.toFixed(2)}</p>
+              <p className={`text-base md:text-lg font-black ${isAtLimit ? 'text-red-400' : 'text-amber-400'}`}>R$ {totalValue.toFixed(0)}</p>
             </div>
           </div>
 
-          {/* Progress Bar - LARGER (no flicker animation) */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
+          {/* Progress Bar - Compact */}
+          <div className="space-y-1">
+            <div className="flex items-center justify-between text-[10px] md:text-xs">
               <span className="text-slate-400 font-medium">{balance.toFixed(1)} / {bhLimit}h</span>
-              <span className={`font-bold ${isNearLimit ? 'text-amber-400 bh-text-glow' : isAtLimit ? 'text-red-400 bh-text-glow' : 'text-green-400'}`}>
+              <span className={`font-bold ${isNearLimit ? 'text-amber-400' : isAtLimit ? 'text-red-400' : 'text-green-400'}`}>
                 {progressPercent.toFixed(0)}%
               </span>
             </div>
             <Progress 
               value={progressPercent} 
-              className={`h-3 rounded-full ${isAtLimit ? '[&>div]:bg-red-500' : isNearLimit ? '[&>div]:bg-amber-500' : '[&>div]:bg-green-500'}`}
+              className={`h-2 rounded-full ${isAtLimit ? '[&>div]:bg-red-500' : isNearLimit ? '[&>div]:bg-amber-500' : '[&>div]:bg-green-500'}`}
             />
           </div>
 
-
-          {/* Compact Fortnight Scale - LARGER */}
-          <div className="pt-3 border-t-2 border-slate-700/60">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <Shield className="h-4 w-4 text-amber-400" />
-                <span className="text-sm font-semibold text-slate-300">Quinzenas</span>
-              </div>
-              <Badge className={`text-xs py-0.5 px-2 font-semibold ${
-                isFirstFortnight 
-                  ? 'bg-blue-500/25 text-blue-300 border-blue-500/40'
-                  : 'bg-purple-500/25 text-purple-300 border-purple-500/40'
-              }`}>
-                {isFirstFortnight ? '1ª' : '2ª'} Ativa
+          {/* Compact Fortnight Indicators */}
+          <div className="flex items-center justify-between pt-2 border-t border-slate-700/50">
+            <div className="flex items-center gap-1.5">
+              <Shield className="h-3 w-3 text-amber-400" />
+              <span className="text-[10px] font-semibold text-slate-400">Quinzenas</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Badge className={`text-[9px] py-0 px-1.5 ${isFirstFortnight ? 'bg-blue-500/20 text-blue-300 border-blue-500/30' : 'bg-slate-700/50 text-slate-500 border-slate-600/30'}`}>
+                1ª
               </Badge>
-            </div>
-
-            {/* Mini Scale Grid - LARGER */}
-            <div className="grid grid-cols-2 gap-3">
-              {/* First Fortnight Mini */}
-              <div className={`p-3 rounded-xl border-2 transition-all ${
-                isFirstFortnight 
-                  ? 'bg-blue-500/15 border-blue-500/50' 
-                  : 'bg-slate-700/30 border-slate-600/40 opacity-60'
-              }`}>
-                <div className="flex items-center gap-1.5 mb-2">
-                  {isFirstFortnight ? (
-                    <Unlock className="h-4 w-4 text-blue-400" />
-                  ) : (
-                    <Lock className="h-4 w-4 text-slate-500" />
-                  )}
-                  <span className={`text-xs font-semibold ${isFirstFortnight ? 'text-blue-300' : 'text-slate-500'}`}>
-                    1ª (1-15)
-                  </span>
-                </div>
-                <div className="flex gap-1 flex-wrap">
-                  {Array.from({ length: 15 }, (_, i) => {
-                    const day = i + 1;
-                    const isToday = todayDay === day && isFirstFortnight;
-                    const hasBH = bhDates.some(d => 
-                      d.getDate() === day && 
-                      d.getMonth() === today.getMonth() && 
-                      d.getFullYear() === today.getFullYear() &&
-                      day <= 15
-                    );
-                    return (
-                      <div
-                        key={day}
-                        className={`w-3 h-3 md:w-3.5 md:h-3.5 rounded-sm transition-all ${
-                          isToday 
-                            ? 'bg-blue-500 ring-2 ring-blue-300 scale-110'
-                            : hasBH 
-                              ? 'bg-green-500/80'
-                              : isFirstFortnight && day <= todayDay
-                                ? 'bg-amber-500/50'
-                                : 'bg-slate-600/40'
-                        }`}
-                        title={`Dia ${day}${isToday ? ' (Hoje)' : ''}${hasBH ? ' - BH' : ''}`}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Second Fortnight Mini */}
-              <div className={`p-3 rounded-xl border-2 transition-all ${
-                !isFirstFortnight 
-                  ? 'bg-purple-500/15 border-purple-500/50' 
-                  : 'bg-slate-700/30 border-slate-600/40 opacity-60'
-              }`}>
-                <div className="flex items-center gap-1.5 mb-2">
-                  {!isFirstFortnight ? (
-                    <Unlock className="h-4 w-4 text-purple-400" />
-                  ) : (
-                    <Lock className="h-4 w-4 text-slate-500" />
-                  )}
-                  <span className={`text-xs font-semibold ${!isFirstFortnight ? 'text-purple-300' : 'text-slate-500'}`}>
-                    2ª (16-{lastDayOfMonth})
-                  </span>
-                </div>
-                <div className="flex gap-1 flex-wrap">
-                  {Array.from({ length: lastDayOfMonth - 15 }, (_, i) => {
-                    const day = i + 16;
-                    const isToday = todayDay === day && !isFirstFortnight;
-                    const hasBH = bhDates.some(d => 
-                      d.getDate() === day && 
-                      d.getMonth() === today.getMonth() && 
-                      d.getFullYear() === today.getFullYear() &&
-                      day >= 16
-                    );
-                    return (
-                      <div
-                        key={day}
-                        className={`w-3 h-3 md:w-3.5 md:h-3.5 rounded-sm transition-all ${
-                          isToday 
-                            ? 'bg-purple-500 ring-2 ring-purple-300 scale-110'
-                            : hasBH 
-                              ? 'bg-green-500/80'
-                              : !isFirstFortnight && day <= todayDay
-                                ? 'bg-amber-500/50'
-                                : 'bg-slate-600/40'
-                        }`}
-                        title={`Dia ${day}${isToday ? ' (Hoje)' : ''}${hasBH ? ' - BH' : ''}`}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
-            {/* Compact Legend - LARGER */}
-            <div className="flex items-center justify-center gap-4 mt-3 text-xs">
-              <div className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-sm bg-green-500/80" />
-                <span className="text-slate-400 font-medium">BH</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-sm bg-amber-500/50" />
-                <span className="text-slate-400 font-medium">Sem</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-sm bg-blue-500" />
-                <span className="text-slate-400 font-medium">Hoje</span>
-              </div>
+              <Badge className={`text-[9px] py-0 px-1.5 ${!isFirstFortnight ? 'bg-purple-500/20 text-purple-300 border-purple-500/30' : 'bg-slate-700/50 text-slate-500 border-slate-600/30'}`}>
+                2ª
+              </Badge>
             </div>
           </div>
         </CardContent>

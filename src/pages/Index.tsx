@@ -823,101 +823,58 @@ export default function Index() {
         {/* Themed Animated Background with Rotating Team Images */}
         <ThemedHomeBackground />
 
-      {/* Security Status Bar - Professional & Larger */}
-      <div className="bg-gradient-to-r from-slate-900/98 via-slate-800/95 to-slate-900/98 backdrop-blur-md border-b-2 border-primary/30 py-2.5 sm:py-3 px-4 sm:px-6 relative z-20 shrink-0 shadow-lg shadow-black/20">
+      {/* Compact Status Bar */}
+      <div className="bg-slate-900/95 backdrop-blur-sm border-b border-primary/20 py-1.5 px-3 sm:px-4 relative z-20 shrink-0">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          {/* Left: Status Indicator */}
-          <div className="flex items-center gap-3 sm:gap-4">
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/15 border border-green-500/40">
-              <div className="relative">
-                <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse shadow-lg shadow-green-500/50" />
-                <div className="absolute inset-0 w-2.5 h-2.5 rounded-full bg-green-400 animate-ping opacity-75" />
-              </div>
-              <span className="text-xs sm:text-sm font-bold text-green-400 tracking-wider">
-                SISTEMA ATIVO
-              </span>
-            </div>
-            <div className="hidden sm:flex items-center gap-2 text-slate-400">
-              <Shield className="h-4 w-4 text-primary" />
-              <span className="text-xs font-medium">Conexão Segura</span>
+          {/* Left: Status */}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-500/15 border border-green-500/30">
+              <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-[10px] sm:text-xs font-bold text-green-400">ATIVO</span>
             </div>
           </div>
           
-          {/* Right: Theme Button & Clock */}
-          <div className="flex items-center gap-3 sm:gap-4">
+          {/* Center: Logo compacto */}
+          <div className="flex items-center gap-2">
+            <div className={cn(
+              "w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-primary/50 flex items-center justify-center",
+              themeConfig.colors.isLight ? "bg-white/90" : "bg-slate-800/90"
+            )}>
+              {(() => {
+                const MainIcon = themeAssets.mainIcon;
+                return <MainIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />;
+              })()}
+            </div>
+            <div className="hidden sm:block">
+              <h1 className="text-lg sm:text-xl font-black leading-none">
+                <span className="text-foreground">PLANTÃO</span>
+                <span className="text-primary ml-1">PRO</span>
+              </h1>
+              <p className="text-[9px] text-muted-foreground tracking-widest uppercase">{themeAssets.subtitle}</p>
+            </div>
+          </div>
+          
+          {/* Right: Theme & Clock */}
+          <div className="flex items-center gap-2">
             <button
               onClick={() => {
                 playSound('click');
                 setShowThemeSelector(true);
               }}
-              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-primary/20 to-primary/10 border-2 border-primary/40 hover:border-primary/60 hover:from-primary/30 hover:to-primary/20 transition-all duration-300 group shadow-lg shadow-primary/10"
-              title="Alterar tema visual"
+              className="p-1.5 rounded-lg bg-primary/10 border border-primary/30 hover:bg-primary/20 transition-colors"
+              title="Tema"
             >
-              <Palette className="h-4 w-4 sm:h-5 sm:w-5 text-primary group-hover:scale-110 transition-transform" />
-              <span className="hidden sm:inline text-sm font-semibold text-primary">Tema</span>
+              <Palette className="h-4 w-4 text-primary" />
             </button>
-            
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/60 border border-slate-700/50">
-              <Clock className="h-4 w-4 text-primary" />
-              <span className="text-sm sm:text-base font-mono font-bold text-primary tracking-wide">
+            <div className="flex items-center gap-1 px-2 py-1 rounded bg-slate-800/50 border border-slate-700/40">
+              <Clock className="h-3 w-3 text-primary" />
+              <span className="text-xs font-mono font-bold text-primary">
                 {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
               </span>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Hero Section - Enhanced title with effects */}
-      <header className="py-4 sm:py-6 md:py-8 px-4 relative z-10 shrink-0">
-        <div className="max-w-4xl mx-auto text-center flex flex-col items-center gap-4 sm:gap-5">
-          {/* Badge with glow */}
-          <div className={cn(
-            "relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-full border-3 border-primary/60 flex items-center justify-center shadow-xl",
-            themeConfig.colors.isLight 
-              ? "bg-gradient-to-br from-white via-gray-50 to-gray-100"
-              : "bg-gradient-to-br from-slate-700 via-slate-800 to-slate-900"
-          )}>
-            {(() => {
-              const MainIcon = themeAssets.mainIcon;
-              return <MainIcon className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-primary drop-shadow-lg" />;
-            })()}
-            {/* Animated ring */}
-            <div className="absolute inset-0 rounded-full border-2 border-primary/30 animate-ping" style={{ animationDuration: '2s' }} />
-            <div className="absolute -inset-3 rounded-full bg-primary/15 blur-xl animate-pulse" />
-          </div>
-          
-          {/* Title with effects */}
-          <div className="relative">
-            {/* Glow behind title */}
-            <div className="absolute inset-0 blur-3xl bg-primary/25 rounded-full" />
-            
-            <h1 className="relative text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight">
-              <span 
-                className="bg-gradient-to-r from-foreground via-foreground to-foreground/80 bg-clip-text text-transparent"
-                style={{ textShadow: '0 0 40px hsl(var(--primary) / 0.3)' }}
-              >
-                PLANTÃO{' '}
-              </span>
-              <span 
-                className="bg-gradient-to-r from-primary via-amber-400 to-primary bg-clip-text text-transparent animate-pulse"
-                style={{ 
-                  textShadow: '0 0 30px hsl(var(--primary) / 0.5), 0 0 60px hsl(var(--primary) / 0.3)',
-                  animationDuration: '3s',
-                }}
-              >
-                PRO
-              </span>
-            </h1>
-            
-            {/* Subtitle with tactical feel */}
-            <p className="mt-2 sm:mt-3 text-xs sm:text-sm md:text-base font-bold text-muted-foreground tracking-[0.25em] uppercase flex items-center justify-center gap-3">
-              <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-              <span>{themeAssets.subtitle}</span>
-              <Radio className="h-3 w-3 sm:h-4 sm:w-4 text-green-500 animate-pulse" />
-            </p>
-          </div>
-        </div>
-      </header>
 
       {/* Teams Grid Section - Optimized for both portrait and landscape */}
       <section className="flex-1 py-2 sm:py-3 px-2 sm:px-4 relative z-10 flex items-center justify-center min-h-0 overflow-hidden">
