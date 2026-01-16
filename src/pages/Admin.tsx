@@ -51,6 +51,7 @@ import { BulkLicenseActivator } from '@/components/admin/BulkLicenseActivator';
 import { OfflineLicenseCacheManager } from '@/components/admin/OfflineLicenseCacheManager';
 import { toast } from 'sonner';
 import { HardDrive, Zap } from 'lucide-react';
+import { TransferApprovalPanel } from '@/components/agents/TransferApprovalPanel';
 
 interface UserWithRole {
   id: string;
@@ -450,6 +451,10 @@ export default function Admin() {
                   <HardDrive className="h-4 w-4 mr-2" />
                   Offline
                 </TabsTrigger>
+                <TabsTrigger value="transfers" className="data-[state=active]:bg-slate-700">
+                  <ArrowRightLeft className="h-4 w-4 mr-2" />
+                  Transferências
+                </TabsTrigger>
               </TabsList>
 
               {/* Units Tab */}
@@ -770,6 +775,12 @@ export default function Admin() {
                 <BulkLicenseActivator onActivated={fetchData} />
                 <LicenseActivationCodeManager />
                 <OfflineLicenseCacheManager />
+              </TabsContent>
+
+              {/* Transfers Tab */}
+              <TabsContent value="transfers" className="space-y-4">
+                <TransferApprovalPanel />
+                <TransferApprovalPanel showHistory />
               </TabsContent>
             </Tabs>
             
