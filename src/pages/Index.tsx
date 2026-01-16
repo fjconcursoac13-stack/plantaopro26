@@ -880,7 +880,28 @@ export default function Index() {
       </div>
 
       {/* Teams Grid Section - Optimized for both portrait and landscape */}
-      <section className="flex-1 py-2 sm:py-3 px-2 sm:px-4 relative z-10 flex items-center justify-center min-h-0 overflow-hidden">
+      <section className="flex-1 py-2 sm:py-3 px-2 sm:px-4 relative z-10 flex flex-col items-center justify-center min-h-0 overflow-hidden">
+        {/* Prominent Title Above Cards */}
+        <div className="w-full text-center mb-2 sm:mb-3 animate-fade-in" style={{ animationDelay: '200ms' }}>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black tracking-tight leading-none">
+            <span 
+              className="bg-gradient-to-r from-white via-slate-100 to-white bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(255,255,255,0.4)] animate-[glow_3s_ease-in-out_infinite]"
+              style={{ textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}
+            >
+              PLANTÃO
+            </span>
+            <span 
+              className="ml-2 bg-gradient-to-r from-primary via-amber-400 to-primary bg-clip-text text-transparent drop-shadow-[0_0_25px_hsl(var(--primary)/0.6)] animate-[pulse-glow_2s_ease-in-out_infinite]"
+              style={{ textShadow: '0 2px 15px hsl(var(--primary)/0.5)' }}
+            >
+              PRO
+            </span>
+          </h1>
+          <p className="text-[10px] sm:text-xs text-muted-foreground/80 tracking-[0.3em] uppercase mt-1 animate-fade-in" style={{ animationDelay: '400ms' }}>
+            Sistema de Escalas Operacionais
+          </p>
+        </div>
+        
         <div className="w-full h-full max-w-[95vw] landscape:max-w-[90vw] sm:max-w-2xl md:max-w-5xl lg:max-w-6xl xl:max-w-7xl mx-auto flex items-center justify-center">
           <div className="w-full grid grid-cols-2 landscape:grid-cols-4 md:grid-cols-4 gap-1.5 landscape:gap-2 sm:gap-3 md:gap-4 lg:gap-5 auto-rows-fr">
             {teams.map((team, index) => (
