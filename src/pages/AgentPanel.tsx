@@ -37,7 +37,7 @@ import { SafeModeToggle } from '@/components/SafeModeToggle';
 import { ThemedPanelBackground } from '@/components/ThemedPanelBackground';
 import { WelcomeTrialDialog, shouldShowWelcomeToday, getRemainingTrialDays } from '@/components/WelcomeTrialDialog';
 import { supabase } from '@/integrations/supabase/client';
-import { Loader2, Users, MessageCircle, Calendar, Clock, ArrowRightLeft, CalendarOff, Settings, User, CalendarDays, Calculator, LogOut, Home, WifiOff, RefreshCw, Droplet, Radar, Gift } from 'lucide-react';
+import { Loader2, Users, MessageCircle, Calendar, Clock, ArrowRightLeft, CalendarOff, Settings, User, CalendarDays, Calculator, LogOut, Home, WifiOff, RefreshCw, Droplet, Radar, Gift, Shield, Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -361,27 +361,117 @@ export default function AgentPanel() {
               </div>
             </div>
 
-            {/* Main Tabs - Painel de Controle na parte SUPERIOR */}
+            {/* Agent Profile Card - PRIMEIRO (antes do Painel de Controle) */}
+            <div className="relative">
+              {/* Glow Effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-amber-500/8 via-transparent to-amber-500/8 rounded-3xl blur-xl" />
+              
+              <div className="relative bg-gradient-to-br from-slate-900/98 via-slate-800/95 to-amber-950/40 rounded-2xl p-5 md:p-7 border-3 border-amber-500/50 shadow-2xl shadow-amber-500/15 backdrop-blur-md overflow-hidden">
+                {/* Decorative Elements */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-amber-500/10 to-transparent rounded-bl-full" />
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-amber-500/8 to-transparent rounded-tr-full" />
+                
+                {/* Header Label */}
+                <div className="absolute -top-3 left-4 md:left-6">
+                  <span className="bg-gradient-to-r from-amber-400 to-amber-500 text-black text-[10px] md:text-xs font-bold px-4 py-1.5 rounded-full shadow-lg uppercase tracking-wider flex items-center gap-1.5">
+                    <Shield className="h-3.5 w-3.5" />
+                    Perfil do Agente
+                  </span>
+                </div>
+                
+                <div className="flex items-center justify-between gap-4 pt-2">
+                  <TooltipProvider delayDuration={300}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div 
+                          className="flex items-center gap-5 cursor-pointer hover:scale-[1.02] transition-all duration-300 flex-1 min-w-0 group/profile"
+                          onClick={() => navigate('/agent-profile')}
+                        >
+                          <Avatar className="w-18 h-18 md:w-22 md:h-22 border-4 border-amber-500/60 shadow-xl shadow-amber-500/25 flex-shrink-0 ring-3 ring-amber-400/25 ring-offset-2 ring-offset-slate-900 group-hover/profile:border-amber-400 group-hover/profile:shadow-amber-500/40 transition-all duration-300">
+                            {(agent as any).avatar_url && <AvatarImage src={(agent as any).avatar_url} alt={agent.name} />}
+                            <AvatarFallback className="bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 text-2xl md:text-3xl font-black text-black">
+                              {agent.name.charAt(0).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="min-w-0 flex-1 space-y-2">
+                            <h1 className="text-2xl md:text-3xl lg:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-300 to-amber-400 tracking-wide truncate drop-shadow-lg">
+                              {agent.name}
+                            </h1>
+                            <div className="flex items-center gap-2.5 flex-wrap">
+                              {getRoleBadge((agent as any).role)}
+                              {(agent as any).blood_type && (
+                                <Badge className="bg-gradient-to-r from-red-500/30 to-red-600/20 text-red-300 border-2 border-red-500/50 flex items-center gap-1.5 text-sm px-3 py-1 font-bold shadow-lg shadow-red-500/10">
+                                  <Droplet className="h-3.5 w-3.5" />
+                                  {(agent as any).blood_type}
+                                </Badge>
+                              )}
+                              {agent.team && (
+                                <Badge className="bg-gradient-to-r from-slate-700/90 to-slate-800/80 text-amber-300 border-2 border-amber-500/50 text-sm px-3 py-1 font-bold shadow-lg">
+                                  {agent.team}
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white">
+                        <p>Clique para editar seu perfil</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  
+                  <div className="flex items-center gap-3 flex-shrink-0">
+                    <TooltipProvider delayDuration={300}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div>
+                            <AgentRoleSelector agentId={agent.id} currentRole={(agent as any).role || 'agent'} />
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white">
+                          <p>Alterar seu papel na equipe</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <TooltipProvider delayDuration={300}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div>
+                            <NotificationsPanel agentId={agent.id} />
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white">
+                          <p>Ver notificações e alertas</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Main Tabs - Painel de Controle */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6 md:space-y-8">
-              {/* Tab Container com destaque profissional - PRIMEIRO */}
+              {/* Tab Container com destaque profissional */}
               <div className="relative">
                 {/* Glow Effect Background */}
                 <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 via-transparent to-amber-500/10 rounded-3xl blur-xl" />
                 
-                <TabsList className="relative bg-gradient-to-br from-slate-900/95 via-slate-800/95 to-slate-900/95 border-3 border-amber-500/40 p-3 md:p-4 h-auto flex flex-wrap gap-2.5 md:gap-3 rounded-2xl shadow-2xl shadow-black/50 backdrop-blur-md">
+                <TabsList className="relative bg-gradient-to-br from-slate-900/98 via-slate-800/95 to-slate-900/98 border-3 border-amber-500/50 p-4 md:p-5 h-auto grid grid-cols-5 lg:grid-cols-10 gap-2 md:gap-3 rounded-2xl shadow-2xl shadow-black/60 backdrop-blur-md">
                   {/* Header Label */}
-                  <div className="absolute -top-3 left-4 md:left-6">
-                    <span className="bg-gradient-to-r from-amber-400 to-amber-500 text-black text-[10px] md:text-xs font-bold px-3 py-1 rounded-full shadow-lg uppercase tracking-wider">
-                      ⚡ Painel de Controle
+                  <div className="absolute -top-3 left-4 md:left-6 z-10">
+                    <span className="bg-gradient-to-r from-amber-400 via-amber-500 to-orange-500 text-black text-[10px] md:text-xs font-bold px-4 py-1.5 rounded-full shadow-xl uppercase tracking-wider flex items-center gap-1.5">
+                      <Zap className="h-3.5 w-3.5" />
+                      Painel de Controle
                     </span>
                   </div>
                   
-                  <TooltipProvider delayDuration={400}>
+                  <TooltipProvider delayDuration={300}>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <TabsTrigger value="equipe" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:via-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-amber-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-amber-300/50">
+                        <TabsTrigger value="equipe" className="flex flex-col items-center justify-center gap-1.5 text-xs md:text-sm p-3 md:p-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:via-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-amber-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/60 border-2 border-transparent data-[state=active]:border-amber-300/60 min-h-[60px] md:min-h-[70px]">
                           <Users className="h-5 w-5 md:h-6 md:w-6" />
-                          <span className="hidden sm:inline">Equipe</span>
+                          <span className="font-bold">Equipe</span>
                         </TabsTrigger>
                       </TooltipTrigger>
                       <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white">
@@ -390,12 +480,12 @@ export default function AgentPanel() {
                     </Tooltip>
                   </TooltipProvider>
                   
-                  <TooltipProvider delayDuration={400}>
+                  <TooltipProvider delayDuration={300}>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <TabsTrigger value="plantoes" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:via-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-amber-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-amber-300/50">
+                        <TabsTrigger value="plantoes" className="flex flex-col items-center justify-center gap-1.5 text-xs md:text-sm p-3 md:p-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:via-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-amber-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/60 border-2 border-transparent data-[state=active]:border-amber-300/60 min-h-[60px] md:min-h-[70px]">
                           <Calendar className="h-5 w-5 md:h-6 md:w-6" />
-                          <span className="hidden sm:inline">Plantões</span>
+                          <span className="font-bold">Plantões</span>
                         </TabsTrigger>
                       </TooltipTrigger>
                       <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white">
@@ -404,10 +494,10 @@ export default function AgentPanel() {
                     </Tooltip>
                   </TooltipProvider>
                   
-                  <TooltipProvider delayDuration={400}>
+                  <TooltipProvider delayDuration={300}>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <TabsTrigger value="bh" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-400 data-[state=active]:via-green-500 data-[state=active]:to-teal-500 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-green-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-green-300/50">
+                        <TabsTrigger value="bh" className="flex flex-col items-center justify-center gap-1.5 text-xs md:text-sm p-3 md:p-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-400 data-[state=active]:via-green-500 data-[state=active]:to-teal-500 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-green-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/60 border-2 border-transparent data-[state=active]:border-green-300/60 min-h-[60px] md:min-h-[70px]">
                           <Clock className="h-5 w-5 md:h-6 md:w-6" />
                           <span className="font-extrabold">BH</span>
                         </TabsTrigger>
@@ -418,12 +508,12 @@ export default function AgentPanel() {
                     </Tooltip>
                   </TooltipProvider>
                   
-                  <TooltipProvider delayDuration={400}>
+                  <TooltipProvider delayDuration={300}>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <TabsTrigger value="folgas" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:via-purple-500 data-[state=active]:to-violet-500 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:shadow-purple-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-purple-300/50">
+                        <TabsTrigger value="folgas" className="flex flex-col items-center justify-center gap-1.5 text-xs md:text-sm p-3 md:p-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:via-purple-500 data-[state=active]:to-violet-500 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:shadow-purple-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/60 border-2 border-transparent data-[state=active]:border-purple-300/60 min-h-[60px] md:min-h-[70px]">
                           <CalendarOff className="h-5 w-5 md:h-6 md:w-6" />
-                          <span className="hidden sm:inline">Folgas</span>
+                          <span className="font-bold">Folgas</span>
                         </TabsTrigger>
                       </TooltipTrigger>
                       <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white">
@@ -432,12 +522,12 @@ export default function AgentPanel() {
                     </Tooltip>
                   </TooltipProvider>
                   
-                  <TooltipProvider delayDuration={400}>
+                  <TooltipProvider delayDuration={300}>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <TabsTrigger value="agenda" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-cyan-400 data-[state=active]:via-cyan-500 data-[state=active]:to-blue-500 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-cyan-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-cyan-300/50">
+                        <TabsTrigger value="agenda" className="flex flex-col items-center justify-center gap-1.5 text-xs md:text-sm p-3 md:p-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-cyan-400 data-[state=active]:via-cyan-500 data-[state=active]:to-blue-500 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-cyan-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/60 border-2 border-transparent data-[state=active]:border-cyan-300/60 min-h-[60px] md:min-h-[70px]">
                           <CalendarDays className="h-5 w-5 md:h-6 md:w-6" />
-                          <span className="hidden sm:inline">Agenda</span>
+                          <span className="font-bold">Agenda</span>
                         </TabsTrigger>
                       </TooltipTrigger>
                       <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white">
@@ -446,12 +536,12 @@ export default function AgentPanel() {
                     </Tooltip>
                   </TooltipProvider>
                   
-                  <TooltipProvider delayDuration={400}>
+                  <TooltipProvider delayDuration={300}>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <TabsTrigger value="planejador" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-rose-400 data-[state=active]:via-pink-500 data-[state=active]:to-red-500 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:shadow-rose-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-rose-300/50">
+                        <TabsTrigger value="planejador" className="flex flex-col items-center justify-center gap-1.5 text-xs md:text-sm p-3 md:p-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-rose-400 data-[state=active]:via-pink-500 data-[state=active]:to-red-500 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:shadow-rose-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/60 border-2 border-transparent data-[state=active]:border-rose-300/60 min-h-[60px] md:min-h-[70px]">
                           <Calculator className="h-5 w-5 md:h-6 md:w-6" />
-                          <span className="hidden sm:inline">Plan</span>
+                          <span className="font-bold">Plan</span>
                         </TabsTrigger>
                       </TooltipTrigger>
                       <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white">
@@ -460,12 +550,12 @@ export default function AgentPanel() {
                     </Tooltip>
                   </TooltipProvider>
                   
-                  <TooltipProvider delayDuration={400}>
+                  <TooltipProvider delayDuration={300}>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <TabsTrigger value="permutas" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:via-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-amber-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-amber-300/50">
+                        <TabsTrigger value="permutas" className="flex flex-col items-center justify-center gap-1.5 text-xs md:text-sm p-3 md:p-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:via-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-amber-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/60 border-2 border-transparent data-[state=active]:border-amber-300/60 min-h-[60px] md:min-h-[70px]">
                           <ArrowRightLeft className="h-5 w-5 md:h-6 md:w-6" />
-                          <span className="hidden sm:inline">Troca</span>
+                          <span className="font-bold">Troca</span>
                         </TabsTrigger>
                       </TooltipTrigger>
                       <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white">
@@ -474,12 +564,12 @@ export default function AgentPanel() {
                     </Tooltip>
                   </TooltipProvider>
                   
-                  <TooltipProvider delayDuration={400}>
+                  <TooltipProvider delayDuration={300}>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <TabsTrigger value="chat" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-400 data-[state=active]:via-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:shadow-blue-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-blue-300/50">
+                        <TabsTrigger value="chat" className="flex flex-col items-center justify-center gap-1.5 text-xs md:text-sm p-3 md:p-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-400 data-[state=active]:via-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:shadow-blue-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/60 border-2 border-transparent data-[state=active]:border-blue-300/60 min-h-[60px] md:min-h-[70px]">
                           <MessageCircle className="h-5 w-5 md:h-6 md:w-6" />
-                          <span className="hidden sm:inline">Chat</span>
+                          <span className="font-bold">Chat</span>
                         </TabsTrigger>
                       </TooltipTrigger>
                       <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white">
@@ -488,12 +578,12 @@ export default function AgentPanel() {
                     </Tooltip>
                   </TooltipProvider>
                   
-                  <TooltipProvider delayDuration={400}>
+                  <TooltipProvider delayDuration={300}>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <TabsTrigger value="config" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-slate-400 data-[state=active]:via-slate-500 data-[state=active]:to-slate-600 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:shadow-slate-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-slate-300/50">
+                        <TabsTrigger value="config" className="flex flex-col items-center justify-center gap-1.5 text-xs md:text-sm p-3 md:p-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-slate-400 data-[state=active]:via-slate-500 data-[state=active]:to-slate-600 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:shadow-slate-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/60 border-2 border-transparent data-[state=active]:border-slate-300/60 min-h-[60px] md:min-h-[70px]">
                           <Settings className="h-5 w-5 md:h-6 md:w-6" />
-                          <span className="hidden sm:inline">Config</span>
+                          <span className="font-bold">Config</span>
                         </TabsTrigger>
                       </TooltipTrigger>
                       <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white">
@@ -517,47 +607,6 @@ export default function AgentPanel() {
                 hasShifts={hasShifts}
                 onComplete={checkAgentShifts}
               />
-
-              {/* Agent Header - COMPACTO */}
-              <div className="bg-gradient-to-br from-slate-800/95 via-slate-900/90 to-amber-950/30 rounded-2xl p-4 md:p-6 border-2 border-amber-500/40 shadow-xl shadow-amber-500/10 backdrop-blur-sm">
-                <div className="flex items-center justify-between gap-4">
-                  <div 
-                    className="flex items-center gap-4 cursor-pointer hover:opacity-90 transition-all duration-300 flex-1 min-w-0"
-                    onClick={() => navigate('/agent-profile')}
-                    title="Editar meu perfil"
-                  >
-                    <Avatar className="w-14 h-14 md:w-18 md:h-18 border-3 border-amber-500/60 shadow-lg shadow-amber-500/20 flex-shrink-0 ring-2 ring-amber-400/20 ring-offset-2 ring-offset-slate-900">
-                      {(agent as any).avatar_url && <AvatarImage src={(agent as any).avatar_url} alt={agent.name} />}
-                      <AvatarFallback className="bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 text-xl md:text-2xl font-black text-black">
-                        {agent.name.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="min-w-0 flex-1">
-                      <h1 className="text-xl md:text-2xl lg:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 tracking-wide truncate">
-                        {agent.name}
-                      </h1>
-                      <div className="flex items-center gap-2 mt-1 flex-wrap">
-                        {getRoleBadge((agent as any).role)}
-                        {(agent as any).blood_type && (
-                          <Badge className="bg-red-500/25 text-red-300 border-red-500/50 flex items-center gap-1 text-xs px-2 py-0.5 font-semibold">
-                            <Droplet className="h-3 w-3" />
-                            {(agent as any).blood_type}
-                          </Badge>
-                        )}
-                        {agent.team && (
-                          <Badge className="bg-slate-700/90 text-amber-300 border-amber-500/40 text-xs px-2 py-0.5 font-semibold">
-                            {agent.team}
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <AgentRoleSelector agentId={agent.id} currentRole={(agent as any).role || 'agent'} />
-                    <NotificationsPanel agentId={agent.id} />
-                  </div>
-                </div>
-              </div>
 
               {/* Quick Stats Row */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">

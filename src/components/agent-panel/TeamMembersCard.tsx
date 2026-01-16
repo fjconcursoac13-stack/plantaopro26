@@ -5,7 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Users, Crown, Shield, User, Loader2, Droplet, Phone, Cake, ChevronDown, ChevronUp } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Users, Crown, Shield, User, Loader2, Droplet, Phone, Cake, ChevronDown, ChevronUp, Info } from 'lucide-react';
 import { format, isToday, isSameDay, addDays, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from '@/hooks/use-toast';
@@ -193,23 +194,50 @@ export function TeamMembersCard({ unitId, team, currentAgentId }: TeamMembersCar
             <CollapsibleTrigger asChild>
               <button className="flex items-center justify-between w-full text-left group/btn">
                 <CardTitle className="flex items-center gap-3 text-xl md:text-2xl">
-                  <div className="p-2.5 rounded-xl bg-gradient-to-br from-amber-500/30 to-orange-500/20 border border-amber-500/40">
-                    <Users className="h-6 w-6 md:h-7 md:w-7 text-amber-400" />
-                  </div>
+                  <TooltipProvider delayDuration={300}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="p-2.5 rounded-xl bg-gradient-to-br from-amber-500/30 to-orange-500/20 border border-amber-500/40 cursor-help">
+                          <Users className="h-6 w-6 md:h-7 md:w-7 text-amber-400" />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="right" className="bg-slate-800 border-slate-600 text-white">
+                        <p>Lista de colegas da sua equipe</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                   <span className="font-bold bg-gradient-to-r from-amber-200 to-orange-300 bg-clip-text text-transparent">
                     Equipe {team}
                   </span>
-                  <Badge className="ml-2 text-sm bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border-amber-500/40 px-3 py-1">
-                    {members.length}
-                  </Badge>
+                  <TooltipProvider delayDuration={300}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Badge className="ml-2 text-sm bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-300 border-amber-500/40 px-3 py-1 cursor-help">
+                          {members.length}
+                        </Badge>
+                      </TooltipTrigger>
+                      <TooltipContent side="right" className="bg-slate-800 border-slate-600 text-white">
+                        <p>Total de {members.length} membros ativos</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </CardTitle>
-                <div className="p-2 rounded-xl bg-slate-800/80 border border-amber-500/30 group-hover/btn:bg-amber-500/20 group-hover/btn:border-amber-400/50 transition-all duration-200">
-                  {isExpanded ? (
-                    <ChevronUp className="h-5 w-5 text-amber-400" />
-                  ) : (
-                    <ChevronDown className="h-5 w-5 text-amber-400" />
-                  )}
-                </div>
+                <TooltipProvider delayDuration={300}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="p-2 rounded-xl bg-slate-800/80 border border-amber-500/30 group-hover/btn:bg-amber-500/20 group-hover/btn:border-amber-400/50 transition-all duration-200">
+                        {isExpanded ? (
+                          <ChevronUp className="h-5 w-5 text-amber-400" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5 text-amber-400" />
+                        )}
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent side="left" className="bg-slate-800 border-slate-600 text-white">
+                      <p>{isExpanded ? 'Recolher lista' : 'Expandir lista'}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </button>
             </CollapsibleTrigger>
           </CardHeader>
@@ -244,65 +272,73 @@ export function TeamMembersCard({ unitId, team, currentAgentId }: TeamMembersCar
                     const hasBirthday = isBirthdayToday(member.birth_date);
                     
                     return (
-                      <button
-                        key={member.id}
-                        onClick={() => handleMemberClick(member)}
-                        className={`relative w-full text-left rounded-xl border-2 p-3.5 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg ${
-                          isCurrentAgent
-                            ? 'bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-transparent border-amber-500/50 shadow-md shadow-amber-500/10 hover:shadow-amber-500/20'
-                            : 'bg-slate-800/60 border-slate-600/50 hover:border-amber-400/50 hover:bg-slate-700/60 hover:shadow-amber-500/10'
-                        } ${hasBirthday ? 'ring-2 ring-pink-500/50 ring-offset-1 ring-offset-slate-900' : ''}`}
-                      >
-                        {/* Birthday indicator */}
-                        {hasBirthday && (
-                          <div className="absolute -top-1.5 -right-1.5 bg-pink-500 text-white text-[9px] px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
-                            <Cake className="h-2.5 w-2.5" />
-                          </div>
-                        )}
-                        
-                        <div className="flex items-center gap-2.5">
-                          {/* Compact Avatar */}
-                          <Avatar className={`h-10 w-10 border-2 shrink-0 ${
-                            member.role === 'team_leader' ? 'border-amber-500' :
-                            member.role === 'support' ? 'border-blue-500' : 'border-border'
-                          }`}>
-                            {member.avatar_url && <AvatarImage src={member.avatar_url} alt={member.name} />}
-                            <AvatarFallback className="bg-muted text-foreground font-semibold text-sm">
-                              {member.name.charAt(0).toUpperCase()}
-                            </AvatarFallback>
-                          </Avatar>
-                          
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-1.5">
-                              <span className={`font-semibold text-sm truncate ${
-                                isCurrentAgent ? 'text-primary' : 'text-foreground'
-                              }`}>
-                                {member.name.split(' ').slice(0, 2).join(' ')}
-                              </span>
-                              {isCurrentAgent && (
-                                <Badge className="bg-primary text-primary-foreground text-[9px] px-1 py-0">Você</Badge>
+                      <TooltipProvider delayDuration={400} key={member.id}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              onClick={() => handleMemberClick(member)}
+                              className={`relative w-full text-left rounded-xl border-2 p-3.5 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg ${
+                                isCurrentAgent
+                                  ? 'bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-transparent border-amber-500/50 shadow-md shadow-amber-500/10 hover:shadow-amber-500/20'
+                                  : 'bg-slate-800/60 border-slate-600/50 hover:border-amber-400/50 hover:bg-slate-700/60 hover:shadow-amber-500/10'
+                              } ${hasBirthday ? 'ring-2 ring-pink-500/50 ring-offset-1 ring-offset-slate-900' : ''}`}
+                            >
+                              {/* Birthday indicator */}
+                              {hasBirthday && (
+                                <div className="absolute -top-1.5 -right-1.5 bg-pink-500 text-white text-[9px] px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                                  <Cake className="h-2.5 w-2.5" />
+                                </div>
                               )}
-                            </div>
-                            
-                            {/* Compact info row */}
-                            <div className="flex items-center gap-2 mt-0.5">
-                              {getRoleIcon(member.role)}
-                              <span className="text-[10px] text-muted-foreground">{getRoleLabel(member.role)}</span>
-                              {member.blood_type && (
-                                <span className="flex items-center gap-0.5 text-[10px] text-red-400">
-                                  <Droplet className="h-2.5 w-2.5" />
-                                  {member.blood_type}
-                                </span>
-                              )}
-                              {member.phone && (
-                                <Phone className="h-2.5 w-2.5 text-green-500" />
-                              )}
-                            </div>
-                          </div>
-                          
-                          <ChevronDown className="h-4 w-4 text-muted-foreground rotate-[-90deg]" />
-                        </div>
-                      </button>
+                              
+                              <div className="flex items-center gap-2.5">
+                                {/* Compact Avatar */}
+                                <Avatar className={`h-10 w-10 border-2 shrink-0 ${
+                                  member.role === 'team_leader' ? 'border-amber-500' :
+                                  member.role === 'support' ? 'border-blue-500' : 'border-border'
+                                }`}>
+                                  {member.avatar_url && <AvatarImage src={member.avatar_url} alt={member.name} />}
+                                  <AvatarFallback className="bg-muted text-foreground font-semibold text-sm">
+                                    {member.name.charAt(0).toUpperCase()}
+                                  </AvatarFallback>
+                                </Avatar>
+                                
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-1.5">
+                                    <span className={`font-semibold text-sm truncate ${
+                                      isCurrentAgent ? 'text-primary' : 'text-foreground'
+                                    }`}>
+                                      {member.name.split(' ').slice(0, 2).join(' ')}
+                                    </span>
+                                    {isCurrentAgent && (
+                                      <Badge className="bg-primary text-primary-foreground text-[9px] px-1 py-0">Você</Badge>
+                                    )}
+                                  </div>
+                                  
+                                  {/* Compact info row */}
+                                  <div className="flex items-center gap-2 mt-0.5">
+                                    {getRoleIcon(member.role)}
+                                    <span className="text-[10px] text-muted-foreground">{getRoleLabel(member.role)}</span>
+                                    {member.blood_type && (
+                                      <span className="flex items-center gap-0.5 text-[10px] text-red-400">
+                                        <Droplet className="h-2.5 w-2.5" />
+                                        {member.blood_type}
+                                      </span>
+                                    )}
+                                    {member.phone && (
+                                      <Phone className="h-2.5 w-2.5 text-green-500" />
+                                    )}
+                                  </div>
+                                </div>
+                                
+                                <ChevronDown className="h-4 w-4 text-muted-foreground rotate-[-90deg]" />
+                              </div>
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent side="right" className="bg-slate-800 border-slate-600 text-white">
+                            <p>Clique para ver detalhes de {member.name.split(' ')[0]}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     );
                   })}
                 </div>
