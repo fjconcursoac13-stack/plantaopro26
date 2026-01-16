@@ -10,7 +10,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { Clock, TrendingUp, TrendingDown, DollarSign, Loader2, History, AlertTriangle, Trash2, CalendarPlus, Edit2, Sun, Moon, Bell, BellOff, HelpCircle, BarChart3, Timer, Lock, Shield, Unlock } from 'lucide-react';
+import { Clock, TrendingUp, TrendingDown, DollarSign, Loader2, History, AlertTriangle, Trash2, CalendarPlus, Edit2, Sun, Moon, Bell, BellOff, HelpCircle, BarChart3, Timer, Lock, Shield, Unlock, X } from 'lucide-react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { NumberStepper } from '@/components/ui/number-stepper';
@@ -1643,13 +1643,14 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
               </div>
             )}
           </div>
-          <DialogFooter className="gap-2">
+          <DialogFooter className="gap-2 flex-wrap">
             <Button
               variant="outline"
               onClick={() => setShowConfirmDialog(false)}
-              className="border-slate-600"
+              className="border-slate-600 text-slate-300 hover:bg-slate-700"
             >
-              Cancelar
+              <X className="h-4 w-4 mr-1.5" />
+              Fechar
             </Button>
             <Button
               onClick={handleConfirmBH}
@@ -1711,13 +1712,14 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
               </>
             )}
           </div>
-          <DialogFooter className="gap-2">
+          <DialogFooter className="gap-2 flex-wrap">
             <Button
               variant="outline"
               onClick={() => setShowEditDialog(false)}
-              className="border-slate-600"
+              className="border-slate-600 text-slate-300 hover:bg-slate-700"
             >
-              Cancelar
+              <X className="h-4 w-4 mr-1.5" />
+              Fechar
             </Button>
             <Button
               onClick={handleRequestEdit}
