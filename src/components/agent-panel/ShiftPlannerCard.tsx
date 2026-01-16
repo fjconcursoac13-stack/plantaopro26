@@ -277,10 +277,11 @@ const ShiftPlannerCard = ({ agentId }: ShiftPlannerCardProps) => {
     label: string
   ) => (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label className="flex items-center gap-2 text-slate-300">
-            <Clock className="h-4 w-4 text-amber-500" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Início Card */}
+        <div className="p-3 bg-slate-700/30 rounded-lg border border-slate-600/50 space-y-2">
+          <Label className="flex items-center gap-2 text-slate-300 text-sm font-medium">
+            <Clock className="h-4 w-4 text-green-400" />
             Início
           </Label>
           <TimePicker
@@ -289,9 +290,11 @@ const ShiftPlannerCard = ({ agentId }: ShiftPlannerCardProps) => {
             placeholder="Hora início"
           />
         </div>
-        <div className="space-y-2">
-          <Label className="flex items-center gap-2 text-slate-300">
-            <Clock className="h-4 w-4 text-amber-500" />
+        
+        {/* Término Card */}
+        <div className="p-3 bg-slate-700/30 rounded-lg border border-slate-600/50 space-y-2">
+          <Label className="flex items-center gap-2 text-slate-300 text-sm font-medium">
+            <Clock className="h-4 w-4 text-red-400" />
             Término
           </Label>
           <TimePicker
@@ -302,23 +305,26 @@ const ShiftPlannerCard = ({ agentId }: ShiftPlannerCardProps) => {
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label className="flex items-center gap-2 text-slate-300">
+      {/* Agent Count Card */}
+      <div className="p-3 bg-slate-700/30 rounded-lg border border-slate-600/50 space-y-2">
+        <Label className="flex items-center gap-2 text-slate-300 text-sm font-medium">
           <Users className="h-4 w-4 text-amber-500" />
           Quantidade de Agentes
         </Label>
-        <NumberStepper
-          value={agentCount}
-          onChange={setAgentCount}
-          min={1}
-          max={20}
-          step={1}
-          suffix=""
-        />
+        <div className="flex justify-center">
+          <NumberStepper
+            value={agentCount}
+            onChange={setAgentCount}
+            min={1}
+            max={20}
+            step={1}
+            suffix=""
+          />
+        </div>
       </div>
 
       <div className="flex gap-2">
-        <Button onClick={onCalculate} className="flex-1 bg-amber-500 hover:bg-amber-600 text-black">
+        <Button onClick={onCalculate} className="flex-1 bg-amber-500 hover:bg-amber-600 text-black font-semibold">
           <Calculator className="h-4 w-4 mr-2" />
           Calcular {label}
         </Button>
