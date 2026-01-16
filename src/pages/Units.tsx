@@ -313,7 +313,7 @@ export default function Units() {
 
               {/* Developer Credit */}
               <p className="text-center text-xs text-muted-foreground">
-                Desenvolvido por <span className="text-primary font-medium">Franc Denis</span>
+                Desenvolvido por <span className="text-primary font-medium">Franc D'nis</span>
               </p>
             </div>
           </main>
@@ -436,7 +436,7 @@ export default function Units() {
 
             {/* Developer Credit */}
             <p className="text-center text-xs text-muted-foreground">
-              Desenvolvido por <span className="text-primary font-medium">Franc Denis</span>
+              Desenvolvido por <span className="text-primary font-medium">Franc D'nis</span>
             </p>
           </div>
         </main>

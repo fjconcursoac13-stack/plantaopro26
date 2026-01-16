@@ -221,7 +221,7 @@ export function ShiftReportPDF({ units }: ShiftReportPDFProps) {
         doc.setFontSize(8);
         doc.setFont('helvetica', 'normal');
         doc.text(
-          `PlantaoPro - Desenvolvido por Franc Denis | Página ${i} de ${pageCount}`,
+          `PlantaoPro - Desenvolvido por Franc D'nis | Página ${i} de ${pageCount}`,
           105,
           doc.internal.pageSize.height - 10,
           { align: 'center' }

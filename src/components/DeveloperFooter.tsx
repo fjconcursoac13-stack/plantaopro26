@@ -35,7 +35,7 @@ export function DeveloperFooter({ className, variant = 'transparent' }: Develope
             animationDuration: '3s',
           }}
           >
-            FRANC DENIS
+            FRANC D'NIS
           </span>
           
           {/* Glow underline */}

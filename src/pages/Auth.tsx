@@ -929,7 +929,7 @@ export default function Auth() {
         {/* Developer Credit */}
         <div className="text-center mt-6">
           <p className="text-xs text-slate-400">
-            Desenvolvido por <span className="text-amber-500 font-semibold">Franc Denis de Souza e Silva</span>
+            Desenvolvido por <span className="text-amber-500 font-semibold">Franc D'nis</span>
           </p>
           <p className="text-[10px] text-slate-500 mt-0.5">Feijó, Acre • © {new Date().getFullYear()} PlantãoPro</p>
         </div>
