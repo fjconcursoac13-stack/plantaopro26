@@ -284,6 +284,9 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
   const [alertDaysBefore, setAlertDaysBefore] = useState(2);
   const [fortnightAlertShown, setFortnightAlertShown] = useState(false);
   
+  // State for expanded view in compact mode
+  const [isExpanded, setIsExpanded] = useState(false);
+  
   // Push notifications hook
   const { isEnabled: pushEnabled, isSupported: pushSupported, requestPermission, showNotification } = usePushNotifications();
 
@@ -747,8 +750,6 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
     );
   }
 
-  // State for expanded view in compact mode
-  const [isExpanded, setIsExpanded] = useState(false);
 
   if (compact && !isExpanded) {
     const today = new Date();
