@@ -839,12 +839,12 @@ export default function Index() {
                   return <MainIcon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />;
                 })()}
               </div>
-              <div>
-                <h1 className="text-base sm:text-xl font-black leading-none tracking-tight">
-                  <span className="text-foreground">PLANTÃO</span>
-                  <span className="text-primary ml-1">PRO</span>
+              <div className="animate-fade-in" style={{ animationDelay: '100ms' }}>
+                <h1 className="text-base sm:text-xl font-black leading-none tracking-tight animate-[slideInLeft_0.6s_ease-out_forwards] opacity-0" style={{ animationDelay: '150ms', animationFillMode: 'forwards' }}>
+                  <span className="text-foreground drop-shadow-[0_0_8px_rgba(255,255,255,0.3)] animate-[glow_3s_ease-in-out_infinite]">PLANTÃO</span>
+                  <span className="text-primary ml-1 drop-shadow-[0_0_10px_hsl(var(--primary)/0.5)] animate-[pulse-glow_2s_ease-in-out_infinite]">PRO</span>
                 </h1>
-                <p className="text-[8px] sm:text-[9px] text-muted-foreground tracking-widest uppercase">{themeAssets.subtitle}</p>
+                <p className="text-[8px] sm:text-[9px] text-muted-foreground tracking-widest uppercase animate-fade-in opacity-0" style={{ animationDelay: '400ms', animationFillMode: 'forwards' }}>{themeAssets.subtitle}</p>
               </div>
             </div>
             
