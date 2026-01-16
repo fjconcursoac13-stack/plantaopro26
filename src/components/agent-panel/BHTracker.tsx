@@ -564,18 +564,22 @@ export function BHTracker({ agentId, compact = false, isAdmin = false }: BHTrack
   const handleDateClick = (date: Date | undefined) => {
     if (!date) return;
     
-    // Check if date is in a closed fortnight
-    if (isInClosedFortnight(date)) {
+    // Check if date is in a closed fortnight (only block non-admins)
+    if (!isAdmin && isInClosedFortnight(date)) {
       toast.error('Esta data pertence a uma quinzena fechada. Apenas visualização permitida.');
       return;
     }
     
-    // Check if this date already has BH
+    // Check if this date already has BH - allow editing instead of blocking
     const dateStr = format(date, 'dd/MM/yyyy');
-    const alreadyRegistered = entries.some(e => e.description?.includes(`BH - ${dateStr}`));
+    const existingEntry = entries.find(e => e.description?.includes(`BH - ${dateStr}`));
     
-    if (alreadyRegistered) {
-      toast.error('Este dia já possui registro de BH');
+    if (existingEntry) {
+      // Open edit dialog for existing entry
+      setEditingEntry(existingEntry);
+      setEditHours(existingEntry.hours.toString());
+      setShowEditDialog(true);
+      toast.info(`Editando BH do dia ${dateStr}`);
       return;
     }
 
