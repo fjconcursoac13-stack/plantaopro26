@@ -40,7 +40,8 @@ import {
   Lock,
   TrendingUp,
   AlertTriangle,
-  ArrowRightLeft
+  ArrowRightLeft,
+  Wallet
 } from 'lucide-react';
 import { format, differenceInDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -49,6 +50,7 @@ import { AdminTransferDialog } from '@/components/admin/AdminTransferDialog';
 import { LicenseActivationCodeManager } from '@/components/admin/LicenseActivationCodeManager';
 import { BulkLicenseActivator } from '@/components/admin/BulkLicenseActivator';
 import { OfflineLicenseCacheManager } from '@/components/admin/OfflineLicenseCacheManager';
+import { AgentBHManagement } from '@/components/admin/AgentBHManagement';
 import { toast } from 'sonner';
 import { HardDrive, Zap } from 'lucide-react';
 import { TransferApprovalPanel } from '@/components/agents/TransferApprovalPanel';
@@ -447,6 +449,10 @@ export default function Admin() {
                   <Users className="h-4 w-4 mr-2" />
                   Usuários
                 </TabsTrigger>
+                <TabsTrigger value="bh" className="data-[state=active]:bg-slate-700">
+                  <Wallet className="h-4 w-4 mr-2" />
+                  Banco Horas
+                </TabsTrigger>
                 <TabsTrigger value="offline" className="data-[state=active]:bg-slate-700">
                   <HardDrive className="h-4 w-4 mr-2" />
                   Offline
@@ -768,6 +774,11 @@ export default function Admin() {
                     </ScrollArea>
                   </CardContent>
                 </Card>
+              </TabsContent>
+
+              {/* BH Management Tab */}
+              <TabsContent value="bh" className="space-y-4">
+                <AgentBHManagement onDataChange={fetchData} />
               </TabsContent>
 
               {/* Offline Tab */}
