@@ -90,25 +90,34 @@ export function BirthdayCard({ agentId, team, unitId }: BirthdayCardProps) {
 
   return (
     <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
-      <Card className="bg-gradient-to-br from-slate-800 via-slate-800/95 to-pink-900/20 border-pink-500/30">
-        <CardHeader className="pb-2">
+      <Card className="relative bg-gradient-to-br from-slate-900/95 via-slate-800/90 to-pink-900/30 border-3 border-pink-500/40 shadow-2xl shadow-pink-900/20 overflow-hidden transition-all duration-300 hover:shadow-pink-500/20 hover:border-pink-400/50 hover:scale-[1.01] group">
+        {/* Glow Effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-pink-500/5 via-transparent to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        
+        <CardHeader className="pb-3 relative">
           <CollapsibleTrigger className="w-full">
-            <CardTitle className="flex items-center justify-between text-lg cursor-pointer hover:opacity-80 transition-opacity">
-              <div className="flex items-center gap-2">
-                <Cake className="h-5 w-5 text-pink-500" />
-                <span>Aniversários da Equipe</span>
+            <CardTitle className="flex items-center justify-between text-xl md:text-2xl cursor-pointer hover:opacity-90 transition-all duration-200 group/title">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-gradient-to-br from-pink-500/30 to-rose-500/20 border border-pink-500/40 group-hover/title:scale-110 transition-transform duration-200">
+                  <Cake className="h-6 w-6 md:h-7 md:w-7 text-pink-400" />
+                </div>
+                <span className="font-bold bg-gradient-to-r from-pink-200 to-rose-300 bg-clip-text text-transparent">
+                  Aniversários da Equipe
+                </span>
                 {todayBirthdays.length > 0 && (
-                  <Badge className="bg-pink-500/20 text-pink-400 animate-pulse">
-                    <PartyPopper className="h-3 w-3 mr-1" />
+                  <Badge className="bg-gradient-to-r from-pink-500/30 to-rose-500/30 text-pink-300 animate-pulse border border-pink-500/40 px-3 py-1">
+                    <PartyPopper className="h-3.5 w-3.5 mr-1.5" />
                     Hoje!
                   </Badge>
                 )}
               </div>
-              {isExpanded ? (
-                <ChevronUp className="h-4 w-4 text-muted-foreground" />
-              ) : (
-                <ChevronDown className="h-4 w-4 text-muted-foreground" />
-              )}
+              <div className="p-2 rounded-xl bg-slate-800/80 border border-pink-500/30 group-hover:bg-pink-500/20 group-hover:border-pink-400/50 transition-all duration-200">
+                {isExpanded ? (
+                  <ChevronUp className="h-5 w-5 text-pink-400" />
+                ) : (
+                  <ChevronDown className="h-5 w-5 text-pink-400" />
+                )}
+              </div>
             </CardTitle>
           </CollapsibleTrigger>
         </CardHeader>
@@ -158,30 +167,29 @@ export function BirthdayCard({ agentId, team, unitId }: BirthdayCardProps) {
                   return (
                     <div
                       key={member.id}
-                      className="flex items-center gap-3 p-2.5 bg-slate-700/30 rounded-lg border border-slate-600/30"
+                      className="flex items-center gap-3.5 p-3.5 bg-slate-800/60 rounded-xl border-2 border-slate-600/50 hover:border-pink-500/40 hover:bg-slate-700/60 hover:shadow-lg hover:shadow-pink-500/10 hover:scale-[1.02] transition-all duration-300 cursor-pointer"
                     >
-                      <Avatar className="h-10 w-10 border border-slate-600">
+                      <Avatar className="h-12 w-12 border-2 border-pink-500/30 shadow-md">
                         {member.avatar_url && <AvatarImage src={member.avatar_url} />}
-                        <AvatarFallback className="bg-slate-700 text-sm">
+                        <AvatarFallback className="bg-gradient-to-br from-pink-500/20 to-rose-500/10 text-pink-300 font-bold">
                           {member.name.charAt(0)}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
-                        <span className="font-medium text-foreground text-sm truncate block">
+                        <span className="font-semibold text-foreground text-base truncate block">
                           {member.name}
                         </span>
                         {birthday && (
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-sm text-pink-300/70">
                             {format(birthday, "dd 'de' MMMM", { locale: ptBR })}
                           </p>
                         )}
                       </div>
                       <Badge 
-                        variant="outline" 
-                        className={`text-xs ${
+                        className={`text-sm px-3 py-1 font-semibold ${
                           daysUntil === 1 
-                            ? 'border-amber-500/50 text-amber-400' 
-                            : 'border-slate-600 text-muted-foreground'
+                            ? 'bg-gradient-to-r from-amber-500/30 to-orange-500/30 text-amber-300 border-amber-500/50' 
+                            : 'bg-slate-700/80 text-slate-300 border-slate-500/50'
                         }`}
                       >
                         {daysUntil === 1 ? 'Amanhã' : `${daysUntil} dias`}
