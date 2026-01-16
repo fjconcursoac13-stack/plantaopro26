@@ -256,7 +256,7 @@ export default function Index() {
     setFoundAgent(null);
   };
 
-  // Real-time CPF search
+  // Real-time CPF search with auto-login for registered agents
   const handleCpfInputChange = async (value: string) => {
     const formatted = formatCPF(value);
     setCheckCpf(formatted);
@@ -273,6 +273,30 @@ export default function Index() {
           .maybeSingle();
         
         setFoundAgent(data);
+        
+        // Auto-login: If agent exists and belongs to selected team, auto-proceed to login
+        if (data && data.team === selectedTeam) {
+          // Small delay to show found status, then auto-proceed
+          setTimeout(() => {
+            setShowCpfCheck(false);
+            setLoginCpf(formatted);
+            setShowLogin(true);
+            toast({
+              title: `Bem-vindo, ${data.name}!`,
+              description: 'Digite sua senha para entrar.',
+              duration: 3000,
+            });
+          }, 800);
+        } else if (data && data.team && data.team !== selectedTeam) {
+          // Wrong team - show professional warning
+          playSound('error');
+          toast({
+            title: '⚠️ Equipe Incorreta',
+            description: `Você pertence à equipe ${data.team}. Selecione o card correto para continuar.`,
+            variant: 'destructive',
+            duration: 5000,
+          });
+        }
       } catch (error) {
         console.error('Error searching agent:', error);
         setFoundAgent(null);
@@ -1378,70 +1402,84 @@ export default function Index() {
               </div>
             )}
 
-            {/* Data de Nascimento */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <Label className="text-slate-300 text-sm">Data de Nascimento</Label>
+            {/* Data de Nascimento e Telefone - Profissional */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-base font-semibold text-slate-300 flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-cyan-400" />
+                  Data de Nascimento
+                </Label>
                 <Input
                   value={formData.birth_date}
                   onChange={(e) => setFormData({ ...formData, birth_date: formatBirthDate(e.target.value) })}
                   placeholder="DD-MM-AAAA"
-                  className="bg-slate-700/50 border-slate-600 text-white"
+                  className="bg-slate-800/80 border-2 border-slate-600 text-white text-base py-5 focus:border-cyan-500/60"
                   maxLength={10}
                 />
                 {calculatedAge !== null && (
-                  <p className="text-xs text-amber-400">Idade: {calculatedAge} anos</p>
+                  <p className="text-sm font-semibold text-amber-400 flex items-center gap-1">
+                    <Award className="h-4 w-4" />
+                    {calculatedAge} anos
+                  </p>
                 )}
-                {regErrors.birth_date && <p className="text-xs text-red-400">{regErrors.birth_date}</p>}
+                {regErrors.birth_date && <p className="text-sm text-red-400">{regErrors.birth_date}</p>}
               </div>
-              <div className="space-y-1">
-                <Label className="text-slate-300 text-sm">Telefone</Label>
+              <div className="space-y-2">
+                <Label className="text-base font-semibold text-slate-300 flex items-center gap-2">
+                  📱 Telefone
+                </Label>
                 <Input
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: formatPhone(e.target.value) })}
                   placeholder="(00) 00000-0000"
-                  className="bg-slate-700/50 border-slate-600 text-white"
+                  className="bg-slate-800/80 border-2 border-slate-600 text-white text-base py-5 focus:border-cyan-500/60"
                   maxLength={15}
                 />
               </div>
             </div>
 
-            {/* Senha */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <Label className="text-slate-300 text-sm">Senha *</Label>
+            {/* Senha - Profissional */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-base font-semibold text-slate-300 flex items-center gap-2">
+                  <Lock className="h-4 w-4 text-cyan-400" />
+                  Senha *
+                </Label>
                 <div className="relative">
                   <Input
                     type={showPassword ? 'text' : 'password'}
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     placeholder="Min. 6 caracteres"
-                    className="bg-slate-700/50 border-slate-600 text-white pr-10"
+                    className="bg-slate-800/80 border-2 border-slate-600 text-white text-base py-5 pr-12 focus:border-cyan-500/60"
                     required
                   />
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="absolute right-0 top-0 h-full px-2 text-slate-400 hover:text-white"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white h-8 w-8 p-0"
                     onClick={() => setShowPassword(!showPassword)}
                   >
-                    {showPassword ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>
                 </div>
-                {regErrors.password && <p className="text-xs text-red-400">{regErrors.password}</p>}
+                {regErrors.password && <p className="text-sm text-red-400">{regErrors.password}</p>}
               </div>
-              <div className="space-y-1">
-                <Label className="text-slate-300 text-sm">Confirmar Senha *</Label>
+              <div className="space-y-2">
+                <Label className="text-base font-semibold text-slate-300 flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-cyan-400" />
+                  Confirmar Senha *
+                </Label>
                 <Input
                   type={showPassword ? 'text' : 'password'}
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                   placeholder="Repita a senha"
-                  className="bg-slate-700/50 border-slate-600 text-white"
+                  className="bg-slate-800/80 border-2 border-slate-600 text-white text-base py-5 focus:border-cyan-500/60"
                   required
                 />
-                {regErrors.confirmPassword && <p className="text-xs text-red-400">{regErrors.confirmPassword}</p>}
+                {regErrors.confirmPassword && <p className="text-sm text-red-400">{regErrors.confirmPassword}</p>}
               </div>
             </div>
             
