@@ -43,6 +43,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { BackButton } from '@/components/BackButton';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { toast } from '@/hooks/use-toast';
 
 export default function AgentPanel() {
@@ -249,67 +250,113 @@ export default function AgentPanel() {
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
         <main className={`flex-1 p-4 md:p-8 lg:p-10 overflow-y-auto overflow-x-hidden pb-safe ${showLicenseWarning ? 'pt-28' : ''}`}>
           <div className="max-w-7xl mx-auto space-y-4 md:space-y-8 animate-fade-in">
-            {/* Professional Header Bar */}
+            {/* Professional Header Bar with Tooltips */}
             <div className="bg-gradient-to-r from-slate-900/95 via-slate-800/95 to-slate-900/95 rounded-2xl border-2 border-amber-500/30 p-4 md:p-5 shadow-2xl shadow-black/50 backdrop-blur-md">
               <div className="flex items-center justify-between gap-4">
                 {/* Left: Navigation */}
                 <div className="flex items-center gap-3">
-                  <Button
-                    variant="ghost"
-                    size="lg"
-                    onClick={() => navigate(-1)}
-                    className="border-2 border-slate-600/50 hover:border-amber-500/50 hover:bg-amber-900/20 text-slate-300 hover:text-amber-400 transition-all duration-300 px-4 py-3 h-auto"
-                  >
-                    <ArrowRightLeft className="h-5 w-5 mr-2 rotate-180" />
-                    <span className="font-semibold text-sm md:text-base">Voltar</span>
-                  </Button>
+                  <TooltipProvider delayDuration={300}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="lg"
+                          onClick={() => navigate(-1)}
+                          className="border-2 border-slate-600/50 hover:border-amber-500/50 hover:bg-amber-900/20 text-slate-300 hover:text-amber-400 transition-all duration-300 px-4 py-3 h-auto"
+                        >
+                          <ArrowRightLeft className="h-5 w-5 mr-2 rotate-180" />
+                          <span className="font-semibold text-sm md:text-base">Voltar</span>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white">
+                        <p>Retornar à página anterior</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
 
                 {/* Center: Title Badge */}
                 <div className="hidden md:flex items-center gap-3">
-                  <div className="bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-full px-6 py-2 border border-amber-500/40">
-                    <span className="text-amber-400 font-bold text-sm tracking-wider uppercase">
-                      Painel do Agente
-                    </span>
-                  </div>
+                  <TooltipProvider delayDuration={300}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-full px-6 py-2 border border-amber-500/40 cursor-help">
+                          <span className="text-amber-400 font-bold text-sm tracking-wider uppercase">
+                            Painel do Agente
+                          </span>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white max-w-xs">
+                        <p>Central de controle para gerenciar seus plantões, banco de horas, folgas e comunicação com a equipe.</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
 
                 {/* Right: Actions */}
                 <div className="flex items-center gap-2 md:gap-3">
-                  <Button
-                    variant="outline"
-                    size="default"
-                    onClick={() => setShowWelcomeDialog(true)}
-                    className="border-2 border-amber-600/50 text-amber-400 hover:bg-amber-900/30 hover:border-amber-500 transition-all duration-300 px-3 md:px-4 py-2 h-auto"
-                    title={`${getRemainingTrialDays()} dias restantes`}
-                  >
-                    <Gift className="h-5 w-5" />
-                    <span className="ml-2 hidden sm:inline font-semibold">Trial</span>
-                    <span className="ml-2 text-xs font-bold bg-amber-500/30 px-2 py-1 rounded-full">
-                      {getRemainingTrialDays()}d
-                    </span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="default"
-                    onClick={() => navigate('/')}
-                    className="border-2 border-slate-500/50 hover:border-blue-500/50 hover:bg-blue-900/20 text-slate-300 hover:text-blue-400 transition-all duration-300 px-3 md:px-4 py-2 h-auto"
-                  >
-                    <Home className="h-5 w-5" />
-                    <span className="ml-2 hidden sm:inline font-semibold">Início</span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="default"
-                    onClick={async () => {
-                      await supabase.auth.signOut();
-                      navigate('/');
-                    }}
-                    className="border-2 border-red-600/50 text-red-400 hover:bg-red-900/30 hover:border-red-500 transition-all duration-300 px-3 md:px-4 py-2 h-auto"
-                  >
-                    <LogOut className="h-5 w-5" />
-                    <span className="ml-2 hidden sm:inline font-semibold">Sair</span>
-                  </Button>
+                  <TooltipProvider delayDuration={300}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="default"
+                          onClick={() => setShowWelcomeDialog(true)}
+                          className="border-2 border-amber-600/50 text-amber-400 hover:bg-amber-900/30 hover:border-amber-500 transition-all duration-300 px-3 md:px-4 py-2 h-auto"
+                        >
+                          <Gift className="h-5 w-5" />
+                          <span className="ml-2 hidden sm:inline font-semibold">Trial</span>
+                          <span className="ml-2 text-xs font-bold bg-amber-500/30 px-2 py-1 rounded-full">
+                            {getRemainingTrialDays()}d
+                          </span>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white">
+                        <p>Ver recursos do período de avaliação ({getRemainingTrialDays()} dias restantes)</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  
+                  <TooltipProvider delayDuration={300}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="default"
+                          onClick={() => navigate('/')}
+                          className="border-2 border-slate-500/50 hover:border-blue-500/50 hover:bg-blue-900/20 text-slate-300 hover:text-blue-400 transition-all duration-300 px-3 md:px-4 py-2 h-auto"
+                        >
+                          <Home className="h-5 w-5" />
+                          <span className="ml-2 hidden sm:inline font-semibold">Início</span>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white">
+                        <p>Voltar à tela de seleção de equipes</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  
+                  <TooltipProvider delayDuration={300}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="default"
+                          onClick={async () => {
+                            await supabase.auth.signOut();
+                            navigate('/');
+                          }}
+                          className="border-2 border-red-600/50 text-red-400 hover:bg-red-900/30 hover:border-red-500 transition-all duration-300 px-3 md:px-4 py-2 h-auto"
+                        >
+                          <LogOut className="h-5 w-5" />
+                          <span className="ml-2 hidden sm:inline font-semibold">Sair</span>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white">
+                        <p>Encerrar sessão e sair do sistema</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
               </div>
             </div>
@@ -329,42 +376,131 @@ export default function AgentPanel() {
                     </span>
                   </div>
                   
-                  <TabsTrigger value="equipe" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:via-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-amber-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-amber-300/50">
-                    <Users className="h-5 w-5 md:h-6 md:w-6" />
-                    <span className="hidden sm:inline">Equipe</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="plantoes" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:via-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-amber-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-amber-300/50">
-                    <Calendar className="h-5 w-5 md:h-6 md:w-6" />
-                    <span className="hidden sm:inline">Plantões</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="bh" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-400 data-[state=active]:via-green-500 data-[state=active]:to-teal-500 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-green-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-green-300/50">
-                    <Clock className="h-5 w-5 md:h-6 md:w-6" />
-                    <span className="font-extrabold">BH</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="folgas" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:via-purple-500 data-[state=active]:to-violet-500 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:shadow-purple-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-purple-300/50">
-                    <CalendarOff className="h-5 w-5 md:h-6 md:w-6" />
-                    <span className="hidden sm:inline">Folgas</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="agenda" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-cyan-400 data-[state=active]:via-cyan-500 data-[state=active]:to-blue-500 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-cyan-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-cyan-300/50">
-                    <CalendarDays className="h-5 w-5 md:h-6 md:w-6" />
-                    <span className="hidden sm:inline">Agenda</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="planejador" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-rose-400 data-[state=active]:via-pink-500 data-[state=active]:to-red-500 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:shadow-rose-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-rose-300/50">
-                    <Calculator className="h-5 w-5 md:h-6 md:w-6" />
-                    <span className="hidden sm:inline">Plan</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="permutas" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:via-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-amber-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-amber-300/50">
-                    <ArrowRightLeft className="h-5 w-5 md:h-6 md:w-6" />
-                    <span className="hidden sm:inline">Troca</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="chat" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-400 data-[state=active]:via-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:shadow-blue-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-blue-300/50">
-                    <MessageCircle className="h-5 w-5 md:h-6 md:w-6" />
-                    <span className="hidden sm:inline">Chat</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="config" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-slate-400 data-[state=active]:via-slate-500 data-[state=active]:to-slate-600 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:shadow-slate-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-slate-300/50">
-                    <Settings className="h-5 w-5 md:h-6 md:w-6" />
-                    <span className="hidden sm:inline">Config</span>
-                  </TabsTrigger>
+                  <TooltipProvider delayDuration={400}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <TabsTrigger value="equipe" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:via-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-amber-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-amber-300/50">
+                          <Users className="h-5 w-5 md:h-6 md:w-6" />
+                          <span className="hidden sm:inline">Equipe</span>
+                        </TabsTrigger>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white">
+                        <p>Ver membros da sua equipe e radar tático</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  
+                  <TooltipProvider delayDuration={400}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <TabsTrigger value="plantoes" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:via-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-amber-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-amber-300/50">
+                          <Calendar className="h-5 w-5 md:h-6 md:w-6" />
+                          <span className="hidden sm:inline">Plantões</span>
+                        </TabsTrigger>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white">
+                        <p>Gerenciar escalas e plantões de serviço</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  
+                  <TooltipProvider delayDuration={400}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <TabsTrigger value="bh" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-emerald-400 data-[state=active]:via-green-500 data-[state=active]:to-teal-500 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-green-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-green-300/50">
+                          <Clock className="h-5 w-5 md:h-6 md:w-6" />
+                          <span className="font-extrabold">BH</span>
+                        </TabsTrigger>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white">
+                        <p>Banco de Horas - Registrar e acompanhar horas extras</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  
+                  <TooltipProvider delayDuration={400}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <TabsTrigger value="folgas" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-purple-400 data-[state=active]:via-purple-500 data-[state=active]:to-violet-500 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:shadow-purple-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-purple-300/50">
+                          <CalendarOff className="h-5 w-5 md:h-6 md:w-6" />
+                          <span className="hidden sm:inline">Folgas</span>
+                        </TabsTrigger>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white">
+                        <p>Solicitar folgas e licenças</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  
+                  <TooltipProvider delayDuration={400}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <TabsTrigger value="agenda" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-cyan-400 data-[state=active]:via-cyan-500 data-[state=active]:to-blue-500 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-cyan-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-cyan-300/50">
+                          <CalendarDays className="h-5 w-5 md:h-6 md:w-6" />
+                          <span className="hidden sm:inline">Agenda</span>
+                        </TabsTrigger>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white">
+                        <p>Eventos e compromissos pessoais</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  
+                  <TooltipProvider delayDuration={400}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <TabsTrigger value="planejador" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-rose-400 data-[state=active]:via-pink-500 data-[state=active]:to-red-500 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:shadow-rose-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-rose-300/50">
+                          <Calculator className="h-5 w-5 md:h-6 md:w-6" />
+                          <span className="hidden sm:inline">Plan</span>
+                        </TabsTrigger>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white">
+                        <p>Planejador de escalas avançado</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  
+                  <TooltipProvider delayDuration={400}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <TabsTrigger value="permutas" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-amber-400 data-[state=active]:via-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-black data-[state=active]:shadow-xl data-[state=active]:shadow-amber-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-amber-300/50">
+                          <ArrowRightLeft className="h-5 w-5 md:h-6 md:w-6" />
+                          <span className="hidden sm:inline">Troca</span>
+                        </TabsTrigger>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white">
+                        <p>Solicitar troca de plantão com colegas</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  
+                  <TooltipProvider delayDuration={400}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <TabsTrigger value="chat" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-blue-400 data-[state=active]:via-blue-500 data-[state=active]:to-indigo-500 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:shadow-blue-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-blue-300/50">
+                          <MessageCircle className="h-5 w-5 md:h-6 md:w-6" />
+                          <span className="hidden sm:inline">Chat</span>
+                        </TabsTrigger>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white">
+                        <p>Comunicação com equipe e unidade</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  
+                  <TooltipProvider delayDuration={400}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <TabsTrigger value="config" className="flex items-center gap-2.5 text-sm md:text-base px-4 py-3 md:px-6 md:py-4 data-[state=active]:bg-gradient-to-br data-[state=active]:from-slate-400 data-[state=active]:via-slate-500 data-[state=active]:to-slate-600 data-[state=active]:text-white data-[state=active]:shadow-xl data-[state=active]:shadow-slate-500/40 data-[state=active]:scale-105 rounded-xl font-bold transition-all duration-300 hover:bg-slate-700/50 border border-transparent data-[state=active]:border-slate-300/50">
+                          <Settings className="h-5 w-5 md:h-6 md:w-6" />
+                          <span className="hidden sm:inline">Config</span>
+                        </TabsTrigger>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="bg-slate-800 border-slate-600 text-white">
+                        <p>Configurações do perfil e notificações</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </TabsList>
               </div>
 
