@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, forwardRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -21,7 +21,7 @@ interface TacticalRadarProps {
   compact?: boolean;
 }
 
-export function TacticalRadar({ unitId, className, compact = false }: TacticalRadarProps) {
+export const TacticalRadar = forwardRef<HTMLDivElement, TacticalRadarProps>(function TacticalRadar({ unitId, className, compact = false }, ref) {
   const [agents, setAgents] = useState<AgentBlip[]>([]);
   const [isScanning, setIsScanning] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
@@ -92,7 +92,7 @@ export function TacticalRadar({ unitId, className, compact = false }: TacticalRa
   const centerY = radarSize / 2;
 
   return (
-    <Card className={cn("glass glass-border shadow-card tactical-card overflow-hidden", className)}>
+    <Card ref={ref} className={cn("glass glass-border shadow-card tactical-card overflow-hidden transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl", className)}>
       <CardHeader className={cn("pb-2", compact && "p-3 pb-1")}>
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -215,4 +215,4 @@ export function TacticalRadar({ unitId, className, compact = false }: TacticalRa
       </CardContent>
     </Card>
   );
-}
+});
