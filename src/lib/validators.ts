@@ -39,9 +39,9 @@ export const formatCPF = (value: string): string => {
     .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
 };
 
-// Format matricula: 000.000.000 (9 digits with dots)
+// Format matricula: 000.000.00 (8 digits with dots)
 export const formatMatricula = (value: string): string => {
-  const numbers = value.replace(/\D/g, '').slice(0, 9);
+  const numbers = value.replace(/\D/g, '').slice(0, 8);
   return numbers
     .replace(/(\d{3})(\d)/, '$1.$2')
     .replace(/(\d{3})(\d)/, '$1.$2');
@@ -49,7 +49,7 @@ export const formatMatricula = (value: string): string => {
 
 // Get raw matricula numbers
 export const getMatriculaNumbers = (value: string): string => {
-  return value.replace(/\D/g, '').slice(0, 9);
+  return value.replace(/\D/g, '').slice(0, 8);
 };
 
 // Format birth date: DD-MM-YYYY
@@ -139,7 +139,7 @@ export const agentRegistrationSchema = z.object({
     .min(14, 'CPF inválido')
     .refine((val) => validateCPF(val), 'CPF inválido'),
   matricula: z.string()
-    .refine((val) => val.replace(/\D/g, '').length === 9, 'Matrícula deve ter 9 dígitos'),
+    .refine((val) => val.replace(/\D/g, '').length === 8, 'Matrícula deve ter 8 dígitos'),
   unit_id: z.string()
     .min(1, 'Selecione uma unidade'),
   team: z.string()

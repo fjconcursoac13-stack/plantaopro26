@@ -95,6 +95,10 @@ export function AgentBHManagement({ onDataChange }: Props) {
   const [newBalance, setNewBalance] = useState('');
   const [adjustmentReason, setAdjustmentReason] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  
+  // Agent config states
+  const [editHourlyRate, setEditHourlyRate] = useState('');
+  const [editBhLimit, setEditBhLimit] = useState('');
 
   useEffect(() => {
     fetchData();
@@ -176,6 +180,8 @@ export function AgentBHManagement({ onDataChange }: Props) {
     setSelectedAgent(agent);
     setNewBalance(currentBalance.toFixed(1));
     setAdjustmentReason('');
+    setEditHourlyRate((agent.bh_hourly_rate || 15).toString());
+    setEditBhLimit((agent.bh_limit || 70).toString());
     setDialogOpen(true);
   };
 
@@ -191,30 +197,50 @@ export function AgentBHManagement({ onDataChange }: Props) {
         return;
       }
       
+      const hourlyRateValue = parseFloat(editHourlyRate);
+      const bhLimitValue = parseFloat(editBhLimit);
+      
+      if (isNaN(hourlyRateValue) || hourlyRateValue <= 0) {
+        toast.error('Valor por hora inválido');
+        return;
+      }
+      
+      if (isNaN(bhLimitValue) || bhLimitValue <= 0) {
+        toast.error('Limite de horas inválido');
+        return;
+      }
+      
+      // Update agent's bh_hourly_rate and bh_limit
+      const { error: updateError } = await supabase
+        .from('agents')
+        .update({
+          bh_hourly_rate: hourlyRateValue,
+          bh_limit: bhLimitValue
+        })
+        .eq('id', selectedAgent.id);
+        
+      if (updateError) throw updateError;
+      
       // Get current balance
       const currentSummary = summaries.find(s => s.agent.id === selectedAgent.id);
       const currentBalance = currentSummary?.balance || 0;
       const difference = newBalanceValue - currentBalance;
       
-      if (difference === 0) {
-        toast.info('Nenhuma alteração no saldo');
-        setDialogOpen(false);
-        return;
+      if (difference !== 0) {
+        // Create adjustment entry
+        const { error } = await supabase
+          .from('overtime_bank')
+          .insert({
+            agent_id: selectedAgent.id,
+            hours: Math.abs(difference),
+            operation_type: difference > 0 ? 'credit' : 'debit',
+            description: `Ajuste Admin: ${adjustmentReason || 'Correção de saldo'}`,
+          });
+          
+        if (error) throw error;
       }
       
-      // Create adjustment entry
-      const { error } = await supabase
-        .from('overtime_bank')
-        .insert({
-          agent_id: selectedAgent.id,
-          hours: Math.abs(difference),
-          operation_type: difference > 0 ? 'credit' : 'debit',
-          description: `Ajuste Admin: ${adjustmentReason || 'Correção de saldo'}`,
-        });
-        
-      if (error) throw error;
-      
-      toast.success(`Saldo de ${selectedAgent.name} ajustado para ${newBalanceValue.toFixed(1)}h`);
+      toast.success(`Configurações de ${selectedAgent.name} atualizadas!`);
       setDialogOpen(false);
       fetchData();
       onDataChange?.();
@@ -521,8 +547,40 @@ export function AgentBHManagement({ onDataChange }: Props) {
                 O sistema calculará automaticamente a diferença e criará o registro de ajuste.
               </p>
             </div>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-slate-300 flex items-center gap-2">
+                  <DollarSign className="h-3 w-3 text-amber-400" />
+                  Valor por Hora (R$)
+                </Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  placeholder="Ex: 15.75"
+                  value={editHourlyRate}
+                  onChange={(e) => setEditHourlyRate(e.target.value)}
+                  className="bg-slate-700/50 border-slate-600 font-mono"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-slate-300 flex items-center gap-2">
+                  <Clock className="h-3 w-3 text-cyan-400" />
+                  Limite de Horas
+                </Label>
+                <Input
+                  type="number"
+                  step="1"
+                  placeholder="Ex: 70"
+                  value={editBhLimit}
+                  onChange={(e) => setEditBhLimit(e.target.value)}
+                  className="bg-slate-700/50 border-slate-600 font-mono"
+                />
+              </div>
+            </div>
+            
             <div className="space-y-2">
-              <Label className="text-slate-300">Motivo do Ajuste</Label>
+              <Label className="text-slate-300">Motivo do Ajuste (saldo)</Label>
               <Textarea
                 placeholder="Ex: Correção de cálculo, compensação..."
                 value={adjustmentReason}
