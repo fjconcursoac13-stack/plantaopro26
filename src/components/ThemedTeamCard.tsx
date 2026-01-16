@@ -92,70 +92,50 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
       style={{ transform, transformStyle: 'preserve-3d' }}
     >
       <div className="relative">
-        {/* Intense rotating border glow */}
+        {/* Rotating border glow - Simplified for mobile */}
         <div 
-          className="absolute -inset-1 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-500"
+          className="absolute -inset-1 rounded-xl opacity-0 group-hover:opacity-80 transition-opacity duration-500 hidden sm:block"
           style={{ 
             background: `conic-gradient(from 0deg, ${teamColors[team as keyof typeof teamColors]?.primary || '#fff'}, transparent 30%, ${teamColors[team as keyof typeof teamColors]?.primary || '#fff'} 60%, transparent 90%, ${teamColors[team as keyof typeof teamColors]?.primary || '#fff'})`,
-            animation: 'spin 2s linear infinite',
-            filter: 'blur(8px)'
+            animation: 'spin 3s linear infinite',
+            filter: 'blur(6px)',
+            willChange: 'transform',
           }}
         />
         
-        {/* Pulsing mega glow layer 1 */}
+        {/* Simplified glow for mobile */}
         <div 
-          className="absolute -inset-4 rounded-2xl opacity-0 group-hover:opacity-70 transition-all duration-500 blur-2xl"
+          className="absolute -inset-2 rounded-2xl opacity-0 group-hover:opacity-50 transition-opacity duration-300 blur-xl sm:blur-2xl"
           style={{ 
             backgroundColor: teamColors[team as keyof typeof teamColors]?.primary || '#fff',
           }}
         />
         
-        {/* Pulsing mega glow layer 2 - slower pulse */}
-        <div 
-          className="absolute -inset-6 rounded-3xl opacity-0 group-hover:opacity-40 transition-all duration-700 blur-3xl"
-          style={{ 
-            backgroundColor: teamColors[team as keyof typeof teamColors]?.glow || 'rgba(255,255,255,0.3)',
-            animation: 'pulse 1.5s ease-in-out infinite'
-          }}
-        />
-        
-        {/* Electric spark effect corners */}
-        <div className="absolute -inset-2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        {/* Electric spark effect corners - Desktop only */}
+        <div className="absolute -inset-2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block">
           <div 
-            className="absolute top-0 left-0 w-8 h-8 border-l-2 border-t-2 rounded-tl-lg"
-            style={{ 
-              borderColor: teamColors[team as keyof typeof teamColors]?.primary,
-              animation: 'electricPulse 0.5s ease-in-out infinite'
-            }}
+            className="absolute top-0 left-0 w-6 h-6 border-l-2 border-t-2 rounded-tl-lg"
+            style={{ borderColor: teamColors[team as keyof typeof teamColors]?.primary }}
           />
           <div 
-            className="absolute top-0 right-0 w-8 h-8 border-r-2 border-t-2 rounded-tr-lg"
-            style={{ 
-              borderColor: teamColors[team as keyof typeof teamColors]?.primary,
-              animation: 'electricPulse 0.5s ease-in-out infinite 0.1s'
-            }}
+            className="absolute top-0 right-0 w-6 h-6 border-r-2 border-t-2 rounded-tr-lg"
+            style={{ borderColor: teamColors[team as keyof typeof teamColors]?.primary }}
           />
           <div 
-            className="absolute bottom-0 left-0 w-8 h-8 border-l-2 border-b-2 rounded-bl-lg"
-            style={{ 
-              borderColor: teamColors[team as keyof typeof teamColors]?.primary,
-              animation: 'electricPulse 0.5s ease-in-out infinite 0.2s'
-            }}
+            className="absolute bottom-0 left-0 w-6 h-6 border-l-2 border-b-2 rounded-bl-lg"
+            style={{ borderColor: teamColors[team as keyof typeof teamColors]?.primary }}
           />
           <div 
-            className="absolute bottom-0 right-0 w-8 h-8 border-r-2 border-b-2 rounded-br-lg"
-            style={{ 
-              borderColor: teamColors[team as keyof typeof teamColors]?.primary,
-              animation: 'electricPulse 0.5s ease-in-out infinite 0.3s'
-            }}
+            className="absolute bottom-0 right-0 w-6 h-6 border-r-2 border-b-2 rounded-br-lg"
+            style={{ borderColor: teamColors[team as keyof typeof teamColors]?.primary }}
           />
         </div>
         
-        {/* Enhanced Glare effect */}
+        {/* Glare effect - Desktop only */}
         <div 
-          className="absolute inset-0 pointer-events-none z-10 transition-opacity duration-200 rounded-xl overflow-hidden"
+          className="absolute inset-0 pointer-events-none z-10 rounded-xl overflow-hidden hidden sm:block"
           style={{
-            background: `radial-gradient(circle at ${glare.x}% ${glare.y}%, rgba(255,255,255,${glare.opacity * 2}) 0%, transparent 50%)`,
+            background: `radial-gradient(circle at ${glare.x}% ${glare.y}%, rgba(255,255,255,${glare.opacity * 1.5}) 0%, transparent 50%)`,
           }}
         />
         
@@ -172,85 +152,68 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
             boxShadow: `0 0 0 rgba(0,0,0,0)`,
           }}
         >
-          {/* Team Poster Background - Full coverage with zoom effect */}
+          {/* Team Poster Background - Optimized zoom */}
           <div 
-            className="absolute inset-0 transition-all duration-700 group-hover:scale-110 group-hover:brightness-110"
+            className="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
             style={{ 
               backgroundImage: `url(${teamPosters[team as keyof typeof teamPosters]})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center top',
               backgroundRepeat: 'no-repeat',
+              willChange: 'transform',
             }}
           />
           
-          {/* Dark overlay - lifts on hover */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-black/30 group-hover:from-black/80 group-hover:via-black/30 group-hover:to-transparent transition-all duration-500" />
+          {/* Dark overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-black/30 group-hover:from-black/80 group-hover:via-black/40 transition-all duration-300" />
           
-          {/* Top gradient stripe with team color - expands on hover */}
+          {/* Top gradient stripe with team color */}
           <div 
-            className="absolute top-0 left-0 right-0 h-1 md:h-1.5 transition-all duration-500 group-hover:h-2 md:group-hover:h-3" 
+            className="absolute top-0 left-0 right-0 h-1 md:h-1.5 transition-all duration-300 group-hover:h-1.5 md:group-hover:h-2" 
             style={{ 
               backgroundColor: teamColors[team as keyof typeof teamColors]?.primary,
-              boxShadow: `0 0 20px ${teamColors[team as keyof typeof teamColors]?.glow}`
             }}
           />
           
-          {/* Animated scan lines - multiple for intensity */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          {/* Scan line - Desktop only, simplified */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden sm:block">
             <div 
-              className="absolute w-full h-32 -translate-y-full bg-gradient-to-b from-transparent via-white/20 to-transparent"
-              style={{ animation: 'scan 1.5s ease-in-out infinite' }}
-            />
-            <div 
-              className="absolute w-full h-16 -translate-y-full bg-gradient-to-b from-transparent via-white/10 to-transparent"
-              style={{ animation: 'scan 2s ease-in-out infinite 0.5s' }}
+              className="absolute w-full h-20 -translate-y-full bg-gradient-to-b from-transparent via-white/15 to-transparent"
+              style={{ animation: 'scan 2s ease-in-out infinite' }}
             />
           </div>
           
-          {/* Holographic overlay effect */}
-          <div 
-            className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-500 pointer-events-none"
-            style={{
-              background: `linear-gradient(135deg, transparent 25%, ${teamColors[team as keyof typeof teamColors]?.primary}20 50%, transparent 75%)`,
-              backgroundSize: '200% 200%',
-              animation: 'shimmer 3s ease-in-out infinite'
-            }}
-          />
-          
-          {/* Status indicator - enhanced with ring */}
+          {/* Status indicator - Simplified, no ping on mobile */}
           <div className="absolute top-2 right-2 flex gap-1 z-10">
-            <div className="relative">
-              <div className="w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-green-500 animate-pulse" />
-              <div className="absolute inset-0 w-2 h-2 md:w-2.5 md:h-2.5 rounded-full bg-green-400 animate-ping opacity-50" />
-            </div>
+            <div className="w-2 h-2 rounded-full bg-green-500" />
           </div>
           
           {/* Content - Bottom aligned, compact on mobile */}
           <div className="absolute inset-x-0 bottom-0 p-2 sm:p-4 md:p-5 lg:p-6 z-10">
             <div className="flex flex-col items-center">
-              {/* Icon with team color - enhanced glow and scale */}
+              {/* Icon with team color - Simplified for mobile */}
               <div 
-                className="w-10 h-10 sm:w-14 sm:h-14 md:w-18 md:h-18 lg:w-22 lg:h-22 xl:w-24 xl:h-24 rounded-full flex items-center justify-center mb-1.5 sm:mb-3 shadow-2xl group-hover:scale-125 group-hover:rotate-6 transition-all duration-500 border-2 md:border-3 border-white/50 group-hover:border-white/80"
+                className="w-10 h-10 sm:w-14 sm:h-14 md:w-18 md:h-18 lg:w-22 lg:h-22 xl:w-24 xl:h-24 rounded-full flex items-center justify-center mb-1.5 sm:mb-3 shadow-xl group-hover:scale-110 transition-transform duration-300 border-2 md:border-3 border-white/50"
                 style={{ 
                   backgroundColor: teamColors[team as keyof typeof teamColors]?.primary,
-                  boxShadow: `0 0 30px ${teamColors[team as keyof typeof teamColors]?.glow}, 0 0 60px ${teamColors[team as keyof typeof teamColors]?.glow}60, inset 0 0 20px rgba(255,255,255,0.2)`,
+                  boxShadow: `0 0 20px ${teamColors[team as keyof typeof teamColors]?.glow}`,
                 }}
               >
-                <Icon className="h-5 w-5 sm:h-7 sm:w-7 md:h-9 md:w-9 lg:h-11 lg:w-11 xl:h-12 xl:w-12 text-white drop-shadow-lg group-hover:animate-pulse" />
+                <Icon className="h-5 w-5 sm:h-7 sm:w-7 md:h-9 md:w-9 lg:h-11 lg:w-11 xl:h-12 xl:w-12 text-white drop-shadow-lg" />
               </div>
               
-              {/* Team name - enhanced glow effect */}
+              {/* Team name */}
               <div className="flex items-center gap-1 sm:gap-2 mb-1.5 sm:mb-3">
-                <Star className="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-4 md:w-4 text-white/80 group-hover:text-yellow-300 group-hover:animate-spin shrink-0 transition-colors duration-300" style={{ animationDuration: '2s' }} />
+                <Star className="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-4 md:w-4 text-white/80 shrink-0" />
                 <h3 
-                  className="text-base sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-black tracking-[0.08em] sm:tracking-[0.15em] text-white drop-shadow-lg group-hover:scale-110 transition-transform duration-300"
+                  className="text-base sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-black tracking-[0.08em] sm:tracking-[0.15em] text-white drop-shadow-lg"
                   style={{ 
-                    textShadow: `0 2px 8px ${teamColors[team as keyof typeof teamColors]?.glow}, 0 0 30px ${teamColors[team as keyof typeof teamColors]?.glow}, 0 0 60px ${teamColors[team as keyof typeof teamColors]?.primary}80`,
+                    textShadow: `0 2px 8px ${teamColors[team as keyof typeof teamColors]?.glow}`,
                   }}
                 >
                   {team}
                 </h3>
-                <Star className="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-4 md:w-4 text-white/80 group-hover:text-yellow-300 group-hover:animate-spin shrink-0 transition-colors duration-300" style={{ animationDuration: '2s', animationDirection: 'reverse' }} />
+                <Star className="h-2.5 w-2.5 sm:h-3 sm:w-3 md:h-4 md:w-4 text-white/80 shrink-0" />
               </div>
               
               {/* Description - Hidden on mobile, visible on larger screens */}
@@ -258,29 +221,23 @@ export function ThemedTeamCard({ team, onClick }: ThemedTeamCardProps) {
                 {descriptions.description}
               </p>
               
-              {/* Access button - Enhanced with glow and animation */}
+              {/* Access button - Simplified */}
               <div 
-                className="flex items-center justify-center gap-1 sm:gap-2 px-3 py-1.5 sm:px-5 sm:py-2.5 md:px-6 md:py-3 rounded-md sm:rounded-lg md:rounded-xl bg-black/70 backdrop-blur-sm border-2 transition-all duration-300 group-hover:bg-black/90 group-hover:scale-110 group-hover:shadow-lg"
-                style={{ 
-                  borderColor: teamColors[team as keyof typeof teamColors]?.primary,
-                  boxShadow: `0 0 0 transparent`,
-                }}
+                className="flex items-center justify-center gap-1 sm:gap-2 px-3 py-1.5 sm:px-5 sm:py-2.5 md:px-6 md:py-3 rounded-md sm:rounded-lg md:rounded-xl bg-black/70 backdrop-blur-sm border-2 transition-transform duration-200 group-hover:scale-105"
+                style={{ borderColor: teamColors[team as keyof typeof teamColors]?.primary }}
               >
-                <Radio className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-green-400 animate-pulse shrink-0" />
-                <span className="text-[10px] sm:text-sm md:text-base font-bold text-white tracking-wider uppercase group-hover:tracking-[0.2em] transition-all duration-300">
+                <Radio className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 text-green-400 shrink-0" />
+                <span className="text-[10px] sm:text-sm md:text-base font-bold text-white tracking-wider uppercase">
                   ACESSAR
                 </span>
               </div>
             </div>
           </div>
           
-          {/* Bottom accent line with team color - grows on hover */}
+          {/* Bottom accent line with team color */}
           <div 
-            className="absolute bottom-0 left-0 right-0 h-0.5 md:h-1 group-hover:h-1 md:group-hover:h-1.5 opacity-80 group-hover:opacity-100 transition-all duration-300"
-            style={{ 
-              backgroundColor: teamColors[team as keyof typeof teamColors]?.primary,
-              boxShadow: `0 0 15px ${teamColors[team as keyof typeof teamColors]?.glow}`
-            }}
+            className="absolute bottom-0 left-0 right-0 h-0.5 md:h-1 opacity-80"
+            style={{ backgroundColor: teamColors[team as keyof typeof teamColors]?.primary }}
           />
         </div>
       </div>

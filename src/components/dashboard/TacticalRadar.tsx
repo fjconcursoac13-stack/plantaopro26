@@ -23,7 +23,6 @@ interface TacticalRadarProps {
 
 export const TacticalRadar = forwardRef<HTMLDivElement, TacticalRadarProps>(function TacticalRadar({ unitId, className, compact = false }, ref) {
   const [agents, setAgents] = useState<AgentBlip[]>([]);
-  const [isScanning, setIsScanning] = useState(true);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
   const { playSound } = useSoundEffects();
 
@@ -64,18 +63,8 @@ export const TacticalRadar = forwardRef<HTMLDivElement, TacticalRadarProps>(func
     return () => clearInterval(interval);
   }, [unitId]);
 
-  // Radar sweep animation trigger
-  useEffect(() => {
-    const sweepInterval = setInterval(() => {
-      setIsScanning(prev => !prev);
-      // Play subtle radar ping
-      if (agents.length > 0) {
-        playSound('tactical-hover');
-      }
-    }, 4000);
-
-    return () => clearInterval(sweepInterval);
-  }, [agents.length, playSound]);
+  // Disable sweep toggle to prevent flickering - keep constant animation
+  // Removed interval that was causing state updates and re-renders
 
   const teamColors: Record<string, string> = {
     ALFA: 'bg-blue-400 shadow-blue-400/50',
@@ -134,23 +123,21 @@ export const TacticalRadar = forwardRef<HTMLDivElement, TacticalRadarProps>(func
             <div className="absolute h-full w-[1px] bg-gradient-to-b from-transparent via-primary/30 to-transparent" />
           </div>
 
-          {/* Sweep animation */}
+          {/* Sweep animation - Optimized for performance */}
           <div 
-            className={cn(
-              "absolute inset-0 rounded-full transition-opacity duration-500",
-              isScanning ? "opacity-100" : "opacity-0"
-            )}
+            className="absolute inset-0 rounded-full"
             style={{
-              background: 'conic-gradient(from 0deg, transparent 0deg, hsl(var(--primary) / 0.4) 30deg, transparent 60deg)',
+              background: 'conic-gradient(from 0deg, transparent 0deg, hsl(var(--primary) / 0.3) 30deg, transparent 60deg)',
               animation: 'spin 4s linear infinite',
+              willChange: 'transform',
             }}
           />
 
           {/* Center point */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-primary rounded-full shadow-glow z-10" />
 
-          {/* Agent blips */}
-          {agents.map((agent, index) => {
+          {/* Agent blips - Stable without pulse */}
+          {agents.map((agent) => {
             const radians = (agent.position.angle * Math.PI) / 180;
             const x = centerX + Math.cos(radians) * (agent.position.distance * centerX / 100) - 4;
             const y = centerY + Math.sin(radians) * (agent.position.distance * centerY / 100) - 4;
@@ -160,15 +147,13 @@ export const TacticalRadar = forwardRef<HTMLDivElement, TacticalRadarProps>(func
               <div
                 key={agent.id}
                 className={cn(
-                  "absolute w-2 h-2 rounded-full z-20 cursor-pointer transition-all duration-300 hover:scale-150",
-                  colorClass,
-                  "animate-pulse"
+                  "absolute w-2 h-2 rounded-full z-20 cursor-pointer transition-transform duration-300 hover:scale-150",
+                  colorClass
                 )}
                 style={{
                   left: x,
                   top: y,
-                  animationDelay: `${index * 0.2}s`,
-                  boxShadow: '0 0 8px currentColor',
+                  boxShadow: '0 0 6px currentColor',
                 }}
                 title={`${agent.name}${agent.team ? ` - ${agent.team}` : ''}`}
                 onClick={() => playSound('tactical-click')}
